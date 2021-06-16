@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 13:25:39 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/16 17:23:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,23 +16,23 @@
 
 const struct s_options	g_options[] = {
 	{'A', OPT_A_MAJ},
-	{'a', OPT_A_MIN},	// MANDATORY
+	{'a', OPT_A_MIN},
 	{'B', OPT_B_MAJ},
 	{'b', OPT_B_MIN},
 	{'C', OPT_C_MAJ},
 	{'c', OPT_C_MIN},
-	{'d', OPT_D},		// Bonus
+	{'d', OPT_D},
 	{'e', OPT_E},
 	{'F', OPT_F_MAJ},
-	{'f', OPT_F_MIN},	// Bonus
+	{'f', OPT_F_MIN},
 	{'G', OPT_G_MAJ},
-	{'g', OPT_G_MIN},	// Bonus
+	{'g', OPT_G_MIN},
 	{'H', OPT_H_MAJ},
 	{'h', OPT_H_MIN},
 	{'i', OPT_I},
 	{'k', OPT_K},
 	{'L', OPT_L_MAJ},
-	{'l', OPT_L_MIN},	// MANDATORY
+	{'l', OPT_L_MIN},
 	{'m', OPT_M},
 	{'n', OPT_N},
 	{'O', OPT_O_MAJ},
@@ -40,14 +40,14 @@ const struct s_options	g_options[] = {
 	{'P', OPT_P_MAJ},
 	{'p', OPT_P_MIN},
 	{'q', OPT_Q},
-	{'R', OPT_R_MAJ},	// MANDATORY
-	{'r', OPT_R_MIN},	// MANDATORY
+	{'R', OPT_R_MAJ},
+	{'r', OPT_R_MIN},
 	{'S', OPT_S_MAJ},
 	{'s', OPT_S_MIN},
 	{'T', OPT_T_MAJ},
-	{'t', OPT_T_MIN},	// MANDATORY
+	{'t', OPT_T_MIN},
 	{'U', OPT_U_MAJ},
-	{'u', OPT_U_MIN},	// Bonus
+	{'u', OPT_U_MIN},
 	{'v', OPT_V},
 	{'W', OPT_W_MAJ},
 	{'w', OPT_W_MIN},
@@ -71,26 +71,38 @@ void	resolve_options_conflicts(void)
 		add_flag(OPT_L_MIN);
 }
 
-void	get_args(const char *arg)
+void	illegal_opt(const char *program_name, char opt)
 {
-	size_t	i = 0;
+	ft_printf("%s: illegal option -- %c\n", program_name, opt);
+	ft_printf(USAGE, program_name);
+}
+
+int		get_args(const char **av, const char *arg)
+{
+	int		got_valid_option;
+	size_t	i;
 	size_t	j;
 
-	while (arg[i])
+	for (i = 0; arg[i]; ++i)
 	{
-		j = 0;
-		while (g_options[j].opt)
+		got_valid_option = FALSE;
+		for (j = 0; g_options[j].opt; ++j)
 		{
 			if (g_options[j].opt == arg[i])
 			{
 				add_flag(g_options[j].flag);
-				// resolve_options_conflicts();
+				resolve_options_conflicts();
+				got_valid_option = TRUE;
 				break ;
 			}
-			++j;
 		}
-		++i;
+		if (FALSE == got_valid_option)
+		{
+			illegal_opt(av[0], arg[i]);
+			return (ERR_CODE);
+		}
 	}
+	return (SUC_CODE);
 }
 
 int		parse_args(int ac, const char **av)
@@ -102,7 +114,8 @@ int		parse_args(int ac, const char **av)
 	{
 		if ('-' == av[i][0] && av[i][1] && FALSE == args_are_done)
 		{
-			get_args(av[i] + 1);
+			if (ERR_CODE == get_args(av, av[i] + 1))
+				return (ERR_CODE);
 		}
 		else
 		{
@@ -113,5 +126,6 @@ int		parse_args(int ac, const char **av)
 			ft_lstadd_back(&singleton()->lst, new);
 		}
 	}
+	resolve_options_conflicts();
 	return (SUC_CODE);
 }
