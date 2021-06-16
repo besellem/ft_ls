@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/15 23:14:42 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/16 13:02:08 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,8 +102,11 @@ typedef	struct	s_ls
 ** -- PROTOTYPES --
 ** Utils
 */
-void			ft_free_all(void);
 t_ls			*singleton(void);
+void			ft_free_all(void);
+void			add_flag(uint64_t flag);
+void			rm_flag(uint64_t flag);
+int				is_flag(uint64_t flag);
 
 /* Parsing */
 int				parse_args(int ac, const char **av);
