@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 17:23:50 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/17 19:00:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,10 @@
 # define TRUE     1
 # define FALSE    0
 
+# define EMPTY    0
+
 # define USAGE "usage: %s [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
-# define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
+# define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Here\n", __FILE__, __LINE__);
 
 /*
 ** -- DATA STRUCTURES --
@@ -91,12 +93,34 @@ struct	s_options{
 };
 
 /*
-** opts:		flag containing all options parsed
+** One node contains the file / folder and its infos
+*/
+typedef	struct	s_node{
+	struct dirent	*_dir_;
+	struct stat		*_stats_;
+	struct stat		*_lstats_;
+	t_list			*recursive_nodes;
+}				t_node;
+
+/*
+** opts:		flag containing all parsed options.
+** args:		list containing all parsed arguments (is temporary).
+** nodes:		list containing all arguments and their data.
+				`nodes->content' is a `t_list *'. The `lst->content' of this
+				former list is a `t_node *' structure containing all data about
+				that file / folder.
+				If the `-R' option is set, there will be a recursive dive in the
+				directories found, setting another list into that node,
+				itself containing a node... until no more directories are found
+				in that path.
+				All nodes are sorted according to the sorting options set
+				(`-t' or `-r' for example).
 */
 typedef	struct	s_ls
 {
 	uint64_t	opts;
-	t_list		*lst;
+	t_list		*args;
+	t_list		*nodes;
 }				t_ls;
 
 /*
@@ -104,12 +128,13 @@ typedef	struct	s_ls
 ** Utils
 */
 t_ls			*singleton(void);
+void			ft_free_node(void *);
 void			ft_free_all(void);
-void			add_flag(uint64_t flag);
-void			rm_flag(uint64_t flag);
-int				is_flag(uint64_t flag);
+void			add_flag(uint64_t);
+void			rm_flag(uint64_t);
+int				is_flag(uint64_t);
 
 /* Parsing */
-int				parse_args(int ac, const char **av);
+int				parse_args(int, const char **);
 
 #endif

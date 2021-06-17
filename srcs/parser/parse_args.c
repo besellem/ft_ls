@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/16 17:23:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/17 15:11:29 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,7 @@ void	resolve_options_conflicts(void)
 
 	if (is_flag(OPT_N))
 		add_flag(OPT_L_MIN);
+	
 }
 
 void	illegal_opt(const char *program_name, char opt)
@@ -123,7 +124,7 @@ int		parse_args(int ac, const char **av)
 			new = ft_lstnew((char *)av[i]);
 			if (!new)
 				return (ERR_CODE);
-			ft_lstadd_back(&singleton()->lst, new);
+			ft_lstadd_back(&singleton()->args, new);
 		}
 	}
 	resolve_options_conflicts();
