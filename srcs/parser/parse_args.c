@@ -6,13 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/17 15:11:29 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/17 22:59:03 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-#define OPTIONS_NB 36
 
 const struct s_options	g_options[] = {
 	{'A', OPT_A_MAJ},
@@ -72,13 +70,13 @@ void	resolve_options_conflicts(void)
 	
 }
 
-void	illegal_opt(const char *program_name, char opt)
+void	illegal_opt(char opt)
 {
-	ft_printf("%s: illegal option -- %c\n", program_name, opt);
-	ft_printf(USAGE, program_name);
+	ft_printf(PROG_NAME ": illegal option -- %c\n", opt);
+	ft_putstr(USAGE);
 }
 
-int		get_args(const char **av, const char *arg)
+int		get_args(const char *arg)
 {
 	int		got_valid_option;
 	size_t	i;
@@ -99,7 +97,7 @@ int		get_args(const char **av, const char *arg)
 		}
 		if (FALSE == got_valid_option)
 		{
-			illegal_opt(av[0], arg[i]);
+			illegal_opt(arg[i]);
 			return (ERR_CODE);
 		}
 	}
@@ -115,7 +113,7 @@ int		parse_args(int ac, const char **av)
 	{
 		if ('-' == av[i][0] && av[i][1] && FALSE == args_are_done)
 		{
-			if (ERR_CODE == get_args(av, av[i] + 1))
+			if (ERR_CODE == get_args(av[i] + 1))
 				return (ERR_CODE);
 		}
 		else

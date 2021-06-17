@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/17 19:10:15 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/17 23:57:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,20 +27,28 @@ void	print_dirent(struct dirent *d)
 void	print_stat(struct stat *d)
 {
 	ft_printf("{\n");
-	ft_printf("    dirent->d_ino     [%ld]\n",   d->st_atimespec.tv_nsec);
-	ft_printf("    dirent->d_ino     [%ld]\n",   d->st_atimespec.tv_sec);
-	ft_printf("    dirent->d_ino     [%ld]\n",   d->st_birthtimespec.tv_nsec);
-	ft_printf("    dirent->d_ino     [%ld]\n",   d->st_birthtimespec.tv_nsec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_blksize);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
-	ft_printf("    dirent->d_ino     [%llu]\n",  d->st_atimespec);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_atimespec.tv_nsec);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_atimespec.tv_sec);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_birthtimespec.tv_nsec);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_birthtimespec.tv_nsec);
+	ft_printf("    dirent->d_ino     [%d]\n",   d->st_blksize);
+	ft_printf("    dirent->d_ino     [%lld]\n", d->st_blocks);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_ctimespec.tv_nsec);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_ctimespec.tv_sec);
+	ft_printf("    dirent->d_ino     [%d]\n",   d->st_dev);
+	ft_printf("    dirent->d_ino     [%u]\n",   d->st_flags);
+	ft_printf("    dirent->d_ino     [%u]\n",   d->st_gen);
+	ft_printf("    dirent->d_ino     [%u]\n",   d->st_gid);
+	ft_printf("    dirent->d_ino     [%llu]\n", d->st_ino);
+	ft_printf("    dirent->d_ino     [%d]\n",   d->st_lspare);
+	ft_printf("    dirent->d_ino     [%d]\n",   d->st_mode);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_mtimespec.tv_nsec);
+	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_mtimespec.tv_sec);
+	ft_printf("    dirent->d_ino     [%u]\n",   d->st_nlink);
+	ft_printf("    dirent->d_ino     [%lld]\n", d->st_qspare);
+	ft_printf("    dirent->d_ino     [%d]\n",   d->st_rdev);
+	ft_printf("    dirent->d_ino     [%lld]\n", d->st_size);
+	ft_printf("    dirent->d_ino     [%u]\n",   d->st_uid);
 	ft_printf("}\n");
 }
 
@@ -86,22 +94,22 @@ void	ft_lstprint(t_list *lst)
 
 int	cmp_node_by_asc_time(t_node *n1, t_node *n2)
 {
-	return (n1->_stats_->st_mtimespec.tv_nsec > n2->_stats_->st_mtimespec.tv_nsec);
+	return (n1->_stats_.st_mtimespec.tv_nsec > n2->_stats_.st_mtimespec.tv_nsec);
 }
 
 int	cmp_node_by_desc_time(t_node *n1, t_node *n2)
 {
-	return (n1->_stats_->st_mtimespec.tv_nsec < n2->_stats_->st_mtimespec.tv_nsec);
+	return (n1->_stats_.st_mtimespec.tv_nsec < n2->_stats_.st_mtimespec.tv_nsec);
 }
 
 int	cmp_node_by_asc(t_node *n1, t_node *n2)
 {
-	return (ft_strcmp(n1->_dir_->d_name, n2->_dir_->d_name));
+	return (ft_strcmp(n1->_dir_.d_name, n2->_dir_.d_name));
 }
 
 int	cmp_node_by_desc(t_node *n1, t_node *n2)
 {
-	return (ft_strcmp(n2->_dir_->d_name, n1->_dir_->d_name));
+	return (ft_strcmp(n2->_dir_.d_name, n1->_dir_.d_name));
 }
 
 /*
@@ -152,47 +160,46 @@ void	ft_sort_lst_nodes(t_list **head)
 ** If the `-R' option is enable, we add a list to that node till we don't find
 ** any directories anymore in that path.
 */
-t_list	*ft_ls2lst(char *path)
+t_list	*ft_ls2lst(t_list *lst, char *path)
 {
 	DIR				*dir = opendir(path);
-	t_list			*lst = NULL;
+	// t_list			*lst = NULL;
 	t_list			*tmp;
-	t_node			node;
+	t_node			*node;
+	char			*pwd;
 	struct dirent	*s_dir;
 
-	// ERR()
-
-	ft_printf("path: [%s], DIR *d: [%p]\n", path, dir);
 	if (!dir)
+	{
+		ft_printf(PROG_NAME ": %s: %s\n", path, strerror(errno));
 		return (NULL);
+	}
 	while ((s_dir = readdir(dir)))
 	{
-		ft_bzero(&node, sizeof(t_node));
-		// ft_bzero(node._dir_, sizeof(struct dirent));
-		// ft_bzero(node._stats_, sizeof(struct stat));
-		// ft_bzero(node._lstats_, sizeof(struct stat));
-		// ft_bzero(node.recursive_nodes, sizeof(t_list));
+		node = (t_node *)ft_calloc(1, sizeof(t_node));
+		ft_bzero(&node->_dir_, sizeof(struct dirent));
+		ft_bzero(&node->_stats_, sizeof(struct stat));
+		ft_bzero(&node->_lstats_, sizeof(struct stat));
 
-		node._dir_ = (struct dirent *)ft_calloc(1, sizeof(struct dirent));
-		ft_memmove(node._dir_, s_dir, sizeof(struct dirent));
+		/* copy that `struct dirent' */
+		ft_memmove(&node->_dir_, s_dir, sizeof(struct dirent));
 
-		// ft_printf("len: [%d]\n", node._dir_->d_namlen);
-
-		/* get stat struct */
-		node._stats_ = (struct stat *)ft_calloc(1, sizeof(struct stat));
-		stat(s_dir->d_name, node._stats_);
-		
-		node._lstats_ = (struct stat *)ft_calloc(1, sizeof(struct stat));
-		lstat(s_dir->d_name, node._lstats_);
-
-		// ft_printf("[%s]\n", s_dir->d_name);
+		/* copy `struct stat' */
+		stat(s_dir->d_name, &node->_stats_);
+		lstat(s_dir->d_name, &node->_lstats_);
 		
 		/* if it's a directory & the flag `-R' is set, make a recursive call */
-		// if (DT_DIR == s_dir->d_type && is_flag(OPT_R_MAJ))
-		// 	node.recursive_nodes = ft_ls2lst(s_dir->d_name);
+		if (DT_DIR == s_dir->d_type && is_flag(OPT_R_MAJ) &&
+			ft_strcmp(s_dir->d_name, "..") && ft_strcmp(s_dir->d_name, "."))
+		{
+			/* Add the folder's name to the current path to search from */
+			ft_asprintf(&pwd, "%s/%s", path, s_dir->d_name);
+			node->recursive_nodes = ft_ls2lst(node->recursive_nodes, pwd);
+			ft_memdel((void **)&pwd);
+		}
 		
 		/* add that node to the list */
-		tmp = ft_lstnew(&node);
+		tmp = ft_lstnew(node);
 		if (!tmp)
 		{
 			ERR()
@@ -212,35 +219,35 @@ t_list	*ft_ls2lst(char *path)
 t_list	*get_nodes(t_list *args)
 {
 	t_list	*nodes = NULL;
-	t_list	*tmp = args;
+	t_list	*tmp;
 	t_list	*new_tmp;
 
 	/* if the list of args is empty, do `ls' on the current dir */
 	if (EMPTY == ft_lstsize(args))
 	{
-		new_tmp = ft_ls2lst(".");
+		new_tmp = ft_ls2lst(nodes, ".");
 		if (!new_tmp)
 		{
-			ft_lstclear(&nodes, ft_free_node);
+			ft_lstclear(&nodes, NULL);
 			return (NULL);
 		}
-		ft_lstadd_front(&nodes, new_tmp);
+		ft_lstadd_back(&nodes, new_tmp);
 	}
 	else
 	{
+		tmp = args;
 		while (tmp)
 		{
-			new_tmp = ft_ls2lst(tmp->content);
+			new_tmp = ft_ls2lst(nodes, tmp->content);
+			
+			/* when the directory passed in args does not exist */
 			if (!new_tmp)
-			{
-				ft_lstclear(&nodes, ft_free_node);
-				return (NULL);
-			}
-			ft_lstadd_back(&nodes, new_tmp);
-			tmp = tmp->content;
+				new_tmp = NULL;
+			else
+				ft_lstadd_back(&nodes, new_tmp);
+			tmp = tmp->next;
 		}
 	}
-	// (t_node *)(singleton()->nodes->content);
 	return (nodes);
 }
 
@@ -267,25 +274,28 @@ t_list	*get_nodes(t_list *args)
 // 	closedir(dir);
 // }
 
-void	ft_do_ls(t_list	*lst)
+void	__print_lst__(t_list *head)
 {
-	(void)lst;
-}
-
-void	__print_lst__(void)
-{
-	t_list	*lst = singleton()->nodes;
-	t_list	*tmp;
+	t_list	*lst = head;
 	t_node	*node;
 
 	while (lst)
 	{
-		tmp = (t_list *)lst->content;
-		node = (t_node *)(tmp->content);
-		// printf("ptr [%p]\n", &node);
-		ft_printf("ptr: [%p]\n", node->_dir_);
-		// write(1, node->_dir_.d_name, node->_dir_.d_namlen - 1);
-		// ft_printf("[%s]\n", node->_dir_.d_name);
+		node = (t_node *)lst->content;
+		if (node)
+		{
+			// ft_printf("node ptr:    [%p]\n", node);
+			// ft_printf("recurse ptr: [%p]\n", node->recursive_nodes);
+			if (DT_DIR == node->_dir_.d_type)
+				ft_printf(B_RED "-- [%s] --\n" CLR_COLOR, node->_dir_.d_name);
+			else
+				ft_printf("[%s]\n", node->_dir_.d_name);
+			if (node->recursive_nodes)
+			{
+				ft_putstr("\n");
+				__print_lst__(node->recursive_nodes);
+			}
+		}
 		lst = lst->next;
 	}
 }
@@ -297,15 +307,22 @@ int	main(int ac, const char **av)
 	if (ERR_CODE == parse_args(ac, av))
 	{
 		ft_free_all();
+		ERR()
 		return (EXIT_FAILURE);
 	}
 	
 	// ft_lstprint(singleton()->args);
 
 	singleton()->nodes = get_nodes(singleton()->args);
+	if (NULL == singleton()->nodes)
+	{
+		ft_free_all();
+		ERR()
+		return (EXIT_FAILURE);
+	}
 	// ft_lstclear(&singleton()->args, NULL);
 
-	__print_lst__();
+	__print_lst__(singleton()->nodes);
 
 	// ft_printf("flag [%.64b]\n\n", singleton()->opts);
 	// if (EMPTY == ft_lstsize(singleton()->args))
@@ -317,9 +334,3 @@ int	main(int ac, const char **av)
 	ft_free_all();
 	return (EXIT_SUCCESS);
 }
-
-/*
-
-
-
-*/

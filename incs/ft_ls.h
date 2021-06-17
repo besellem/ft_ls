@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/17 19:00:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/17 22:56:45 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,18 @@
 # include <sys/xattr.h>
 # include <time.h>
 # include <stdio.h>
+# include <errno.h>
 
 # include "libft.h"
 
 /*
 ** -- DEFINES --
 */
+# define PROG_NAME "ft_ls"
+
+# define USAGE "usage: " PROG_NAME " [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
+# define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
+
 # define ERR_CODE 0
 # define SUC_CODE 1
 
@@ -43,12 +49,6 @@
 
 # define EMPTY    0
 
-# define USAGE "usage: %s [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
-# define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Here\n", __FILE__, __LINE__);
-
-/*
-** -- DATA STRUCTURES --
-*/
 # define OPT_A_MAJ	(1ULL <<  0)
 # define OPT_A_MIN	(1ULL <<  1)	/* MANDATORY */
 # define OPT_B_MAJ	(1ULL <<  2)
@@ -87,6 +87,13 @@
 # define OPT_W_MIN	(1ULL << 35)
 # define OPT_X		(1ULL << 36)
 
+/*
+** -- DATA STRUCTURES --
+*/
+
+/*
+** Used temporarily for a lookup table in the parsing of the options
+*/
 struct	s_options{
 	char		opt;
 	uint64_t	flag;
@@ -96,25 +103,25 @@ struct	s_options{
 ** One node contains the file / folder and its infos
 */
 typedef	struct	s_node{
-	struct dirent	*_dir_;
-	struct stat		*_stats_;
-	struct stat		*_lstats_;
+	struct dirent	_dir_;
+	struct stat		_stats_;
+	struct stat		_lstats_;
 	t_list			*recursive_nodes;
 }				t_node;
 
 /*
-** opts:		flag containing all parsed options.
-** args:		list containing all parsed arguments (is temporary).
-** nodes:		list containing all arguments and their data.
-				`nodes->content' is a `t_list *'. The `lst->content' of this
-				former list is a `t_node *' structure containing all data about
-				that file / folder.
-				If the `-R' option is set, there will be a recursive dive in the
-				directories found, setting another list into that node,
-				itself containing a node... until no more directories are found
-				in that path.
-				All nodes are sorted according to the sorting options set
-				(`-t' or `-r' for example).
+** opts:	flag containing all parsed options.
+** args:	list containing all parsed arguments (is temporary).
+** nodes:	list containing all arguments and their data.
+			`nodes->content' is a `t_list *'. The `lst->content' of this former
+			list is a `t_node *' structure containing all data about that
+			file / folder.
+			If the `-R' option is set, there will be a recursive dive in the
+			directories found, setting another list into that node, itself
+			containing a node... until no more directories are found in that
+			path.
+			All nodes are sorted according to the sorting options set (`-t' or
+			`-r' for example).
 */
 typedef	struct	s_ls
 {
@@ -134,7 +141,7 @@ void			add_flag(uint64_t);
 void			rm_flag(uint64_t);
 int				is_flag(uint64_t);
 
-/* Parsing */
+/* Options parsing */
 int				parse_args(int, const char **);
 
 #endif

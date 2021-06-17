@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 22:22:52 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/17 18:52:19 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/17 23:56:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,25 +27,23 @@ void	add_flag(uint64_t flag)
 	singleton()->opts |= flag;
 }
 
-/*
-** free this node which is a list: (t_list *)(singleton()->nodes->content)
-*/
-void	ft_free_node(void *lst_node)
+void	ft_free_nodes(t_list *head)
 {
-	// t_list	*lst = (t_list *)lst_node;
-	// t_list	*tmp = lst;
-	// t_node	*node;
+	t_list	*lst = head;
+	t_node	*node;
 
-	// while (tmp)
-	// {
-	// 	// node = (t_node *)tmp->content;
-
-	// 	// do a recursive trick here
-	// 	// ft_lstclear(&node->recursive_nodes, NULL);
-	// 	tmp = tmp->content;
-	// }
-	// ft_lstclear(&lst, NULL);
-	(void)lst_node;
+	while (lst)
+	{
+		node = (t_node *)lst->content;
+		if (node)
+		{
+			if (node->recursive_nodes)
+				ft_free_nodes(node->recursive_nodes);
+		}
+		ft_memdel((void **)&node);
+		lst = lst->next;
+	}
+	ft_lstclear(&head, NULL);
 }
 
 void	ft_free_all(void)
@@ -55,7 +53,7 @@ void	ft_free_all(void)
 		if (singleton()->args)
 			ft_lstclear(&singleton()->args, NULL);
 		if (singleton()->nodes)
-			ft_lstclear(&singleton()->nodes, ft_free_node);
+			ft_free_nodes(singleton()->nodes);
 		free(singleton());
 	}
 }
