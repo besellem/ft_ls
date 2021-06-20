@@ -6,22 +6,22 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2021/06/20 12:06:28 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/20 23:15:31 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
-CC			= clang
-CFLAGS 		= -Wall -Wextra -Werror -g3 -fsanitize=address
-IFLAGS 		= -I./incs -I./libft/incs
-LIBFLAGS 	= -L./libft -lft
+CC			:= clang
+CFLAGS 		:= -Wall -Wextra -Werror -g3 -fsanitize=address
+INCS		:= ./incs/ft_ls.h
+IFLAGS 		:= -I./incs -I./libft/incs
+LIBFLAGS 	:= -L./libft -lft
 
 # DIRECTORIES
 
 BUILD		:= .build
 LIB_DIR		:= libft
-INC_DIR		:= incs
 SRC_DIR		:= srcs
 SUB_DIR		:= parser \
 			   utils
@@ -34,7 +34,10 @@ NAME	:= ft_ls
 SRC		:= main.c
 SUB_SRC	:= parse_args.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
-SUB_SRC	:= general.c
+SUB_SRC	:= buffer_management.c \
+		   flag_utils.c \
+		   general.c \
+		   memory_management.c
 SRC		+= $(addprefix utils/, $(SUB_SRC))
 
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
@@ -83,7 +86,7 @@ $(BUILD):
 	@echo "Creating $(RED_COLOR)$@ $(DEFAULT_COLOR)..."
 	@mkdir $@ $(DIRS)
 	
-$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c | $(BUILD)
+$(OBJ_DIR)/%.o:$(SRC_DIR)/%.c $(INCS) | $(BUILD)
 	@echo "Compiling $(YELLOW_COLOR)$< $(DEFAULT_COLOR)..."
 	@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 

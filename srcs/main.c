@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 14:34:48 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 23:36:09 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,6 @@ void	ft_lst_sort(t_list **lst, int (*cmp)())
 	{
 		if (cmp(tmp->content, tmp->next->content) > 0)
 		{
-			// ERR()
 			content = tmp->content;
 			tmp->content = tmp->next->content;
 			tmp->next->content = content;
@@ -153,19 +152,17 @@ void	ft_sort_lst_nodes(t_list **head)
 }
 
 /*
-** t_list	*lst;
 ** `lst->content' is a `t_node *' structure.
-** Each node contains all infos about the file / folder.
-** If the `-R' option is enable, we add a list to that node till we don't find
-** any directories anymore in that path.
+** Each `t_node *' structure contains the infos about the file / folder.
+** If the `-R' option is enable, we add a list to that node until no more
+** directories are found in that path.
 */
-t_list	*ft_ls2lst(t_list *lst, char *path)
+t_list	*ft_ls2lst(t_list **lst, char *path)
 {
 	DIR				*dir = opendir(path);
-	// t_list			*lst = NULL;
 	t_list			*tmp;
 	t_node			*node;
-	char			*pwd;
+	char			*pwd = NULL;
 	struct dirent	*s_dir;
 
 	if (!dir)
@@ -175,8 +172,6 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 	}
 	// if (!lst || !path)
 	// 	return (NULL);
-	ERR()
-	ft_printf("%s:%d: [%s]\n", __FILE__, __LINE__, path);
 	while ((s_dir = readdir(dir)))
 	{
 		node = (t_node *)ft_calloc(1, sizeof(t_node));
@@ -184,8 +179,8 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 		// ft_bzero(&node->_stats_, sizeof(struct stat));	// may be faster without
 		// ft_bzero(&node->_lstats_, sizeof(struct stat));	// may be faster without
 
-		ft_printf("s_dir[%p] s_dir->d_name[%s] node[%p]\n",
-			s_dir, s_dir->d_name, node);
+		// ft_printf("s_dir[%p] node[%p] s_dir->d_name[%s]\n",
+		// 	s_dir, node, s_dir->d_name);
 
 		/* copy that `struct dirent' */
 		ft_memmove(&node->_dir_, s_dir, sizeof(struct dirent));
@@ -200,10 +195,10 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 		{
 			/* Add the folder's name to the current path to search from */
 			ft_asprintf(&pwd, "%s/%s", path, s_dir->d_name);
-			node->recursive_nodes = ft_ls2lst(node->recursive_nodes, pwd);
+			node->recursive_nodes = NULL;
+			ft_ls2lst(&node->recursive_nodes, pwd);
 			ft_memdel((void **)&pwd);
 		}
-		
 		/* add that node to the list */
 		tmp = ft_lstnew(node);
 		if (!tmp)
@@ -212,13 +207,11 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 			ft_free_all();
 			exit(EXIT_FAILURE);
 		}
-		ft_printf("  tmp[%p]\n", tmp);
-		ft_lstadd_back(&lst, tmp);
+		ft_lstadd_back(lst, tmp);
 	}
 	closedir(dir);
-	LST_DEBUG(lst);
-	ft_sort_lst_nodes(&lst);
-	return (lst);
+	ft_sort_lst_nodes(lst);
+	return (*lst);
 }
 
 /*
@@ -226,25 +219,22 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 */
 t_list	*get_nodes(t_list *args)
 {
-	t_list	*nodes = NULL;
-	t_list	*new_node = NULL;
-	t_list	*node_list = NULL;
-	t_list	*node_list_content = NULL;
-	t_list	*lst = NULL;
-	t_list	*tmp = NULL;
+	t_list	*nodes = NULL;				/* main list */
+	t_list	*new_node = NULL;			/* list of nodes containing */
+	t_list	*node_list;					/*  */
+	t_list	*tmp = args;
 
-	tmp = args;
 	while (tmp)
 	{
-		// t_list *new_node = (t_list *)ft_calloc(1, sizeof(t_list));
-		lst = ft_lstnew((t_list *)ft_calloc(1, sizeof(t_list)));
-
-		node_content = ft_ls2lst(lst, tmp->content);
-
-		new_node = ft_lstnew(node_content);
+		/* `t_list' containing all the lists from a path (which is an argument) */
+		node_list = NULL;
+		ft_ls2lst(&node_list, (char *)tmp->content);
+		
+		/* `t_list' containing `node_list' above */
+		new_node = ft_lstnew(node_list);
 		
 		/* when the directory passed in args does not exist */
-		if (lst && new_node)
+		if (node_list && new_node)
 		{
 			// lst = ft_lstnew(new_node);
 			ft_lstadd_back(&nodes, new_node);
@@ -292,30 +282,40 @@ char	get_mode(mode_t mode)
 
 void	print_permissions(t_node *node)
 {
-	ft_printf("mode[%16b] ", node->_stats_.st_mode);
-	ft_putchar(get_mode(node->_stats_.st_mode));
-	ft_putchar((node->_stats_.st_mode & S_IRUSR) ? 'r' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IWUSR) ? 'w' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IXUSR) ? 'x' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IRGRP) ? 'r' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IWGRP) ? 'w' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IXGRP) ? 'x' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IROTH) ? 'r' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IWOTH) ? 'w' : '-');
-	ft_putchar((node->_stats_.st_mode & S_IXOTH) ? 'x' : '-');
-	ft_putchar(' ');
+	// ft_printf("mode[%16b] ", node->_stats_.st_mode);
+	// ft_add2buf(get_mode(node->_stats_.st_mode));
+	ft_add2buf((node->_stats_.st_mode & S_IRUSR) ? "r" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IWUSR) ? "w" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IXUSR) ? "x" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IRGRP) ? "r" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IWGRP) ? "w" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IXGRP) ? "x" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IROTH) ? "r" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IWOTH) ? "w" : "-");
+	ft_add2buf((node->_stats_.st_mode & S_IXOTH) ? "x" : "-");
+	ft_add2buf(" ");
 }
 
 void	ft_print_entry(t_list *current, t_node *node)
 {
+	char	*tmp = NULL;
+
+	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
 	if (!is_flag(OPT_A_MIN) && 0 == ft_strncmp(node->_dir_.d_name, ".", 1))
 		return ;
+	
+	/* print nbr of blocks if `-s' is set */
 	if (is_flag(OPT_S_MIN))
 	{
-		// ft_printf("%d ",   node->_stats_.st_blksize);
-		ft_printf("%*lld ", s_padding(current), node->_stats_.st_blocks);
+		/*
+		** OPTI -> get the padding before the call instead of recalculating it for each node
+		*/
+		ft_asprintf(&tmp, "%*lld ", s_padding(current), node->_stats_.st_blocks);
+		ft_add2buf(tmp);
+		ft_memdel((void **)&tmp);
 	}
 	
+	/* print permissions if `-l' (ell) is set */
 	if (is_flag(OPT_L_MIN))
 	{
 		print_permissions(node);
@@ -326,17 +326,18 @@ void	ft_print_entry(t_list *current, t_node *node)
 	*/
 	/* option `-G' turns on the colors */
 	if (is_flag(OPT_G_MAJ) && DT_DIR == node->_dir_.d_type)
-		ft_putstr(B_CYAN);
+		ft_add2buf(B_CYAN);
 	
 	/* print entry name */
-	ft_printf("%s" CLR_COLOR, node->_dir_.d_name);
+	ft_add2buf(node->_dir_.d_name);
+	ft_add2buf(CLR_COLOR);
 
 	/* add `/' when the option `-p' is turned on and if it's a directory */
 	if (is_flag(OPT_P_MIN) && DT_DIR == node->_dir_.d_type)
-		ft_putstr("/");
+		ft_add2buf("/");
 	
 	/* new line -- end of the entry */
-	ft_putstr("\n");
+	ft_add2buf("\n");
 }
 
 // void	ft_ls(char *path)
@@ -362,45 +363,54 @@ void	ft_print_entry(t_list *current, t_node *node)
 // 	closedir(dir);
 // }
 
-void	__print_lst__(t_list *head)
+
+static void	__print_lst_recursively__(t_list *head)
 {
 	t_list	*lst = head;
-	t_list	*tmp;
 	t_node	*node;
 
 	while (lst)
 	{
-		tmp = (t_list *)lst->content;
-		while (tmp)
+		node = (t_node *)lst->content;
+		if (node)
 		{
-			node = (t_node *)tmp->content;
-			if (node)
-			{
-				ft_print_entry((t_list *)lst->content, node);
-				if (is_flag(OPT_R_MAJ) && node->recursive_nodes)
-					__print_lst__(node->recursive_nodes);
-			}
-			tmp = tmp->next;
+			ft_print_entry((t_list *)head, node);
+			if (is_flag(OPT_R_MAJ) && node->recursive_nodes)
+				__print_lst_recursively__(node->recursive_nodes);
 		}
+		lst = lst->next;
+	}
+}
+
+void	__print_entries__(t_list *head)
+{
+	t_list	*lst = head;
+
+	while (lst)
+	{
+		__print_lst_recursively__((t_list *)lst->content);
 		lst = lst->next;
 	}
 }
 
 int	main(int ac, const char **av)
 {
+	/* init singleton */
 	if (NULL == singleton())
+	{
+		ERR()
 		return (EXIT_FAILURE);
-	if (ERR_CODE == parse_args(ac, av))
+	}
+
+	/* parse arguments */
+	if (ERR_CODE == parse_args(ac, av, &singleton()->args))
 	{
 		ft_free_all();
 		ERR()
 		return (EXIT_FAILURE);
 	}
 
-	ft_printf("-- singleton()->args:\n");
-	ft_lstprint(singleton()->args);
-	ft_printf("-- end\n\n");
-
+	/* get all nodes asked by the args and the options set */
 	singleton()->nodes = get_nodes(singleton()->args);
 	if (NULL == singleton()->nodes)
 	{
@@ -408,29 +418,10 @@ int	main(int ac, const char **av)
 		ERR()
 		return (EXIT_FAILURE);
 	}
+
+	__print_entries__(singleton()->nodes);
 	
-	// ft_lstclear(&singleton()->args, NULL);
-
-	// ft_printf("main list size: %d\n", ft_lstsize(singleton()->nodes));
-	// LST_DEBUG(singleton()->nodes);
-
-	// ft_printf("\n----------------\n\n");
-
-	// t_list	*__tmp__ = singleton()->nodes;
-	// for (; __tmp__ ; __tmp__ = __tmp__->next)
-	// {
-	// 	ft_printf("lstsize: %d\n", ft_lstsize(__tmp__->content));
-	// 	LST_DEBUG(__tmp__->content);
-	// }
-
-	// ft_printf("\n----------------\n\n");
-
-	// __print_lst__(singleton()->nodes);
-
-	// ft_printf("flag [%.64b]\n\n", singleton()->opts);
-
-	// __recurse__(singleton()->args);
-	// ft_ls();
-	// ft_free_all();
+	ft_flush_buf();
+	ft_free_all();
 	return (EXIT_SUCCESS);
 }

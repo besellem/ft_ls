@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 13:24:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 21:59:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ const struct s_options	g_options[] = {
 	{'W', OPT_W_MAJ},
 	{'w', OPT_W_MIN},
 	{'x', OPT_X},
+	{'1', OPT_ONE},
 	{'\0', 0}
 };
 
@@ -104,7 +105,7 @@ int		get_args(const char *arg)
 	return (SUC_CODE);
 }
 
-int		parse_args(int ac, const char **av)
+int		parse_args(int ac, const char **av, t_list **args)
 {
 	t_list	*new = NULL;
 	int		args_are_done = FALSE;
@@ -122,18 +123,18 @@ int		parse_args(int ac, const char **av)
 			new = ft_lstnew((char *)av[i]);
 			if (!new)
 				return (ERR_CODE);
-			ft_lstadd_back(&singleton()->args, new);
+			ft_lstadd_back(args, new);
 		}
 	}
 	resolve_options_conflicts();
 	
-	/* there may be options but no args afterward, do `ls' on the current path*/
+	/* if there is no path after the options, do `ls' on the current path */
 	if (!new)
 	{
-		new = ft_lstnew(".");
+		new = ft_lstnew("."); /* `.' is the current directory */
 		if (!new)
 			return (ERR_CODE);
-		ft_lstadd_front(&singleton()->args, new);
+		ft_lstadd_front(args, new);
 	}
 	return (SUC_CODE);
 }

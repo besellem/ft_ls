@@ -1,32 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   general.c                                          :+:      :+:    :+:   */
+/*   flag_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/06/15 22:22:52 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 22:51:59 by besellem         ###   ########.fr       */
+/*   Created: 2021/06/20 22:00:14 by besellem          #+#    #+#             */
+/*   Updated: 2021/06/20 22:00:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-/*
-** A call to the singleton returns the main structure. It's like a global.
-** We can use it like this for example:
-**
-**   singleton()->buffer
-*/
-t_ls	*singleton(void)
+int		is_flag(uint64_t flag)
 {
-	static t_ls	*s = NULL;
+	return (singleton()->opts & flag);
+}
 
-	if (!s)
-	{
-		s = (t_ls *)ft_calloc(1, sizeof(t_ls));
-		if (!s)
-			return (NULL);
-	}
-	return (s);
+void	rm_flag(uint64_t flag)
+{
+	singleton()->opts &= ~flag;
+}
+
+void	add_flag(uint64_t flag)
+{
+	singleton()->opts |= flag;
 }

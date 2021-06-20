@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/17 22:56:45 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 23:16:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,8 +38,11 @@
 */
 # define PROG_NAME "ft_ls"
 
-# define USAGE "usage: " PROG_NAME " [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
+# define USAGE "usage: " PROG_NAME " [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
 # define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
+
+/* buffer size - to store infos before a syscall to `write' */
+# define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024 to print faster -> 4096 */
 
 # define ERR_CODE 0
 # define SUC_CODE 1
@@ -86,13 +89,14 @@
 # define OPT_W_MAJ	(1ULL << 34)
 # define OPT_W_MIN	(1ULL << 35)
 # define OPT_X		(1ULL << 36)
+# define OPT_ONE	(1ULL << 37)
 
 /*
 ** -- DATA STRUCTURES --
 */
 
 /*
-** Used temporarily for a lookup table in the parsing of the options
+** Used temporarily for a lookup table in the option's parsing
 */
 struct	s_options{
 	char		opt;
@@ -111,7 +115,7 @@ typedef	struct	s_node{
 
 /*
 ** opts:	flag containing all parsed options.
-** args:	list containing all parsed arguments (is temporary).
+** args:	list containing all parsed arguments.
 ** nodes:	list containing all arguments and their data.
 			`nodes->content' is a `t_list *'. The `lst->content' of this former
 			list is a `t_node *' structure containing all data about that
@@ -128,20 +132,27 @@ typedef	struct	s_ls
 	uint64_t	opts;
 	t_list		*args;
 	t_list		*nodes;
+	size_t		buf_idx;
+	char		buffer[_LS_BUFSIZ_];
 }				t_ls;
 
 /*
 ** -- PROTOTYPES --
-** Utils
+** General Utils
 */
 t_ls			*singleton(void);
-void			ft_free_node(void *);
+
+/* Buffer Management */
+void			ft_add2buf(char *);
+void			ft_flush_buf(void);
+
+/* Memory Management */
 void			ft_free_all(void);
+
+/* Options parsing & flag utils */
 void			add_flag(uint64_t);
 void			rm_flag(uint64_t);
 int				is_flag(uint64_t);
-
-/* Options parsing */
-int				parse_args(int, const char **);
+int				parse_args(int, const char **, t_list **);
 
 #endif
