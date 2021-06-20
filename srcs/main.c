@@ -6,11 +6,30 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/18 16:54:46 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 14:34:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+#define __DEBUG__		0
+
+#if defined(__DEBUG__)
+# define LST_DEBUG(lst)															\
+	do {																		\
+		t_list	*tmp = lst;														\
+																				\
+		printf(B_BLUE"%s:%d: "CLR_COLOR"lst_size: ["B_GREEN"%d"CLR_COLOR"]\n",	\
+			__FILE__, __LINE__, ft_lstsize(lst));								\
+		while (tmp) {															\
+			printf("["B_RED"%p"CLR_COLOR"] ["B_RED"%p"CLR_COLOR"]\n",			\
+				tmp, tmp->next);												\
+			tmp = tmp->next;													\
+		}																		\
+	} while (0);
+# else
+# define LST_DEBUG(lst)	(void lst);
+#endif /* defined(__DEBUG__) */
 
 void	print_dirent(struct dirent *d)
 {
@@ -40,12 +59,10 @@ void	print_stat(struct stat *d)
 	ft_printf("    dirent->d_ino     [%u]\n",   d->st_gen);
 	ft_printf("    dirent->d_ino     [%u]\n",   d->st_gid);
 	ft_printf("    dirent->d_ino     [%llu]\n", d->st_ino);
-	ft_printf("    dirent->d_ino     [%d]\n",   d->st_lspare);
 	ft_printf("    dirent->d_ino     [%d]\n",   d->st_mode);
 	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_mtimespec.tv_nsec);
 	ft_printf("    dirent->d_ino     [%ld]\n",  d->st_mtimespec.tv_sec);
 	ft_printf("    dirent->d_ino     [%u]\n",   d->st_nlink);
-	ft_printf("    dirent->d_ino     [%lld]\n", d->st_qspare);
 	ft_printf("    dirent->d_ino     [%d]\n",   d->st_rdev);
 	ft_printf("    dirent->d_ino     [%lld]\n", d->st_size);
 	ft_printf("    dirent->d_ino     [%u]\n",   d->st_uid);
@@ -59,18 +76,6 @@ void	ft_lstprint(t_list *lst)
 	while (tmp)
 	{
 		ft_printf("[%s]\n", (char *)tmp->content);
-		tmp = tmp->next;
-	}
-}
-
-void	ft_lstprint_ptr(t_list *lst)
-{
-	t_list	*tmp = lst;
-
-	ft_printf("listsize: [" B_GREEN "%d" CLR_COLOR "]\n", ft_lstsize(lst));
-	while (tmp)
-	{
-		ft_printf("[" B_RED "%p" CLR_COLOR "] [" B_RED "%p" CLR_COLOR "]\n", tmp, tmp->next);
 		tmp = tmp->next;
 	}
 }
@@ -170,12 +175,17 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 	}
 	// if (!lst || !path)
 	// 	return (NULL);
+	ERR()
+	ft_printf("%s:%d: [%s]\n", __FILE__, __LINE__, path);
 	while ((s_dir = readdir(dir)))
 	{
 		node = (t_node *)ft_calloc(1, sizeof(t_node));
 		// ft_bzero(&node->_dir_, sizeof(struct dirent));	// may be faster without
 		// ft_bzero(&node->_stats_, sizeof(struct stat));	// may be faster without
 		// ft_bzero(&node->_lstats_, sizeof(struct stat));	// may be faster without
+
+		ft_printf("s_dir[%p] s_dir->d_name[%s] node[%p]\n",
+			s_dir, s_dir->d_name, node);
 
 		/* copy that `struct dirent' */
 		ft_memmove(&node->_dir_, s_dir, sizeof(struct dirent));
@@ -202,11 +212,12 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 			ft_free_all();
 			exit(EXIT_FAILURE);
 		}
+		ft_printf("  tmp[%p]\n", tmp);
 		ft_lstadd_back(&lst, tmp);
 	}
 	closedir(dir);
-	ft_lstprint_ptr(lst);
-	// ft_sort_lst_nodes(&lst);
+	LST_DEBUG(lst);
+	ft_sort_lst_nodes(&lst);
 	return (lst);
 }
 
@@ -216,40 +227,31 @@ t_list	*ft_ls2lst(t_list *lst, char *path)
 t_list	*get_nodes(t_list *args)
 {
 	t_list	*nodes = NULL;
-	t_list	*lst;
-	t_list	*tmp;
-	t_list	*new_tmp;
+	t_list	*new_node = NULL;
+	t_list	*node_list = NULL;
+	t_list	*node_list_content = NULL;
+	t_list	*lst = NULL;
+	t_list	*tmp = NULL;
 
-	/* if the list of args is empty, do `ls' on the current dir */
-	if (EMPTY == ft_lstsize(args))
+	tmp = args;
+	while (tmp)
 	{
+		// t_list *new_node = (t_list *)ft_calloc(1, sizeof(t_list));
 		lst = ft_lstnew((t_list *)ft_calloc(1, sizeof(t_list)));
-		new_tmp = ft_lstnew(ft_ls2lst(lst, "."));
-		if (!lst || !new_tmp)
+
+		node_content = ft_ls2lst(lst, tmp->content);
+
+		new_node = ft_lstnew(node_content);
+		
+		/* when the directory passed in args does not exist */
+		if (lst && new_node)
 		{
-			ft_lstclear(&nodes, NULL);
-			return (NULL);
+			// lst = ft_lstnew(new_node);
+			ft_lstadd_back(&nodes, new_node);
 		}
-		ft_lstadd_front(&nodes, new_tmp);
-	}
-	else
-	{
-		tmp = args;
-		while (tmp)
-		{
-			lst = ft_lstnew((t_list *)ft_calloc(1, sizeof(t_list)));
-			new_tmp = ft_lstnew(ft_ls2lst(lst, tmp->content));
-			
-			/* when the directory passed in args does not exist */
-			if (lst && new_tmp)
-			{
-				// lst = ft_lstnew(new_tmp);
-				ft_lstadd_back(&nodes, new_tmp);
-			}
-			// else
-			// 	free(lst);
-			tmp = tmp->next;
-		}
+		// else
+		// 	free(lst);
+		tmp = tmp->next;
 	}
 	return (nodes);
 }
@@ -395,6 +397,10 @@ int	main(int ac, const char **av)
 		return (EXIT_FAILURE);
 	}
 
+	ft_printf("-- singleton()->args:\n");
+	ft_lstprint(singleton()->args);
+	ft_printf("-- end\n\n");
+
 	singleton()->nodes = get_nodes(singleton()->args);
 	if (NULL == singleton()->nodes)
 	{
@@ -405,21 +411,21 @@ int	main(int ac, const char **av)
 	
 	// ft_lstclear(&singleton()->args, NULL);
 
-	ft_printf("main list size: %d\n", ft_lstsize(singleton()->nodes));
-	ft_lstprint_ptr(singleton()->nodes);
+	// ft_printf("main list size: %d\n", ft_lstsize(singleton()->nodes));
+	// LST_DEBUG(singleton()->nodes);
 
-	ft_printf("\n----------------\n\n");
+	// ft_printf("\n----------------\n\n");
 
 	// t_list	*__tmp__ = singleton()->nodes;
 	// for (; __tmp__ ; __tmp__ = __tmp__->next)
 	// {
 	// 	ft_printf("lstsize: %d\n", ft_lstsize(__tmp__->content));
-	// 	ft_lstprint_ptr(__tmp__->content);
+	// 	LST_DEBUG(__tmp__->content);
 	// }
 
-	ft_printf("\n----------------\n\n");
+	// ft_printf("\n----------------\n\n");
 
-	__print_lst__(singleton()->nodes);
+	// __print_lst__(singleton()->nodes);
 
 	// ft_printf("flag [%.64b]\n\n", singleton()->opts);
 

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/18 14:20:44 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/20 13:24:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,7 @@ int		get_args(const char *arg)
 
 int		parse_args(int ac, const char **av)
 {
-	t_list	*new;
+	t_list	*new = NULL;
 	int		args_are_done = FALSE;
 
 	for (int i = 1; i < ac; ++i)
@@ -126,5 +126,14 @@ int		parse_args(int ac, const char **av)
 		}
 	}
 	resolve_options_conflicts();
+	
+	/* there may be options but no args afterward, do `ls' on the current path*/
+	if (!new)
+	{
+		new = ft_lstnew(".");
+		if (!new)
+			return (ERR_CODE);
+		ft_lstadd_front(&singleton()->args, new);
+	}
 	return (SUC_CODE);
 }
