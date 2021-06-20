@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 23:36:09 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 00:00:07 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -300,8 +300,15 @@ void	ft_print_entry(t_list *current, t_node *node)
 {
 	char	*tmp = NULL;
 
+	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
+	if (is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
+		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
+		0 == ft_strcmp(node->_dir_.d_name, ".")))
+		return ;
+
 	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
-	if (!is_flag(OPT_A_MIN) && 0 == ft_strncmp(node->_dir_.d_name, ".", 1))
+	if (!is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
+		0 == ft_strncmp(node->_dir_.d_name, ".", 1))
 		return ;
 	
 	/* print nbr of blocks if `-s' is set */
