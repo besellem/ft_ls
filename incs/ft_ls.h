@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 23:16:34 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 18:38:13 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,6 @@
 # define PROG_NAME "ft_ls"
 
 # define USAGE "usage: " PROG_NAME " [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
-# define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
-
-/* buffer size - to store infos before a syscall to `write' */
-# define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024 to print faster -> 4096 */
 
 # define ERR_CODE 0
 # define SUC_CODE 1
@@ -51,6 +47,36 @@
 # define FALSE    0
 
 # define EMPTY    0
+
+/* buffer size - the actual buffer stores data before a syscall to `write' */
+# define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024. setting it to 4096 may be faster */
+
+/* debug macro - to remove when finished */
+# define __DEBUG__    FALSE
+
+# if defined(__DEBUG__) && (FALSE == __DEBUG__)
+#  define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
+# else
+#  define ERR() (NULL);
+# endif
+
+#if defined(__DEBUG__)
+# define LST_DEBUG(lst)															\
+	do {																		\
+		t_list	*tmp = lst;														\
+																				\
+		printf(B_BLUE"%s:%d: "CLR_COLOR"lst_size: ["B_GREEN"%d"CLR_COLOR"]\n",	\
+			__FILE__, __LINE__, ft_lstsize(lst));								\
+		while (tmp) {															\
+			printf("["B_RED"%p"CLR_COLOR"] ["B_RED"%p"CLR_COLOR"]\n",			\
+				tmp, tmp->next);												\
+			tmp = tmp->next;													\
+		}																		\
+	} while (0);
+# else
+# define LST_DEBUG(lst)	(void lst);
+#endif /* defined(__DEBUG__) */
+
 
 # define OPT_A_MAJ	(1ULL <<  0)
 # define OPT_A_MIN	(1ULL <<  1)	/* MANDATORY */
@@ -107,6 +133,7 @@ struct	s_options{
 ** One node contains the file / folder and its infos
 */
 typedef	struct	s_node{
+	char			*path;
 	struct dirent	_dir_;
 	struct stat		_stats_;
 	struct stat		_lstats_;
@@ -126,6 +153,9 @@ typedef	struct	s_node{
 			path.
 			All nodes are sorted according to the sorting options set (`-t' or
 			`-r' for example).
+** buf_idx:	index into the current bufferized data
+** buffer:	buffer containing the data to display. Just way faster than a lot of
+			calls to `write'
 */
 typedef	struct	s_ls
 {
@@ -143,11 +173,23 @@ typedef	struct	s_ls
 t_ls			*singleton(void);
 
 /* Buffer Management */
+void			ft_add_char2buf(char);
 void			ft_add2buf(char *);
 void			ft_flush_buf(void);
 
 /* Memory Management */
 void			ft_free_all(void);
+
+/* Sorting Utils */
+int				cmp_node_by_asc_time(t_node *, t_node *);
+int				cmp_node_by_desc_time(t_node *, t_node *);
+int				cmp_node_by_asc(t_node *, t_node *);
+int				cmp_node_by_desc(t_node *, t_node *);
+int				cmp_content_asc(void *, void *);
+int				cmp_content_desc(void *, void *);
+
+void			ft_lst_sort(t_list **, int (*)());
+void			ft_sort_lst_nodes(t_list **);
 
 /* Options parsing & flag utils */
 void			add_flag(uint64_t);

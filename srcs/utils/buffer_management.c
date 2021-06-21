@@ -6,13 +6,13 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:51:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 23:18:14 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 18:28:29 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void	__add_char2buf__(char c)
+void	ft_add_char2buf(char c)
 {
 	if (singleton()->buf_idx < _LS_BUFSIZ_)
 		singleton()->buffer[singleton()->buf_idx++] = c;
@@ -36,7 +36,7 @@ void	ft_add2buf(char *str)
 		return ;
 	i = 0;
 	while (str[i])
-		__add_char2buf__(str[i++]);
+		ft_add_char2buf(str[i++]);
 }
 
 void	ft_flush_buf(void)

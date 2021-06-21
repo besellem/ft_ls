@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 21:59:22 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/21 13:22:41 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,5 +136,6 @@ int		parse_args(int ac, const char **av, t_list **args)
 			return (ERR_CODE);
 		ft_lstadd_front(args, new);
 	}
+	ft_sort_lst_nodes(args);
 	return (SUC_CODE);
 }

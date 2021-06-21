@@ -6,14 +6,14 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2021/06/20 23:15:31 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/21 13:10:49 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			:= clang
-CFLAGS 		:= -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS 		:= -Wall -Wextra -Werror #-g3 -fsanitize=address
 INCS		:= ./incs/ft_ls.h
 IFLAGS 		:= -I./incs -I./libft/incs
 LIBFLAGS 	:= -L./libft -lft
@@ -37,7 +37,8 @@ SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= buffer_management.c \
 		   flag_utils.c \
 		   general.c \
-		   memory_management.c
+		   memory_management.c \
+		   sort_utils.c
 SRC		+= $(addprefix utils/, $(SUB_SRC))
 
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
