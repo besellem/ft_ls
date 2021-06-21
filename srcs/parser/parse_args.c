@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 13:22:41 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 00:46:20 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,6 +109,7 @@ int		parse_args(int ac, const char **av, t_list **args)
 {
 	t_list	*new = NULL;
 	int		args_are_done = FALSE;
+	DIR		*dir;
 
 	for (int i = 1; i < ac; ++i)
 	{
@@ -120,10 +121,17 @@ int		parse_args(int ac, const char **av, t_list **args)
 		else
 		{
 			args_are_done = TRUE;
-			new = ft_lstnew((char *)av[i]);
-			if (!new)
-				return (ERR_CODE);
-			ft_lstadd_back(args, new);
+			dir = opendir(av[i]);
+			if (!dir) 
+				ft_printf(PROG_NAME ": %s: %s\n", av[i], strerror(errno));
+			else
+			{
+				new = ft_lstnew(ft_strdup(av[i]));
+				if (!new)
+					return (ERR_CODE);
+				ft_lstadd_front(args, new);
+				closedir(dir);
+			}
 		}
 	}
 	resolve_options_conflicts();
@@ -136,6 +144,6 @@ int		parse_args(int ac, const char **av, t_list **args)
 			return (ERR_CODE);
 		ft_lstadd_front(args, new);
 	}
-	ft_sort_lst_nodes(args);
+	ft_sort_lst_nodes(args); /* PROBLEM HERE - CHECK : 'ls -lRrt incs srcs' */
 	return (SUC_CODE);
 }

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 18:38:13 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 00:25:07 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -188,7 +188,7 @@ int				cmp_node_by_desc(t_node *, t_node *);
 int				cmp_content_asc(void *, void *);
 int				cmp_content_desc(void *, void *);
 
-void			ft_lst_sort(t_list **, int (*)());
+void			ft_lst_qsort(t_list **, int (*)()); /* quicksort */
 void			ft_sort_lst_nodes(t_list **);
 
 /* Options parsing & flag utils */
@@ -196,5 +196,8 @@ void			add_flag(uint64_t);
 void			rm_flag(uint64_t);
 int				is_flag(uint64_t);
 int				parse_args(int, const char **, t_list **);
+
+
+void	ft_lstprint(t_list *lst);
 
 #endif

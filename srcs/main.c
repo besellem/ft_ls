@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 18:57:34 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/22 00:21:47 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,13 +69,12 @@ void	ft_lstprint(t_list *lst)
 */
 t_list	*ft_ls2lst(t_list **lst, char *path)
 {
-	DIR				*dir;
+	DIR				*dir = opendir(path);
 	t_list			*tmp;
 	t_node			*node;
 	char			*pwd = NULL;
 	struct dirent	*s_dir;
 
-	dir = opendir(path);
 	if (!dir)
 	{
 		ft_printf(PROG_NAME ": %s: %s\n", path, strerror(errno));
@@ -92,7 +91,7 @@ t_list	*ft_ls2lst(t_list **lst, char *path)
 		// 	s_dir, node, s_dir->d_name);
 
 		/* copy that `struct dirent' */
-		ft_memmove(&node->_dir_, s_dir, sizeof(struct dirent));
+		ft_memcpy(&node->_dir_, s_dir, sizeof(struct dirent));
 
 		/* copy `struct stat' */
 		/*
@@ -142,14 +141,15 @@ t_list	*get_nodes(t_list *args)
 		node_list = NULL;
 		ft_ls2lst(&node_list, (char *)tmp->content);
 		
-		/* `t_list' containing `node_list' above */
-		new_node = ft_lstnew(node_list);
-		
-		/* when the directory passed in args does not exist */
-		if (node_list && new_node)
+		/* when the directory passed in args does exist */
+		if (node_list)
+		{
+			/* `t_list' containing `node_list' above */
+			new_node = ft_lstnew(node_list);
+			
+			/* append the new list to the main one */
 			ft_lstadd_back(&nodes, new_node);
-		// else
-		// 	free(lst);
+		}
 		tmp = tmp->next;
 	}
 	return (nodes);
