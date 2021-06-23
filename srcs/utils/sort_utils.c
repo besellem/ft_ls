@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 13:07:57 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/21 23:53:26 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/23 17:34:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,27 +64,27 @@ int	cmp_content_desc(void *content_1, void *content_2)
 /*
 ** OPTI -> THIS SORTING ALGORITHM IS TOO SLOW FOR LARGE LISTS
 */
-// void	ft_lst_sort(t_list **lst, int (*cmp)())
-// {
-// 	t_list	*tmp;
-// 	void	*ptr;
+void	ft_lst_sort(t_list **lst, int (*cmp)())
+{
+	t_list	*tmp;
+	void	*ptr;
 
-// 	if (!lst || !*lst || !(*cmp))
-// 		return ;
-// 	tmp = *lst;
-// 	while (tmp && tmp->next)
-// 	{
-// 		if (cmp(tmp->content, tmp->next->content) > 0)
-// 		{
-// 			ptr = tmp->content;
-// 			tmp->content = tmp->next->content;
-// 			tmp->next->content = ptr;
-// 			tmp = *lst;
-// 		}
-// 		else
-// 			tmp = tmp->next;
-// 	}
-// }
+	if (!lst || !*lst || !(*cmp))
+		return ;
+	tmp = *lst;
+	while (tmp && tmp->next)
+	{
+		if (cmp(tmp->content, tmp->next->content) > 0)
+		{
+			ptr = tmp->content;
+			tmp->content = tmp->next->content;
+			tmp->next->content = ptr;
+			tmp = *lst;
+		}
+		else
+			tmp = tmp->next;
+	}
+}
 
 void	ft_sort_lst_nodes(t_list **head)
 {

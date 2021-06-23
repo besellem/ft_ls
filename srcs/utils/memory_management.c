@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/20 22:33:28 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/23 18:37:16 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ static void	__free_lst__(t_list *head)
 		node = (t_node *)lst->content;
 		if (node)
 		{
+			ft_memdel((void **)&node->path);
 			if (node->recursive_nodes)
 				__free_lst__(node->recursive_nodes);
 		}

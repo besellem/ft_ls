@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 16:22:16 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/23 17:38:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,14 +105,15 @@ int		get_args(const char *arg)
 	return (SUC_CODE);
 }
 
-int		parse_args(int ac, const char **av, t_list **args)
+int		parse_args(int ac, char **av, t_list **args)
 {
-	t_list	*new = NULL;
-	struct stat	_stat_;
-	int		args_are_done = FALSE;
-	DIR		*dir;
+	t_list			*new = NULL;
+	int				args_are_done = FALSE;
+	int				i;
+	struct stat		_stat_;
+	DIR				*dir;
 
-	for (int i = 1; i < ac; ++i)
+	for (i = 1; i < ac; ++i)
 	{
 		if ('-' == av[i][0] && av[i][1] && FALSE == args_are_done)
 		{
@@ -122,24 +123,28 @@ int		parse_args(int ac, const char **av, t_list **args)
 		else
 		{
 			args_are_done = TRUE;
-			stat(av[i], &_stat_);
+			errno = 0;
 			dir = opendir(av[i]);
-			if (!dir) 
-				ft_printf(PROG_NAME ": %s: %s\n", av[i], strerror(errno));
+			int	tmp_errno = errno;
+			if (!dir && NOT_FOUND == stat(av[i], &_stat_))
+				ft_printf(PROG_NAME ": %s: %s\n", av[i], strerror(tmp_errno));
 			else
 			{
-				new = ft_lstnew(ft_strdup(av[i]));
+				new = ft_lstnew((char *)av[i]);
 				if (!new)
 					return (ERR_CODE);
-				ft_lstadd_front(args, new);
-				closedir(dir);
+				ft_lstadd_back(args, new);
+				if (dir)
+					closedir(dir);
 			}
 		}
 	}
+	
+	/* there may be conflicts to avoid in options (man ls) */
 	resolve_options_conflicts();
 	
 	/* if there is no path after the options, do `ls' on the current path */
-	if (!new)
+	if (0 == errno && !new)
 	{
 		new = ft_lstnew("."); /* `.' is the current directory */
 		if (!new)

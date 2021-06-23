@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/22 00:25:07 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/23 17:31:38 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,13 +40,16 @@
 
 # define USAGE "usage: " PROG_NAME " [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
 
-# define ERR_CODE 0
-# define SUC_CODE 1
+# define SUC_CODE  1
+# define ERR_CODE  0
 
-# define TRUE     1
-# define FALSE    0
+# define TRUE      1
+# define FALSE     0
 
-# define EMPTY    0
+# define FOUND     1
+# define NOT_FOUND (-1)
+
+# define EMPTY     0
 
 /* buffer size - the actual buffer stores data before a syscall to `write' */
 # define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024. setting it to 4096 may be faster */
@@ -188,14 +191,15 @@ int				cmp_node_by_desc(t_node *, t_node *);
 int				cmp_content_asc(void *, void *);
 int				cmp_content_desc(void *, void *);
 
-void			ft_lst_qsort(t_list **, int (*)()); /* quicksort */
+void			ft_lst_sort(t_list **, int (*)());  /* sort a list (slow) */
+void			ft_lst_qsort(t_list **, int (*)()); /* quicksort a list */
 void			ft_sort_lst_nodes(t_list **);
 
 /* Options parsing & flag utils */
 void			add_flag(uint64_t);
 void			rm_flag(uint64_t);
 int				is_flag(uint64_t);
-int				parse_args(int, const char **, t_list **);
+int				parse_args(int, char **, t_list **);
 
 
 void	ft_lstprint(t_list *lst);
