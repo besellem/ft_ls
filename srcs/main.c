@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 19:14:26 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/24 18:40:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -233,7 +233,6 @@ char	get_mode(mode_t mode)
 
 void	print_permissions(t_node *node)
 {
-	// ft_printf("mode[%16b] ", node->_stats_.st_mode);
 	ft_add_char2buf(get_mode(node->_lstats_.st_mode));
 	ft_add_char2buf((node->_lstats_.st_mode & S_IRUSR) ? 'r' : '-');
 	ft_add_char2buf((node->_lstats_.st_mode & S_IWUSR) ? 'w' : '-');
@@ -244,6 +243,17 @@ void	print_permissions(t_node *node)
 	ft_add_char2buf((node->_lstats_.st_mode & S_IROTH) ? 'r' : '-');
 	ft_add_char2buf((node->_lstats_.st_mode & S_IWOTH) ? 'w' : '-');
 	ft_add_char2buf((node->_lstats_.st_mode & S_IXOTH) ? 'x' : '-');
+	ft_add_char2buf(' ');
+}
+
+void	print_time(t_node *node)
+{
+	char	*file_time = ctime(&node->_stats_.st_mtimespec.tv_sec);
+
+	if (!file_time)
+		return ;
+	file_time[16] = '\0';		/* don't print after 16th char (man ctime) */
+	ft_add2buf(file_time + 4);	/* skip the day (first 4 chars) */
 	ft_add_char2buf(' ');
 }
 
@@ -300,6 +310,7 @@ void	ft_print_entry(t_list *current, t_node *node)
 	if (is_flag(OPT_L_MIN))
 	{
 		print_permissions(node);
+		print_time(node);
 	}
 
 	/*

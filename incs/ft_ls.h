@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 17:31:38 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/24 17:23:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -133,10 +133,20 @@ struct	s_options{
 };
 
 /*
+** padding:		current padding
+*/
+typedef struct s_padding
+{
+	int		padding;
+	int		total;
+}	t_padding;
+
+/*
 ** One node contains the file / folder and its infos
 */
 typedef	struct	s_node{
 	char			*path;
+	t_padding		pad;
 	struct dirent	_dir_;
 	struct stat		_stats_;
 	struct stat		_lstats_;
