@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 18:40:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/27 16:29:52 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ t_list	*ft_ls_file2lst(t_list **lst, char *path)
 	tmp = ft_lstnew(node);
 	if (!tmp)
 	{
+		merror();
 		ft_free_all();
 		exit(EXIT_FAILURE);
 	}
@@ -108,13 +109,11 @@ t_list	*ft_ls2lst(t_list **lst, char *path)
 	{
 		node = (t_node *)ft_calloc(1, sizeof(t_node));
 
+		/* keep current path */
+		node->path = ft_strdup(path);
+
 		/* Add node's name to the current path */
 		ft_asprintf(&pwd, "%s/%s", path, s_dir->d_name);
-		
-		// ft_printf("s_dir[%p] node[%p] s_dir->d_name[%s]\n",
-		// 	s_dir, node, s_dir->d_name);
-
-		node->path = ft_strdup(path);
 
 		/* copy that `struct dirent' */
 		ft_memcpy(&node->_dir_, s_dir, sizeof(struct dirent));
@@ -143,6 +142,7 @@ t_list	*ft_ls2lst(t_list **lst, char *path)
 		tmp = ft_lstnew(node);
 		if (!tmp)
 		{
+			merror();
 			ft_free_all();
 			exit(EXIT_FAILURE);
 		}
@@ -151,17 +151,6 @@ t_list	*ft_ls2lst(t_list **lst, char *path)
 	closedir(dir);
 	ft_sort_lst_nodes(lst);
 	return (*lst);
-}
-
-
-int	ft_is_dir(char *path)
-{
-	DIR	*d = opendir(path);
-
-	if (!d)
-		return (FALSE);
-	closedir(d);
-	return (TRUE);
 }
 
 /*
@@ -198,209 +187,20 @@ t_list	*get_nodes(t_list *args)
 	return (nodes);
 }
 
-int	s_padding(t_list *lst)
-{
-	int		padding = 0;
-	t_list	*tmp = lst;
-	t_node	*node;
-	int		tmp_len;
-
-	while (tmp)
-	{
-		node = (t_node *)tmp->content;
-		if (node)
-		{
-			tmp_len = ft_nblen(node->_stats_.st_blocks);
-			if (tmp_len > padding)
-				padding = tmp_len;
-		}
-		tmp = tmp->next;
-	}
-	return (padding);
-}
-
-char	get_mode(mode_t mode)
-{
-	if (S_ISBLK(mode))	return ('b'); /* block special */
-	if (S_ISCHR(mode))	return ('c'); /* char special */
-	if (S_ISDIR(mode))	return ('d'); /* directory */
-	if (S_ISREG(mode))	return ('-'); /* regular file */
-	if (S_ISLNK(mode))	return ('l'); /* symbolic link */
-	if (S_ISSOCK(mode))	return ('s'); /* socket */
-	if (S_ISFIFO(mode))	return ('p'); /* fifo or socket */
-	return ('-');
-}
-
-void	print_permissions(t_node *node)
-{
-	ft_add_char2buf(get_mode(node->_lstats_.st_mode));
-	ft_add_char2buf((node->_lstats_.st_mode & S_IRUSR) ? 'r' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IWUSR) ? 'w' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IXUSR) ? 'x' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IRGRP) ? 'r' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IWGRP) ? 'w' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IXGRP) ? 'x' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IROTH) ? 'r' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IWOTH) ? 'w' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IXOTH) ? 'x' : '-');
-	ft_add_char2buf(' ');
-}
-
-void	print_time(t_node *node)
-{
-	char	*file_time = ctime(&node->_stats_.st_mtimespec.tv_sec);
-
-	if (!file_time)
-		return ;
-	file_time[16] = '\0';		/* don't print after 16th char (man ctime) */
-	ft_add2buf(file_time + 4);	/* skip the day (first 4 chars) */
-	ft_add_char2buf(' ');
-}
-
-void	print_color(t_node *node)
-{
-	if (S_ISLNK(node->_lstats_.st_mode))
-		ft_add2buf(PURPLE);
-	else if (DT_DIR != node->_dir_.d_type && node->_lstats_.st_mode & S_IXOTH)
-		ft_add2buf(RED);
-	else if (DT_DIR == node->_dir_.d_type)
-		ft_add2buf(B_CYAN);
-}
-
-
-void	print_readlink(t_node *node)
-{
-	char	buf[FILENAME_MAX + 1] = {0};
-	char	*filename;
-
-	ft_asprintf(&filename, "%s/%s", node->path, node->_dir_.d_name);
-	readlink(filename, buf, FILENAME_MAX);
-	ft_memdel((void **)&filename);
-	ft_add2buf(" -> ");
-	ft_add2buf(buf);
-}
-
-void	ft_print_entry(t_list *current, t_node *node)
-{
-	char	*tmp = NULL;
-
-	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
-	if (is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
-		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
-		0 == ft_strcmp(node->_dir_.d_name, ".")))
-		return ;
-
-	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
-	if (!is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
-		0 == ft_strncmp(node->_dir_.d_name, ".", 1))
-		return ;
-	
-	/* print nbr of blocks if `-s' is set */
-	if (is_flag(OPT_S_MIN))
-	{
-		/*
-		** OPTI -> get the padding before the call instead of recalculating it for each node
-		*/
-		ft_asprintf(&tmp, "%*lld ", s_padding(current), node->_stats_.st_blocks);
-		ft_add2buf(tmp);
-		ft_memdel((void **)&tmp);
-	}
-	
-	/* print permissions if `-l' (ell) is set */
-	if (is_flag(OPT_L_MIN))
-	{
-		print_permissions(node);
-		print_time(node);
-	}
-
-	/*
-	** print node's name
-	*/
-	/* option `-G' turns on the colors */
-	if (is_flag(OPT_G_MAJ))
-		print_color(node);
-	
-	/* print entry name */
-	ft_add2buf(node->_dir_.d_name);
-
-	if (is_flag(OPT_G_MAJ))
-		ft_add2buf(CLR_COLOR);
-	
-	/* follow the link and print it */
-	if (S_ISLNK(node->_lstats_.st_mode))
-		print_readlink(node);
-
-	/* add `/' when the option `-p' is turned on and if it's a directory */
-	if (is_flag(OPT_P_MIN) && DT_DIR == node->_dir_.d_type)
-		ft_add_char2buf('/');
-	
-	/* new line -- end of the entry */
-	ft_add_char2buf('\n');
-}
-
-static void	__print_lst_recursively__(t_list *head, int is_last)
-{
-	t_list	*lst;
-	t_node	*node;
-
-	/* first print all the current list */
-	ft_add2buf(((t_node *)head->content)->path);
-	ft_add2buf(":\n");
-	lst = head;
-	while (lst)
-	{
-		node = (t_node *)lst->content;
-		if (node)
-			ft_print_entry((t_list *)head, node);
-		lst = lst->next;
-	}
-	
-	if (FALSE == is_last)
-		ft_add_char2buf('\n');
-
-	/* then print the recursive lists */
-	lst = head;
-	while (lst)
-	{
-		node = (t_node *)lst->content;
-		if (node && is_flag(OPT_R_MAJ) && node->recursive_nodes)
-		{
-			__print_lst_recursively__(node->recursive_nodes, FALSE);
-		}
-		lst = lst->next;
-	}
-}
-
-void	__print_entries__(t_list *head)
-{
-	t_list	*lst = head;
-
-	while (lst)
-	{
-		// ft_add2buf(((t_node *)((t_list *)lst->content)->content)->path);
-		// ft_add2buf(":\n");
-		// ft_printf(B_RED "%s:\n" CLR_COLOR,
-		// 	((t_node *)((t_list *)lst->content)->content)->_dir_.d_name);
-		
-		__print_lst_recursively__((t_list *)lst->content, (lst->next == NULL));
-		lst = lst->next;
-	}
-}
-
 int	main(int ac, char **av)
 {
 	/* init singleton */
 	if (NULL == singleton())
 	{
-		ERR()
+		merror();
 		return (EXIT_FAILURE);
 	}
 
 	/* parse arguments */
 	if (ERR_CODE == parse_args(ac, av, &singleton()->args))
 	{
+		merror();
 		ft_free_all();
-		ERR()
 		return (EXIT_FAILURE);
 	}
 
@@ -408,11 +208,12 @@ int	main(int ac, char **av)
 	singleton()->nodes = get_nodes(singleton()->args);
 	if (NULL == singleton()->nodes)
 	{
+		merror();
 		ft_free_all();
 		return (EXIT_FAILURE);
 	}
 
-	__print_entries__(singleton()->nodes);
+	ft_print_entries(singleton()->nodes);
 	
 	ft_flush_buf();
 	ft_free_all();

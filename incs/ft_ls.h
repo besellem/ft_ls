@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/24 17:23:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/27 16:44:53 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,9 @@
 # define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024. setting it to 4096 may be faster */
 
 /* debug macro - to remove when finished */
-# define __DEBUG__    FALSE
+# define __DEBUG__    TRUE
 
-# if defined(__DEBUG__) && (FALSE == __DEBUG__)
+# if defined(__DEBUG__) && (TRUE == __DEBUG__)
 #  define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
 # else
 #  define ERR() (NULL);
@@ -80,6 +80,8 @@
 # define LST_DEBUG(lst)	(void lst);
 #endif /* defined(__DEBUG__) */
 
+# define merror() ft_printf("%s:%d: malloc error\n", __FILE__, __LINE__)
+
 
 # define OPT_A_MAJ	(1ULL <<  0)
 # define OPT_A_MIN	(1ULL <<  1)	/* MANDATORY */
@@ -94,7 +96,7 @@
 # define OPT_G_MAJ	(1ULL << 10)
 # define OPT_G_MIN	(1ULL << 11)	/* Bonus */
 # define OPT_H_MAJ	(1ULL << 12)
-# define OPT_H_MIN	(1ULL << 13)
+# define OPT_H_MIN	(1ULL << 13)	/* DOES NOT WORK */
 # define OPT_I		(1ULL << 14)
 # define OPT_K		(1ULL << 15)
 # define OPT_L_MAJ	(1ULL << 16)
@@ -132,13 +134,14 @@ struct	s_options{
 	uint64_t	flag;
 };
 
-/*
-** padding:		current padding
-*/
+/* get the len of max values for padding */
 typedef struct s_padding
 {
-	int		padding;
-	int		total;
+	nlink_t		nlink;
+	off_t		size;
+	blkcnt_t	blocks;
+	size_t		owner_name;
+	size_t		group_name;
 }	t_padding;
 
 /*
@@ -146,7 +149,7 @@ typedef struct s_padding
 */
 typedef	struct	s_node{
 	char			*path;
-	t_padding		pad;
+	// t_padding		pad;
 	struct dirent	_dir_;
 	struct stat		_stats_;
 	struct stat		_lstats_;
@@ -185,6 +188,9 @@ typedef	struct	s_ls
 */
 t_ls			*singleton(void);
 
+/* Utils */
+int				ft_is_dir(char *);
+
 /* Buffer Management */
 void			ft_add_char2buf(char);
 void			ft_add2buf(char *);
@@ -212,6 +218,19 @@ int				is_flag(uint64_t);
 int				parse_args(int, char **, t_list **);
 
 
-void	ft_lstprint(t_list *lst);
+/* Display */
+void			print_blocks(t_node *, t_padding *);
+void			print_permissions(t_node *);
+void			print_nlinks(t_node *, t_padding *);
+void			print_owner(t_node *, t_padding *);
+void			print_group(t_node *, t_padding *);
+void			print_size(t_node *, t_padding *);
+void			print_time(t_node *);
+void			print_color(t_node *);
+void			print_readlink(t_node *);
+
+void			ft_print_entries(t_list *);
+
+void	ft_lstprint(t_list *lst); // debug
 
 #endif

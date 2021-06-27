@@ -6,14 +6,14 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2021/06/23 19:15:21 by besellem         ###   ########.fr        #
+#    Updated: 2021/06/27 15:33:54 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			:= clang
-CFLAGS 		:= -Wall -Wextra -Werror -g3 -fsanitize=address
+CFLAGS 		:= -Wall -Wextra -Werror #-g3 -fsanitize=address
 INCS		:= ./incs/ft_ls.h
 IFLAGS 		:= -I./incs -I./libft/incs
 LIBFLAGS 	:= -L./libft -lft
@@ -23,7 +23,8 @@ LIBFLAGS 	:= -L./libft -lft
 BUILD		:= .build
 LIB_DIR		:= libft
 SRC_DIR		:= srcs
-SUB_DIR		:= parser \
+SUB_DIR		:= display \
+			   parser \
 			   utils
 OBJ_DIR 	:= $(BUILD)/obj
 DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
@@ -32,6 +33,17 @@ DIRS		:= $(OBJ_DIR) $(addprefix $(OBJ_DIR)/, $(SUB_DIR))
 
 NAME	:= ft_ls
 SRC		:= main.c
+SUB_SRC	:= print_blocks.c \
+		   print_color.c \
+		   print_entries.c \
+		   print_group.c \
+		   print_nlinks.c \
+		   print_owner.c \
+		   print_permissions.c \
+		   print_readlink.c \
+		   print_size.c \
+		   print_time.c
+SRC		+= $(addprefix display/, $(SUB_SRC))
 SUB_SRC	:= parse_args.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= buffer_management.c \
@@ -39,8 +51,10 @@ SUB_SRC	:= buffer_management.c \
 		   ft_lst_qsort.c \
 		   general.c \
 		   memory_management.c \
-		   sort_utils.c
+		   sort_utils.c \
+		   utils.c
 SRC		+= $(addprefix utils/, $(SUB_SRC))
+
 
 OBJ 	:= $(SRC:%.c=$(OBJ_DIR)/%.o)
 
