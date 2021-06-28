@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 16:44:53 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/28 21:57:15 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,6 +140,7 @@ typedef struct s_padding
 	nlink_t		nlink;
 	off_t		size;
 	blkcnt_t	blocks;
+	blkcnt_t	total_blocks;
 	size_t		owner_name;
 	size_t		group_name;
 }	t_padding;

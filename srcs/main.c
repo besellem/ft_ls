@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 16:29:52 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/28 21:12:36 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,7 +208,7 @@ int	main(int ac, char **av)
 	singleton()->nodes = get_nodes(singleton()->args);
 	if (NULL == singleton()->nodes)
 	{
-		merror();
+		// merror();
 		ft_free_all();
 		return (EXIT_FAILURE);
 	}

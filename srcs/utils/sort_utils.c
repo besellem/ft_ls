@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 13:07:57 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 17:34:01 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/28 22:06:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,15 @@ int	cmp_node_by_desc_time(t_node *n1, t_node *n2)
 
 int	cmp_node_by_asc(t_node *n1, t_node *n2)
 {
-	return (ft_strcmp(n2->_dir_.d_name, n1->_dir_.d_name));
+	// printf("n1[%s] n2[%s] (n2 - n1)[%d]\n",
+	// 	n1->_dir_.d_name, n2->_dir_.d_name,
+	// 	ft_strcmp(n2->_dir_.d_name, n1->_dir_.d_name));
+	return (ft_strcmp(n1->_dir_.d_name, n2->_dir_.d_name));
 }
 
 int	cmp_node_by_desc(t_node *n1, t_node *n2)
 {
-	return (ft_strcmp(n1->_dir_.d_name, n2->_dir_.d_name));
+	return (ft_strcmp(n2->_dir_.d_name, n1->_dir_.d_name));
 }
 
 int	cmp_content_asc(void *content_1, void *content_2)
@@ -93,13 +96,13 @@ void	ft_sort_lst_nodes(t_list **head)
 		if (is_flag(OPT_T_MIN))
 			ft_lst_qsort(head, &cmp_node_by_asc_time);
 		else
-			ft_lst_qsort(head, &cmp_node_by_asc);
+			ft_lst_qsort(head, &cmp_node_by_desc);
 	}
 	else
 	{
 		if (is_flag(OPT_T_MIN))
 			ft_lst_qsort(head, &cmp_node_by_desc_time);
 		else
-			ft_lst_qsort(head, &cmp_node_by_desc);
+			ft_lst_qsort(head, &cmp_node_by_asc);
 	}
 }

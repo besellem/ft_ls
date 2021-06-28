@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/23 17:38:11 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/28 22:03:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ int		parse_args(int ac, char **av, t_list **args)
 			dir = opendir(av[i]);
 			int	tmp_errno = errno;
 			if (!dir && NOT_FOUND == stat(av[i], &_stat_))
-				ft_printf(PROG_NAME ": %s: %s\n", av[i], strerror(tmp_errno));
+				ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: %s\n", av[i], strerror(tmp_errno));
 			else
 			{
 				new = ft_lstnew((char *)av[i]);
@@ -151,6 +151,7 @@ int		parse_args(int ac, char **av, t_list **args)
 			return (ERR_CODE);
 		ft_lstadd_front(args, new);
 	}
+	// ft_lst_qsort(args, &cmp_node_by_desc);
 	ft_sort_lst_nodes(args); /* PROBLEM HERE - CHECK : 'ls -lRrt incs srcs' */
 	return (SUC_CODE);
 }

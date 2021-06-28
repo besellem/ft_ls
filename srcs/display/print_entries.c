@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 15:27:55 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/28 22:03:23 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,6 +55,9 @@ static void	__set_pads__(t_list *head, t_padding *pads)
 				if (tmp_pads.size > pads->size)
 					pads->size = tmp_pads.size;
 			}
+			
+			/* total blocks to print */
+			pads->total_blocks += node->_stats_.st_blocks;
 		}
 		tmp = tmp->next;
 	}
@@ -113,6 +116,17 @@ static void	ft_print_entry(t_node *node, t_padding *pads)
 	ft_add_char2buf('\n');
 }
 
+static void	print_total_blocks(t_padding *pads)
+{
+	char	*tmp = NULL;
+
+	ft_add2buf("total ");
+	ft_asprintf(&tmp, "%lld", pads->total_blocks);
+	ft_add2buf(tmp);
+	ft_memdel((void **)&tmp);
+	ft_add_char2buf('\n');
+}
+
 static void	__print_lst_recursively__(t_list *head, int is_last)
 {
 	t_padding	pads;
@@ -123,8 +137,14 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	__set_pads__(head, &pads);
 
 	/* first print all the current list */
-	ft_add2buf(((t_node *)head->content)->path);
-	ft_add2buf(":\n");
+	// if (ft_strcmp(((t_node *)head->content)->path, "."))
+	// {
+		ft_add2buf(((t_node *)head->content)->path);
+		ft_add2buf(":\n");
+	// }
+	
+	print_total_blocks(&pads);
+	
 	lst = head;
 	while (lst)
 	{

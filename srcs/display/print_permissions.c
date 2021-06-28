@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 15:20:28 by besellem         ###   ########.fr       */
+/*   Updated: 2021/06/28 21:40:23 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,5 +36,15 @@ void	print_permissions(t_node *node)
 	ft_add_char2buf((node->_lstats_.st_mode & S_IROTH) ? 'r' : '-');
 	ft_add_char2buf((node->_lstats_.st_mode & S_IWOTH) ? 'w' : '-');
 	ft_add_char2buf((node->_lstats_.st_mode & S_IXOTH) ? 'x' : '-');
-	ft_add_char2buf(' ');
+	
+	// char		*str = node->_dir_.d_name;
+	// // char		*str = node->path;
+	// ssize_t		sd = listxattr(str, NULL, 0, 0);
+	
+	// printf("[%s] %zd\n", str, sd);
+	
+	// if (sd > 0)
+	// 	ft_add2buf("@ ");
+	// else
+	ft_add2buf("  ");
 }
