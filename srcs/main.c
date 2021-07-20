@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/28 21:12:36 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 17:46:53 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,14 @@ void	ft_lstprint(t_list *lst)
 	}
 }
 
-
 t_list	*ft_ls_file2lst(t_list **lst, char *path)
 {
 	t_list			*tmp;
 	t_node			*node;
 
 	node = (t_node *)ft_calloc(1, sizeof(t_node));
+	if (!node)
+		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 
 	/* need that to print its name */
 	ft_bzero(&node->_dir_, sizeof(struct dirent));
@@ -80,11 +81,7 @@ t_list	*ft_ls_file2lst(t_list **lst, char *path)
 	/* add that node to the list */
 	tmp = ft_lstnew(node);
 	if (!tmp)
-	{
-		merror();
-		ft_free_all();
-		exit(EXIT_FAILURE);
-	}
+		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 	ft_lstadd_back(lst, tmp);
 	return (*lst);
 }
@@ -108,12 +105,18 @@ t_list	*ft_ls2lst(t_list **lst, char *path)
 	while ((s_dir = readdir(dir)))
 	{
 		node = (t_node *)ft_calloc(1, sizeof(t_node));
+		if (!node)
+			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 
 		/* keep current path */
 		node->path = ft_strdup(path);
+		if (!node->path)
+			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 
 		/* Add node's name to the current path */
 		ft_asprintf(&pwd, "%s/%s", path, s_dir->d_name);
+		if (!pwd)
+			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 
 		/* copy that `struct dirent' */
 		ft_memcpy(&node->_dir_, s_dir, sizeof(struct dirent));
@@ -141,11 +144,7 @@ t_list	*ft_ls2lst(t_list **lst, char *path)
 		/* add that node to the list */
 		tmp = ft_lstnew(node);
 		if (!tmp)
-		{
-			merror();
-			ft_free_all();
-			exit(EXIT_FAILURE);
-		}
+			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 		ft_lstadd_back(lst, tmp);
 	}
 	closedir(dir);
@@ -173,11 +172,16 @@ t_list	*get_nodes(t_list *args)
 		else
 			ft_ls_file2lst(&node_list, (char *)tmp->content);
 		
+		if (!node_list)
+			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
+		
 		/* when the directory passed in args does exist */
 		if (node_list)
 		{
 			/* `t_list' containing `node_list' above */
 			new_node = ft_lstnew(node_list);
+			if (!new_node)
+				ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 			
 			/* append the new list to the main one */
 			ft_lstadd_back(&nodes, new_node);
@@ -191,31 +195,20 @@ int	main(int ac, char **av)
 {
 	/* init singleton */
 	if (NULL == singleton())
-	{
-		merror();
-		return (EXIT_FAILURE);
-	}
+		ft_free_exit(EXIT_FAILURE, NO_ERR);
 
 	/* parse arguments */
 	if (ERR_CODE == parse_args(ac, av, &singleton()->args))
-	{
-		merror();
-		ft_free_all();
-		return (EXIT_FAILURE);
-	}
+		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 
 	/* get all nodes asked by the args and the options set */
 	singleton()->nodes = get_nodes(singleton()->args);
 	if (NULL == singleton()->nodes)
-	{
-		// merror();
-		ft_free_all();
-		return (EXIT_FAILURE);
-	}
+		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 
 	ft_print_entries(singleton()->nodes);
 	
-	ft_flush_buf();
+	ft_flush_buff();
 	ft_free_all();
 	return (EXIT_SUCCESS);
 }

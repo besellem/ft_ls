@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:12 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 16:44:37 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ void	print_size(t_node *node, t_padding *pads)
 	}
 	else
 		ft_asprintf(&tmp, "%*lld", pads->size, node->_stats_.st_size);
-	ft_add2buf(tmp);
+	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
-	ft_add_char2buf(' ');
+	ft_buffaddc(' ');
 }

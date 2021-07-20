@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:15 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 15:22:28 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,6 @@ void	print_time(t_node *node)
 	if (!file_time)
 		return ;
 	file_time[16] = '\0';		/* don't print after 16th char (man ctime) */
-	ft_add2buf(file_time + 4);	/* skip the day (first 4 chars) */
-	ft_add_char2buf(' ');
+	ft_buffadd(file_time + 4);	/* skip the day (first 4 chars) */
+	ft_buffaddc(' ');
 }

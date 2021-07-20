@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/28 21:40:23 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,16 +26,16 @@ static char	get_mode(mode_t mode)
 
 void	print_permissions(t_node *node)
 {
-	ft_add_char2buf(get_mode(node->_lstats_.st_mode));
-	ft_add_char2buf((node->_lstats_.st_mode & S_IRUSR) ? 'r' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IWUSR) ? 'w' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IXUSR) ? 'x' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IRGRP) ? 'r' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IWGRP) ? 'w' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IXGRP) ? 'x' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IROTH) ? 'r' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IWOTH) ? 'w' : '-');
-	ft_add_char2buf((node->_lstats_.st_mode & S_IXOTH) ? 'x' : '-');
+	ft_buffaddc(get_mode(node->_lstats_.st_mode));
+	ft_buffaddc((node->_lstats_.st_mode & S_IRUSR) ? 'r' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IWUSR) ? 'w' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IXUSR) ? 'x' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IRGRP) ? 'r' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IWGRP) ? 'w' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IXGRP) ? 'x' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IROTH) ? 'r' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IWOTH) ? 'w' : '-');
+	ft_buffaddc((node->_lstats_.st_mode & S_IXOTH) ? 'x' : '-');
 	
 	// char		*str = node->_dir_.d_name;
 	// // char		*str = node->path;
@@ -44,7 +44,7 @@ void	print_permissions(t_node *node)
 	// printf("[%s] %zd\n", str, sd);
 	
 	// if (sd > 0)
-	// 	ft_add2buf("@ ");
+	// 	ft_buffadd("@ ");
 	// else
-	ft_add2buf("  ");
+	ft_buffadd("  ");
 }

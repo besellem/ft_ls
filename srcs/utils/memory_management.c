@@ -6,11 +6,15 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 12:32:59 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 17:49:16 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
+
+const char	*g_error_msgs[] = {
+	[ERR_MSG_MALLOC] = "malloc error"
+};
 
 static void	__free_lst__(t_list *head)
 {
@@ -46,6 +50,9 @@ static void	ft_free_nodes(t_list *head)
 
 void	ft_free_all(void)
 {
+	t_buffer_attr	attr = {.fd = STDOUT_FILENO, .oflag = BUF_INIT};
+
+	ft_init_buff(&attr); // release buffer memory in case of a malloc error during print
 	if (singleton())
 	{
 		if (singleton()->args)
@@ -54,4 +61,12 @@ void	ft_free_all(void)
 			ft_free_nodes(singleton()->nodes);
 		free(singleton());
 	}
+}
+
+void	ft_free_exit(int val, enum e_error_msg __error)
+{
+	if ((int)__error != NO_ERR)
+		ft_printf(PROG_NAME ": %s\n", g_error_msgs[__error]);
+	ft_free_all();
+	exit(val);
 }

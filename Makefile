@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2021/06/27 15:33:54 by besellem         ###   ########.fr        #
+#    Updated: 2021/07/20 11:31:19 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -46,8 +46,7 @@ SUB_SRC	:= print_blocks.c \
 SRC		+= $(addprefix display/, $(SUB_SRC))
 SUB_SRC	:= parse_args.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
-SUB_SRC	:= buffer_management.c \
-		   flag_utils.c \
+SUB_SRC	:= flag_utils.c \
 		   ft_lst_qsort.c \
 		   general.c \
 		   memory_management.c \

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/28 22:03:23 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,10 +99,10 @@ static void	ft_print_entry(t_node *node, t_padding *pads)
 		print_color(node);
 	
 	/* print entry name */
-	ft_add2buf(node->_dir_.d_name);
+	ft_buffadd(node->_dir_.d_name);
 
 	if (is_flag(OPT_G_MAJ))
-		ft_add2buf(CLR_COLOR);
+		ft_buffadd(CLR_COLOR);
 	
 	/* follow the link and print it */
 	if (S_ISLNK(node->_lstats_.st_mode))
@@ -110,21 +110,21 @@ static void	ft_print_entry(t_node *node, t_padding *pads)
 
 	/* add `/' when the option `-p' is turned on and if it's a directory */
 	if (is_flag(OPT_P_MIN) && DT_DIR == node->_dir_.d_type)
-		ft_add_char2buf('/');
+		ft_buffaddc('/');
 	
 	/* new line -- end of the entry */
-	ft_add_char2buf('\n');
+	ft_buffaddc('\n');
 }
 
 static void	print_total_blocks(t_padding *pads)
 {
 	char	*tmp = NULL;
 
-	ft_add2buf("total ");
+	ft_buffadd("total ");
 	ft_asprintf(&tmp, "%lld", pads->total_blocks);
-	ft_add2buf(tmp);
+	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
-	ft_add_char2buf('\n');
+	ft_buffaddc('\n');
 }
 
 static void	__print_lst_recursively__(t_list *head, int is_last)
@@ -139,8 +139,8 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	/* first print all the current list */
 	// if (ft_strcmp(((t_node *)head->content)->path, "."))
 	// {
-		ft_add2buf(((t_node *)head->content)->path);
-		ft_add2buf(":\n");
+		ft_buffadd(((t_node *)head->content)->path);
+		ft_buffadd(":\n");
 	// }
 	
 	print_total_blocks(&pads);
@@ -155,7 +155,7 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	}
 	
 	if (FALSE == is_last)
-		ft_add_char2buf('\n');
+		ft_buffaddc('\n');
 
 	/* then print the recursive lists */
 	lst = head;

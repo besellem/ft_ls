@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:10 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 15:23:21 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 12:01:15 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,6 @@ void	print_readlink(t_node *node)
 	ft_asprintf(&filename, "%s/%s", node->path, node->_dir_.d_name);
 	readlink(filename, buf, FILENAME_MAX);
 	ft_memdel((void **)&filename);
-	ft_add2buf(" -> ");
-	ft_add2buf(buf);
+	ft_buffadd(" -> ");
+	ft_buffadd(buf);
 }

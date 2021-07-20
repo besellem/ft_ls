@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/28 22:03:49 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 17:48:52 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ int		parse_args(int ac, char **av, t_list **args)
 			{
 				new = ft_lstnew((char *)av[i]);
 				if (!new)
-					return (ERR_CODE);
+					ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 				ft_lstadd_back(args, new);
 				if (dir)
 					closedir(dir);
@@ -148,7 +148,7 @@ int		parse_args(int ac, char **av, t_list **args)
 	{
 		new = ft_lstnew("."); /* `.' is the current directory */
 		if (!new)
-			return (ERR_CODE);
+			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 		ft_lstadd_front(args, new);
 	}
 	// ft_lst_qsort(args, &cmp_node_by_desc);

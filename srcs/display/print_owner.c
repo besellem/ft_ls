@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:05 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/27 15:24:07 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 11:30:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	print_owner(t_node *node, t_padding *pads)
 	char			*tmp = NULL;
 
 	ft_asprintf(&tmp, "%-*s", pads->owner_name, password->pw_name);
-	ft_add2buf(tmp);
+	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
-	ft_add2buf("  ");
+	ft_buffadd("  ");
 }

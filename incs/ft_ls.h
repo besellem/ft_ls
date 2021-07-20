@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/06/28 21:57:15 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 12:31:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@
 # define NOT_FOUND (-1)
 
 # define EMPTY     0
+
+# define NO_ERR    (-1)
 
 /* buffer size - the actual buffer stores data before a syscall to `write' */
 # define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024. setting it to 4096 may be faster */
@@ -129,6 +131,12 @@
 /*
 ** Used temporarily for a lookup table in the option's parsing
 */
+
+enum e_error_msg
+{
+	ERR_MSG_MALLOC
+};
+
 struct	s_options{
 	char		opt;
 	uint64_t	flag;
@@ -192,13 +200,9 @@ t_ls			*singleton(void);
 /* Utils */
 int				ft_is_dir(char *);
 
-/* Buffer Management */
-void			ft_add_char2buf(char);
-void			ft_add2buf(char *);
-void			ft_flush_buf(void);
-
-/* Memory Management */
+/* Memory & Error Management */
 void			ft_free_all(void);
+void			ft_free_exit(int val, enum e_error_msg __error);
 
 /* Sorting Utils */
 int				cmp_node_by_asc_time(t_node *, t_node *);
