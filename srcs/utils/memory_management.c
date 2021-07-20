@@ -6,15 +6,11 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 17:49:16 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/20 17:51:26 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
-
-const char	*g_error_msgs[] = {
-	[ERR_MSG_MALLOC] = "malloc error"
-};
 
 static void	__free_lst__(t_list *head)
 {
@@ -62,6 +58,10 @@ void	ft_free_all(void)
 		free(singleton());
 	}
 }
+
+const char	*g_error_msgs[] = {
+	[ERR_MSG_MALLOC] = "malloc error"
+};
 
 void	ft_free_exit(int val, enum e_error_msg __error)
 {
