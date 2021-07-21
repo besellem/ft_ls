@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:12 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/21 11:56:10 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,11 +21,11 @@
 
 
 #define UNIT_BYTE     1000.0					/* ~ 2^10 */
-#define UNIT_KILOBYTE 1000000.0					/* 2^20 */
-#define UNIT_MEGABYTE 1000000000.0				/* 2^30 */
-#define UNIT_GIGABYTE 1000000000000.0			/* 2^40 */
-#define UNIT_TERABYTE 1000000000000000.0		/* 2^50 */
-#define UNIT_PETABYTE 1000000000000000000.0		/* 2^60 */
+#define UNIT_KILOBYTE 1000000.0					/*   2^20 */
+#define UNIT_MEGABYTE 1000000000.0				/*   2^30 */
+#define UNIT_GIGABYTE 1000000000000.0			/*   2^40 */
+#define UNIT_TERABYTE 1000000000000000.0		/*   2^50 */
+#define UNIT_PETABYTE 1000000000000000000.0		/*   2^60 */
 
 struct s_unit_lookup_table
 {
@@ -63,6 +63,8 @@ void	print_size(t_node *node, t_padding *pads)
 	}
 	else
 		ft_asprintf(&tmp, "%*lld", pads->size, node->_stats_.st_size);
+	if (!tmp)
+		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
 	ft_buffaddc(' ');

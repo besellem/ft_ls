@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 17:51:26 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/21 12:41:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void	ft_free_nodes(t_list *head)
 
 void	ft_free_all(void)
 {
-	t_buffer_attr	attr = {.fd = STDOUT_FILENO, .oflag = BUF_INIT};
+	const t_buffer_attr	attr = {.fd = STDOUT_FILENO, .oflag = BUF_INIT};
 
 	ft_init_buff(&attr); // release buffer memory in case of a malloc error during print
 	if (singleton())

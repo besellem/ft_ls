@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/21 11:53:46 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,8 @@ static void	print_total_blocks(t_padding *pads)
 
 	ft_buffadd("total ");
 	ft_asprintf(&tmp, "%lld", pads->total_blocks);
+	if (!tmp)
+		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
 	ft_buffaddc('\n');

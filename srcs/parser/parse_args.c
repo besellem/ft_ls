@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 17:48:52 by besellem         ###   ########.fr       */
+/*   Updated: 2021/07/21 11:58:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,9 +109,9 @@ int		parse_args(int ac, char **av, t_list **args)
 {
 	t_list			*new = NULL;
 	int				args_are_done = FALSE;
-	int				i;
-	struct stat		_stat_;
+	struct stat		__stat;
 	DIR				*dir;
+	int				i;
 
 	for (i = 1; i < ac; ++i)
 	{
@@ -126,7 +126,7 @@ int		parse_args(int ac, char **av, t_list **args)
 			errno = 0;
 			dir = opendir(av[i]);
 			int	tmp_errno = errno;
-			if (!dir && NOT_FOUND == stat(av[i], &_stat_))
+			if (!dir && NOT_FOUND == stat(av[i], &__stat))
 				ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: %s\n", av[i], strerror(tmp_errno));
 			else
 			{
