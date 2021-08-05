@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 12:31:22 by besellem         ###   ########.fr       */
+/*   Updated: 2021/08/05 17:53:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,14 @@
 # define LST_DEBUG(lst)	(void lst);
 #endif /* defined(__DEBUG__) */
 
-# define merror() ft_printf("%s:%d: malloc error\n", __FILE__, __LINE__)
+// # define merror() ft_printf("%s:%d: malloc error\n", __FILE__, __LINE__)
+
+# define ft_free_exit(val, error)                                              \
+	do {                                                                       \
+		ft_printf("%s:%d: %s\n", __FILE__, __LINE__, strerror(errno));         \
+		ft_free_all();                                                         \
+		exit(val);                                                             \
+	} while (0);
 
 
 # define OPT_A_MAJ	(1ULL <<  0)
@@ -184,6 +191,7 @@ typedef	struct	s_node{
 */
 typedef	struct	s_ls
 {
+	int			_isatty;
 	uint64_t	opts;
 	t_list		*args;
 	t_list		*nodes;
@@ -202,7 +210,7 @@ int				ft_is_dir(char *);
 
 /* Memory & Error Management */
 void			ft_free_all(void);
-void			ft_free_exit(int val, enum e_error_msg __error);
+// void			ft_free_exit(int val, enum e_error_msg __error);
 
 /* Sorting Utils */
 int				cmp_node_by_asc_time(t_node *, t_node *);

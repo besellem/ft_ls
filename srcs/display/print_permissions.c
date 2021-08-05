@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/20 11:30:56 by besellem         ###   ########.fr       */
+/*   Updated: 2021/08/05 16:39:17 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 static char	get_mode(mode_t mode)
 {
-	if (S_ISBLK(mode))	return ('b'); /* block special */
-	if (S_ISCHR(mode))	return ('c'); /* char special */
-	if (S_ISDIR(mode))	return ('d'); /* directory */
-	if (S_ISREG(mode))	return ('-'); /* regular file */
-	if (S_ISLNK(mode))	return ('l'); /* symbolic link */
-	if (S_ISSOCK(mode))	return ('s'); /* socket */
-	if (S_ISFIFO(mode))	return ('p'); /* fifo or socket */
+	if (S_ISBLK(mode))  return ('b'); /* block special */
+	if (S_ISCHR(mode))  return ('c'); /* char special */
+	if (S_ISDIR(mode))  return ('d'); /* directory */
+	if (S_ISREG(mode))  return ('-'); /* regular file */
+	if (S_ISLNK(mode))  return ('l'); /* symbolic link */
+	if (S_ISSOCK(mode)) return ('s'); /* socket */
+	if (S_ISFIFO(mode)) return ('p'); /* fifo or socket */
 	return ('-');
 }
 

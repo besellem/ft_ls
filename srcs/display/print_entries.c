@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/21 11:53:46 by besellem         ###   ########.fr       */
+/*   Updated: 2021/08/05 17:41:50 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,13 +95,13 @@ static void	ft_print_entry(t_node *node, t_padding *pads)
 	** print node's name
 	*/
 	/* option `-G' turns on the colors */
-	if (is_flag(OPT_G_MAJ))
+	if (is_flag(OPT_G_MAJ) && TRUE == singleton()->_isatty)
 		print_color(node);
 	
 	/* print entry name */
 	ft_buffadd(node->_dir_.d_name);
 
-	if (is_flag(OPT_G_MAJ))
+	if (is_flag(OPT_G_MAJ) && TRUE == singleton()->_isatty)
 		ft_buffadd(CLR_COLOR);
 	
 	/* follow the link and print it */
