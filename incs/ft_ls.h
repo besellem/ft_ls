@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2021/08/05 17:53:34 by besellem         ###   ########.fr       */
+/*   Updated: 2021/11/05 15:52:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -144,28 +144,30 @@ enum e_error_msg
 	ERR_MSG_MALLOC
 };
 
-struct	s_options{
+struct	s_options
+{
 	char		opt;
 	uint64_t	flag;
 };
 
 /* get the len of max values for padding */
-typedef struct s_padding
+typedef struct s_pad
 {
-	nlink_t		nlink;
-	off_t		size;
-	blkcnt_t	blocks;
-	blkcnt_t	total_blocks;
-	size_t		owner_name;
-	size_t		group_name;
-}	t_padding;
+	int		nlink;
+	int		size;
+	int		blocks;
+	int		total_blocks;
+	int		owner_name;
+	int		group_name;
+}	t_pad;
 
 /*
 ** One node contains the file / folder and its infos
 */
-typedef	struct	s_node{
+typedef	struct	s_node
+{
 	char			*path;
-	// t_padding		pad;
+	// t_pad		pad;
 	struct dirent	_dir_;
 	struct stat		_stats_;
 	struct stat		_lstats_;
@@ -232,12 +234,12 @@ int				parse_args(int, char **, t_list **);
 
 
 /* Display */
-void			print_blocks(t_node *, t_padding *);
+void			print_blocks(t_node *, t_pad *);
 void			print_permissions(t_node *);
-void			print_nlinks(t_node *, t_padding *);
-void			print_owner(t_node *, t_padding *);
-void			print_group(t_node *, t_padding *);
-void			print_size(t_node *, t_padding *);
+void			print_nlinks(t_node *, t_pad *);
+void			print_owner(t_node *, t_pad *);
+void			print_group(t_node *, t_pad *);
+void			print_size(t_node *, t_pad *);
 void			print_time(t_node *);
 void			print_color(t_node *);
 void			print_readlink(t_node *);

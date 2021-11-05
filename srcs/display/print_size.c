@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:12 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/21 11:56:10 by besellem         ###   ########.fr       */
+/*   Updated: 2021/11/05 15:53:57 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ const struct s_unit_lookup_table	g_units[] = {
 	{0, 0}
 };
 
-void	print_size(t_node *node, t_padding *pads)
+void	print_size(t_node *node, t_pad *pads)
 {
 	char	*tmp = NULL;
 

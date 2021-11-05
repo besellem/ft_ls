@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2021/07/20 11:31:19 by besellem         ###   ########.fr        #
+#    Updated: 2021/11/05 15:56:23 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -83,15 +83,15 @@ all: $(NAME)
 bonus: all
 
 clean:
-	@echo "Deleting $(CYAN_COLOR).o file $(DEFAULT_COLOR)of libft ..."
+	@echo "Deleting $(CYAN_COLOR)libft $(DEFAULT_COLOR)objs ..."
 	@$(MAKE) clean -C $(LIB_DIR) >/dev/null
-	@echo "Deleting $(CYAN_COLOR).o file $(DEFAULT_COLOR)of ft_ls ..."
+	@echo "Deleting $(CYAN_COLOR)$(NAME) $(DEFAULT_COLOR)objs ..."
 	@rm -rf $(BUILD)
 
 fclean: clean
-	@echo "Deleting $(CYAN_COLOR)libft $(DEFAULT_COLOR)file ..."
+	@echo "Deleting $(CYAN_COLOR)libft $(DEFAULT_COLOR)library ..."
 	@$(MAKE) fclean -C $(LIB_DIR) >/dev/null
-	@echo "Deleting $(CYAN_COLOR)ft_ls $(DEFAULT_COLOR)file ..."
+	@echo "Deleting $(CYAN_COLOR)$(NAME) $(DEFAULT_COLOR)binary ..."
 	@rm -rf $(NAME)
 	@rm -rf $(NAME).dSYM
 

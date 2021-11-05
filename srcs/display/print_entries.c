@@ -6,23 +6,23 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/08/05 17:41:50 by besellem         ###   ########.fr       */
+/*   Updated: 2021/11/05 15:53:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
 /* get max padding values of a list */
-static void	__set_pads__(t_list *head, t_padding *pads)
+static void	__set_pads__(t_list *head, t_pad *pads)
 {
 	struct passwd	*password;
 	struct group	*group;
-	t_padding 		tmp_pads;
+	t_pad 			tmp_pads;
 	t_list			*tmp;
 	t_node			*node;
 
-	ft_bzero(pads, sizeof(t_padding));
-	ft_bzero(&tmp_pads, sizeof(t_padding));
+	ft_bzero(pads, sizeof(t_pad));
+	ft_bzero(&tmp_pads, sizeof(t_pad));
 	tmp = head;
 	while (tmp)
 	{
@@ -63,7 +63,7 @@ static void	__set_pads__(t_list *head, t_padding *pads)
 	}
 }
 
-static void	ft_print_entry(t_node *node, t_padding *pads)
+static void	ft_print_entry(t_node *node, t_pad *pads)
 {
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 	if (is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
@@ -116,12 +116,12 @@ static void	ft_print_entry(t_node *node, t_padding *pads)
 	ft_buffaddc('\n');
 }
 
-static void	print_total_blocks(t_padding *pads)
+static void	print_total_blocks(t_pad *pads)
 {
 	char	*tmp = NULL;
 
 	ft_buffadd("total ");
-	ft_asprintf(&tmp, "%lld", pads->total_blocks);
+	ft_asprintf(&tmp, "%d", pads->total_blocks);
 	if (!tmp)
 		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
 	ft_buffadd(tmp);
@@ -131,7 +131,7 @@ static void	print_total_blocks(t_padding *pads)
 
 static void	__print_lst_recursively__(t_list *head, int is_last)
 {
-	t_padding	pads;
+	t_pad	pads;
 	t_list		*lst;
 	t_node		*node;
 
