@@ -68,18 +68,18 @@ static void	ft_print_entry(t_node *node, t_pad *pads)
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 	if (is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
 		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
-		0 == ft_strcmp(node->_dir_.d_name, ".")))
+		 0 == ft_strcmp(node->_dir_.d_name, ".")))
 		return ;
 
 	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
 	if (!is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
 		0 == ft_strncmp(node->_dir_.d_name, ".", 1))
 		return ;
-	
+
 	/* print nbr of blocks if `-s' is set */
 	if (is_flag(OPT_S_MIN))
 		print_blocks(node, pads);
-	
+
 	/* print long format if `-l' (ell) is set */
 	if (is_flag(OPT_L_MIN))
 	{
@@ -132,20 +132,25 @@ static void	print_total_blocks(t_pad *pads)
 static void	__print_lst_recursively__(t_list *head, int is_last)
 {
 	t_pad	pads;
-	t_list		*lst;
-	t_node		*node;
+	t_list	*lst;
+	t_node	*node;
 
 	/* set the different padding values */
 	__set_pads__(head, &pads);
 
 	/* first print all the current list */
-	// if (ft_strcmp(((t_node *)head->content)->path, "."))
+	// if (ft_strcmp(((t_node *)head->content)->path, ".") == 0)
 	// {
 		ft_buffadd(((t_node *)head->content)->path);
 		ft_buffadd(":\n");
 	// }
 	
-	print_total_blocks(&pads);
+	// if (head)
+	// {
+	// 	node = (t_node *)head->content;
+	// 	if (node->recursive_nodes)
+			print_total_blocks(&pads);
+	// }
 	
 	lst = head;
 	while (lst)

@@ -47,7 +47,6 @@ SRC		+= $(addprefix display/, $(SUB_SRC))
 SUB_SRC	:= parse_args.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
 SUB_SRC	:= flag_utils.c \
-		   ft_lst_qsort.c \
 		   general.c \
 		   memory_management.c \
 		   sort_utils.c \

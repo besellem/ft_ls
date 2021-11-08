@@ -38,8 +38,6 @@
 */
 # define PROG_NAME "ft_ls"
 
-# define USAGE "usage: " PROG_NAME " [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n"
-
 # define SUC_CODE  1
 # define ERR_CODE  0
 
@@ -92,58 +90,54 @@
 	} while (0);
 
 
-# define OPT_A_MAJ	(1ULL <<  0)
-# define OPT_A_MIN	(1ULL <<  1)	/* MANDATORY */
-# define OPT_B_MAJ	(1ULL <<  2)
-# define OPT_B_MIN	(1ULL <<  3)
-# define OPT_C_MAJ	(1ULL <<  4)
-# define OPT_C_MIN	(1ULL <<  5)
-# define OPT_D		(1ULL <<  6)	/* Bonus */
-# define OPT_E		(1ULL <<  7)
-# define OPT_F_MAJ	(1ULL <<  8)
-# define OPT_F_MIN	(1ULL <<  9)	/* Bonus */
-# define OPT_G_MAJ	(1ULL << 10)
-# define OPT_G_MIN	(1ULL << 11)	/* Bonus */
-# define OPT_H_MAJ	(1ULL << 12)
-# define OPT_H_MIN	(1ULL << 13)	/* DOES NOT WORK */
-# define OPT_I		(1ULL << 14)
-# define OPT_K		(1ULL << 15)
-# define OPT_L_MAJ	(1ULL << 16)
-# define OPT_L_MIN	(1ULL << 17)	/* MANDATORY */
-# define OPT_M		(1ULL << 18)
-# define OPT_N		(1ULL << 19)
-# define OPT_O_MAJ	(1ULL << 20)
-# define OPT_O_MIN	(1ULL << 21)
-# define OPT_P_MAJ	(1ULL << 22)
-# define OPT_P_MIN	(1ULL << 23)
-# define OPT_Q		(1ULL << 24)
-# define OPT_R_MAJ	(1ULL << 25)	/* MANDATORY */
-# define OPT_R_MIN	(1ULL << 26)	/* MANDATORY */
-# define OPT_S_MAJ	(1ULL << 27)
-# define OPT_S_MIN	(1ULL << 28)
-# define OPT_T_MAJ	(1ULL << 29)
-# define OPT_T_MIN	(1ULL << 30)	/* MANDATORY */
-# define OPT_U_MAJ	(1ULL << 31)
-# define OPT_U_MIN	(1ULL << 32)	/* Bonus */
-# define OPT_V		(1ULL << 33)
-# define OPT_W_MAJ	(1ULL << 34)
-# define OPT_W_MIN	(1ULL << 35)
-# define OPT_X		(1ULL << 36)
-# define OPT_ONE	(1ULL << 37)
+# define OPT_A_MAJ  (1ULL <<  0)
+# define OPT_A_MIN  (1ULL <<  1)  /* MANDATORY */
+# define OPT_B_MAJ  (1ULL <<  2)
+# define OPT_B_MIN  (1ULL <<  3)
+# define OPT_C_MAJ  (1ULL <<  4)
+# define OPT_C_MIN  (1ULL <<  5)
+# define OPT_D      (1ULL <<  6)  /* Bonus */
+# define OPT_E      (1ULL <<  7)
+# define OPT_F_MAJ  (1ULL <<  8)
+# define OPT_F_MIN  (1ULL <<  9)  /* Bonus */
+# define OPT_G_MAJ  (1ULL << 10)
+# define OPT_G_MIN  (1ULL << 11)  /* Bonus */
+# define OPT_H_MAJ  (1ULL << 12)
+# define OPT_H_MIN  (1ULL << 13)  /* DOES NOT WORK */
+# define OPT_I      (1ULL << 14)
+# define OPT_K      (1ULL << 15)
+# define OPT_L_MAJ  (1ULL << 16)
+# define OPT_L_MIN  (1ULL << 17)  /* MANDATORY */
+# define OPT_M      (1ULL << 18)
+# define OPT_N      (1ULL << 19)
+# define OPT_O_MAJ  (1ULL << 20)
+# define OPT_O_MIN  (1ULL << 21)
+# define OPT_P_MAJ  (1ULL << 22)
+# define OPT_P_MIN  (1ULL << 23)
+# define OPT_Q      (1ULL << 24)
+# define OPT_R_MAJ  (1ULL << 25)  /* MANDATORY */
+# define OPT_R_MIN  (1ULL << 26)  /* MANDATORY */
+# define OPT_S_MAJ  (1ULL << 27)
+# define OPT_S_MIN  (1ULL << 28)
+# define OPT_T_MAJ  (1ULL << 29)
+# define OPT_T_MIN  (1ULL << 30)  /* MANDATORY */
+# define OPT_U_MAJ  (1ULL << 31)
+# define OPT_U_MIN  (1ULL << 32)  /* Bonus */
+# define OPT_V      (1ULL << 33)
+# define OPT_W_MAJ  (1ULL << 34)
+# define OPT_W_MIN  (1ULL << 35)
+# define OPT_X      (1ULL << 36)
+# define OPT_ONE    (1ULL << 37)
 
 /*
 ** -- DATA STRUCTURES --
 */
-
-/*
-** Used temporarily for a lookup table in the option's parsing
-*/
-
 enum e_error_msg
 {
 	ERR_MSG_MALLOC
 };
 
+/* Used temporarily for a lookup table in the option's parsing */
 struct	s_options
 {
 	char		opt;
@@ -167,11 +161,11 @@ typedef struct s_pad
 typedef	struct	s_node
 {
 	char			*path;
+	t_list			*recursive_nodes;
 	// t_pad		pad;
-	struct dirent	_dir_;
 	struct stat		_stats_;
 	struct stat		_lstats_;
-	t_list			*recursive_nodes;
+	struct dirent	_dir_;
 }				t_node;
 
 /*
@@ -212,7 +206,7 @@ int				ft_is_dir(char *);
 
 /* Memory & Error Management */
 void			ft_free_all(void);
-// void			ft_free_exit(int val, enum e_error_msg __error);
+
 
 /* Sorting Utils */
 int				cmp_node_by_asc_time(t_node *, t_node *);
@@ -222,14 +216,14 @@ int				cmp_node_by_desc(t_node *, t_node *);
 int				cmp_content_asc(void *, void *);
 int				cmp_content_desc(void *, void *);
 
-void			ft_lst_sort(t_list **, int (*)());  /* sort a list (slow) */
-void			ft_lst_qsort(t_list **, int (*)()); /* quicksort a list */
 void			ft_sort_lst_nodes(t_list **);
+
 
 /* Options parsing & flag utils */
 void			add_flag(uint64_t);
 void			rm_flag(uint64_t);
 int				is_flag(uint64_t);
+
 int				parse_args(int, char **, t_list **);
 
 

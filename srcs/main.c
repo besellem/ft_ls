@@ -12,6 +12,10 @@
 
 #include "ft_ls.h"
 
+
+////////////////////////////////////////////////////////////////////////////////
+// DEBUG PURPOSE ONLY
+////////////////////////////////////////////////////////////////////////////////
 void	print_dirent(struct dirent *d)
 {
 	ft_printf("{\n");
@@ -60,6 +64,11 @@ void	ft_lstprint(t_list *lst)
 		tmp = tmp->next;
 	}
 }
+////////////////////////////////////////////////////////////////////////////////
+// END DEBUG PURPOSE ONLY
+////////////////////////////////////////////////////////////////////////////////
+
+
 
 t_list	*ft_ls_file2lst(t_list **lst, char *path)
 {
@@ -160,17 +169,16 @@ t_list	*get_nodes(t_list *args)
 	t_list	*nodes = NULL;			/* main list */
 	t_list	*new_node = NULL;		/* list of nodes containing */
 	t_list	*node_list;				/*  */
-	t_list	*tmp = args;
 
-	while (tmp)
+	while (args)
 	{
 		/* `t_list' containing all the lists from a path (which is an argument) */
 		node_list = NULL;
 
-		if (ft_is_dir((char *)tmp->content))
-			ft_ls2lst(&node_list, (char *)tmp->content);
+		if (ft_is_dir((char *)args->content))
+			ft_ls2lst(&node_list, (char *)args->content);
 		else
-			ft_ls_file2lst(&node_list, (char *)tmp->content);
+			ft_ls_file2lst(&node_list, (char *)args->content);
 		
 		if (!node_list)
 			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
@@ -186,12 +194,12 @@ t_list	*get_nodes(t_list *args)
 			/* append the new list to the main one */
 			ft_lstadd_back(&nodes, new_node);
 		}
-		tmp = tmp->next;
+		args = args->next;
 	}
 	return (nodes);
 }
 
-int	main(int ac, char **av)
+int		main(int ac, char **av)
 {
 	/* init singleton */
 	if (NULL == singleton())

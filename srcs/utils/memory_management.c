@@ -46,9 +46,7 @@ static void	ft_free_nodes(t_list *head)
 
 void	ft_free_all(void)
 {
-	const t_buffer_attr	attr = {.fd = STDOUT_FILENO, .oflag = BUF_INIT};
-
-	ft_init_buff(&attr); // release buffer memory in case of a malloc error during print
+	ft_destroy_buff();
 	if (singleton())
 	{
 		if (singleton()->args)

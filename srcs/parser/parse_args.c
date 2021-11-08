@@ -73,8 +73,9 @@ void	resolve_options_conflicts(void)
 
 void	illegal_opt(char opt)
 {
-	ft_printf(PROG_NAME ": illegal option -- %c\n", opt);
-	ft_putstr(USAGE);
+	ft_printf(PROG_NAME ": illegal option -- %c\n"
+			  "usage: " PROG_NAME " [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n",
+			  opt);
 }
 
 int		get_args(const char *arg)
