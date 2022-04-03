@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 17:43:35 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 21:26:08 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,14 +159,12 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	// }
 	
 	lst = head;
-	while (lst)
+	for ( ; lst; lst = lst->next)
 	{
 		node = (t_node *)lst->content;
+		
 		if (node)
-		{
 			ft_print_entry(node, &pads);
-		}
-		lst = lst->next;
 	}
 	
 	if (FALSE == is_last)
@@ -174,22 +172,19 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 
 	/* then print the recursive lists */
 	lst = head;
-	while (lst)
+	for ( ; lst; lst = lst->next)
 	{
 		node = (t_node *)lst->content;
+		
 		if (node && is_flag(OPT_R) && node->recursive_nodes)
-		{
 			__print_lst_recursively__(node->recursive_nodes, FALSE);
-		}
-		lst = lst->next;
 	}
 }
 
 void	ft_print_entries(t_list *lst)
 {
-	while (lst)
+	for ( ; lst; lst = lst->next)
 	{
 		__print_lst_recursively__((t_list *)lst->content, (NULL == lst->next));
-		lst = lst->next;
 	}
 }

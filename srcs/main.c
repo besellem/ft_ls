@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 17:35:18 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 21:28:41 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,14 +72,12 @@ void	ft_lstprint(t_list *lst)
 
 t_list	*ft_ls_file2lst(t_list *lst, char *path)
 {
-	t_node	*node;
+	t_node	*node = (t_node *)ft_calloc(1, sizeof(t_node));
 
-	node = (t_node *)ft_calloc(1, sizeof(t_node));
 	if (!node)
 		ft_free_exit();
 
 	/* need that to print its name */
-	ft_bzero(&node->_dir_, sizeof(struct dirent));
 	ft_memcpy(node->_dir_.d_name, path, ft_strlen(path));
 
 	/* copy `struct stat' */
@@ -163,11 +161,10 @@ t_list	*get_nodes(t_list *args)
 	t_list	*nodes = NULL;	/* main list */
 	t_list	*node_list;		/*  */
 
-	while (args)
+	for ( ; args; args = args->next)
 	{
 		/* `t_list' containing all the lists from a path (which is an argument) */
 		node_list = NULL;
-		ft_printf("- [%s]\n", (char *)args->content);
 
 		if (ft_is_dir((char *)args->content))
 			ft_ls2lst(&node_list, (char *)args->content);
@@ -184,7 +181,6 @@ t_list	*get_nodes(t_list *args)
 			if (!ft_lst_push_back(&nodes, node_list))
 				ft_free_exit();
 		}
-		args = args->next;
 	}
 	return (nodes);
 }

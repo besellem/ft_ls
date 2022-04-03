@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 18:38:49 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 21:23:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,9 +90,9 @@
 
 
 /*
-** On M1 macs, the variadic functions are implemented differently.
-** Thus, my printf() are buggy on this platform.
-** To avoid this, I replace the use of ft_*printf by the real ones.
+** On M1 macs, variadic functions are implemented differently.
+** Thus, my printf() functions are buggy on this platform.
+** To avoid this, I replace ft_*printf calls by the real ones here :
 */
 #ifdef __arm64__
 # define ft_printf(__fmt, ...)           printf((__fmt), ##__VA_ARGS__)
