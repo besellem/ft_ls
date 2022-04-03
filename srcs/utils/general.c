@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 22:22:52 by besellem          #+#    #+#             */
-/*   Updated: 2021/08/05 17:55:18 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 17:05:54 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,13 +18,13 @@
 **
 **   singleton()->buffer
 */
-t_ls	*singleton(void)
+t_ls_data	*singleton(void)
 {
-	static t_ls	*s = NULL;
+	static t_ls_data	*s = NULL;
 
 	if (!s)
 	{
-		s = (t_ls *)ft_calloc(1, sizeof(t_ls));
+		s = (t_ls_data *)ft_calloc(1, sizeof(t_ls_data));
 		if (!s)
 			return (NULL);
 		

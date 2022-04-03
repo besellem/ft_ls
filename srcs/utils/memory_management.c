@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2021/08/05 17:51:29 by besellem         ###   ########.fr       */
+/*   Updated: 2022/03/29 00:52:08 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,15 +56,3 @@ void	ft_free_all(void)
 		free(singleton());
 	}
 }
-
-// const char	*g_error_msgs[] = {
-// 	[ERR_MSG_MALLOC] = "malloc error"
-// };
-
-// void	ft_free_exit(int val, enum e_error_msg __error)
-// {
-// 	if ((int)__error != NO_ERR)
-// 		ft_printf(PROG_NAME ": %s\n", g_error_msgs[__error]);
-// 	ft_free_all();
-// 	exit(val);
-// }

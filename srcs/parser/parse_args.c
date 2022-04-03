@@ -1,57 +1,57 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   parse_args.c                                       :+:      :+:    :+:   */
+/*   ft_parse_args.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:49:11 by besellem          #+#    #+#             */
-/*   Updated: 2021/07/21 11:58:35 by besellem         ###   ########.fr       */
+/*   Updated: 2022/03/28 23:16:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-const struct s_options	g_options[] = {
-	{'A', OPT_A_MAJ},
+static const struct s_options	g_options[] = {
+	{'A', OPT_A},
 	{'a', OPT_A_MIN},
-	{'B', OPT_B_MAJ},
+	{'B', OPT_B},
 	{'b', OPT_B_MIN},
-	{'C', OPT_C_MAJ},
+	{'C', OPT_C},
 	{'c', OPT_C_MIN},
-	{'d', OPT_D},
-	{'e', OPT_E},
-	{'F', OPT_F_MAJ},
+	{'d', OPT_D_MIN},
+	{'e', OPT_E_MIN},
+	{'F', OPT_F},
 	{'f', OPT_F_MIN},
-	{'G', OPT_G_MAJ},
+	{'G', OPT_G},
 	{'g', OPT_G_MIN},
-	{'H', OPT_H_MAJ},
+	{'H', OPT_H},
 	{'h', OPT_H_MIN},
-	{'i', OPT_I},
-	{'k', OPT_K},
-	{'L', OPT_L_MAJ},
+	{'i', OPT_I_MIN},
+	{'k', OPT_K_MIN},
+	{'L', OPT_L},
 	{'l', OPT_L_MIN},
-	{'m', OPT_M},
-	{'n', OPT_N},
-	{'O', OPT_O_MAJ},
+	{'m', OPT_M_MIN},
+	{'n', OPT_N_MIN},
+	{'O', OPT_O},
 	{'o', OPT_O_MIN},
-	{'P', OPT_P_MAJ},
+	{'P', OPT_P},
 	{'p', OPT_P_MIN},
-	{'q', OPT_Q},
-	{'R', OPT_R_MAJ},
+	{'q', OPT_Q_MIN},
+	{'R', OPT_R},
 	{'r', OPT_R_MIN},
-	{'S', OPT_S_MAJ},
+	{'S', OPT_S},
 	{'s', OPT_S_MIN},
-	{'T', OPT_T_MAJ},
+	{'T', OPT_T},
 	{'t', OPT_T_MIN},
-	{'U', OPT_U_MAJ},
+	{'U', OPT_U},
 	{'u', OPT_U_MIN},
-	{'v', OPT_V},
-	{'W', OPT_W_MAJ},
+	{'v', OPT_V_MIN},
+	{'W', OPT_W},
 	{'w', OPT_W_MIN},
-	{'x', OPT_X},
-	{'1', OPT_ONE},
-	{'\0', 0}
+	{'x', OPT_X_MIN},
+	{'1', OPT_1},
+	{0, 0}
 };
 
 // NOT QUITE FINISHED
@@ -60,15 +60,14 @@ void	resolve_options_conflicts(void)
 	if (is_flag(OPT_F_MIN))
 		add_flag(OPT_A_MIN);
 
-	if (!is_flag(OPT_F_MAJ) && !is_flag(OPT_L_MIN) && !is_flag(OPT_D))
-		add_flag(OPT_H_MAJ);
+	if (!is_flag(OPT_F) && !is_flag(OPT_L_MIN) && !is_flag(OPT_D))
+		add_flag(OPT_H);
 
-	if (is_flag(OPT_L_MAJ))
-		rm_flag(OPT_P_MAJ);
+	if (is_flag(OPT_L))
+		rm_flag(OPT_P);
 
-	if (is_flag(OPT_N))
+	if (is_flag(OPT_N_MIN))
 		add_flag(OPT_L_MIN);
-	
 }
 
 void	illegal_opt(char opt)
@@ -92,7 +91,7 @@ int		get_args(const char *arg)
 			if (g_options[j].opt == arg[i])
 			{
 				add_flag(g_options[j].flag);
-				resolve_options_conflicts();
+				resolve_options_conflicts(); // ? NOT NECESSARY
 				got_valid_option = TRUE;
 				break ;
 			}
@@ -100,15 +99,14 @@ int		get_args(const char *arg)
 		if (FALSE == got_valid_option)
 		{
 			illegal_opt(arg[i]);
-			return (ERR_CODE);
+			return (FALSE);
 		}
 	}
-	return (SUC_CODE);
+	return (TRUE);
 }
 
-int		parse_args(int ac, char **av, t_list **args)
+int		ft_parse_args(int ac, char **av, t_list **args)
 {
-	t_list			*new = NULL;
 	int				args_are_done = FALSE;
 	struct stat		__stat;
 	DIR				*dir;
@@ -118,8 +116,8 @@ int		parse_args(int ac, char **av, t_list **args)
 	{
 		if ('-' == av[i][0] && av[i][1] && FALSE == args_are_done)
 		{
-			if (ERR_CODE == get_args(av[i] + 1))
-				return (ERR_CODE);
+			if (FALSE == get_args(av[i] + 1))
+				return (FALSE);
 		}
 		else
 		{
@@ -131,10 +129,8 @@ int		parse_args(int ac, char **av, t_list **args)
 				ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: %s\n", av[i], strerror(tmp_errno));
 			else
 			{
-				new = ft_lstnew((char *)av[i]);
-				if (!new)
-					ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
-				ft_lstadd_back(args, new);
+				if (!ft_lst_push_back(args, (char *)av[i]))
+					ft_free_exit();	
 				if (dir)
 					closedir(dir);
 			}
@@ -143,16 +139,14 @@ int		parse_args(int ac, char **av, t_list **args)
 	
 	/* there may be conflicts to avoid in options (man ls) */
 	resolve_options_conflicts();
-	
+
 	/* if there is no path after the options, do `ls' on the current path */
-	if (0 == errno && !new)
+	if (0 == errno && ft_lstsize(*args) == 0)
 	{
-		new = ft_lstnew("."); /* `.' is the current directory */
-		if (!new)
-			ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
-		ft_lstadd_front(args, new);
+		if (!ft_lst_push_front(args, ".")) // `.' is the current directory
+			ft_free_exit();	
 	}
 	// ft_lst_qsort(args, &cmp_node_by_desc);
 	ft_sort_lst_nodes(args); /* PROBLEM HERE - CHECK : 'ls -lRrt incs srcs' */
-	return (SUC_CODE);
+	return (TRUE);
 }

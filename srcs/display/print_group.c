@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:21:59 by besellem          #+#    #+#             */
-/*   Updated: 2021/11/05 15:53:31 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 17:24:21 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void	print_group(t_node *node, t_pad *pads)
 
 	ft_asprintf(&tmp, "%-*s", pads->group_name, grp->gr_name);
 	if (!tmp)
-		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
+		ft_free_exit();
 	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
 	ft_buffadd("  ");

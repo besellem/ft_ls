@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2021/11/05 15:53:11 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 17:43:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,19 +63,25 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 	}
 }
 
-static void	ft_print_entry(t_node *node, t_pad *pads)
+// static
+void	ft_print_entry(t_node *node, t_pad *pads)
 {
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
-	if (is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
+	if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
 		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
 		 0 == ft_strcmp(node->_dir_.d_name, ".")))
 		return ;
 
-	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
-	if (!is_flag(OPT_A_MAJ) && !is_flag(OPT_A_MIN) &&
-		0 == ft_strncmp(node->_dir_.d_name, ".", 1))
-		return ;
+	// ft_printf("%#llx  %#llx %#llx\n", singleton()->opts, OPT_A, OPT_A_MIN);
 
+	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
+	if (!is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
+		0 == ft_strncmp(node->_dir_.d_name, ".", 1))
+	{
+		return ;
+	}
+
+	// LOG
 	/* print nbr of blocks if `-s' is set */
 	if (is_flag(OPT_S_MIN))
 		print_blocks(node, pads);
@@ -95,13 +101,13 @@ static void	ft_print_entry(t_node *node, t_pad *pads)
 	** print node's name
 	*/
 	/* option `-G' turns on the colors */
-	if (is_flag(OPT_G_MAJ) && TRUE == singleton()->_isatty)
+	if (is_flag(OPT_G) && TRUE == singleton()->_isatty)
 		print_color(node);
 	
 	/* print entry name */
 	ft_buffadd(node->_dir_.d_name);
 
-	if (is_flag(OPT_G_MAJ) && TRUE == singleton()->_isatty)
+	if (is_flag(OPT_G) && TRUE == singleton()->_isatty)
 		ft_buffadd(CLR_COLOR);
 	
 	/* follow the link and print it */
@@ -123,7 +129,7 @@ static void	print_total_blocks(t_pad *pads)
 	ft_buffadd("total ");
 	ft_asprintf(&tmp, "%d", pads->total_blocks);
 	if (!tmp)
-		ft_free_exit(EXIT_FAILURE, ERR_MSG_MALLOC);
+		ft_free_exit();
 	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
 	ft_buffaddc('\n');
@@ -157,7 +163,9 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	{
 		node = (t_node *)lst->content;
 		if (node)
+		{
 			ft_print_entry(node, &pads);
+		}
 		lst = lst->next;
 	}
 	
@@ -169,7 +177,7 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	while (lst)
 	{
 		node = (t_node *)lst->content;
-		if (node && is_flag(OPT_R_MAJ) && node->recursive_nodes)
+		if (node && is_flag(OPT_R) && node->recursive_nodes)
 		{
 			__print_lst_recursively__(node->recursive_nodes, FALSE);
 		}
@@ -177,10 +185,8 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 	}
 }
 
-void	ft_print_entries(t_list *head)
+void	ft_print_entries(t_list *lst)
 {
-	t_list	*lst = head;
-
 	while (lst)
 	{
 		__print_lst_recursively__((t_list *)lst->content, (NULL == lst->next));
