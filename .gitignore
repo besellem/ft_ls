@@ -1,5 +1,6 @@
 .vscode/
 .idea/
+ft_ls
 *.o
 *.obj
 *.a

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 17:11:37 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/03 18:38:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,6 +88,17 @@
 		exit(EXIT_FAILURE);                                                    \
 	} while (0);
 
+
+/*
+** On M1 macs, the variadic functions are implemented differently.
+** Thus, my printf() are buggy on this platform.
+** To avoid this, I replace the use of ft_*printf by the real ones.
+*/
+#ifdef __arm64__
+# define ft_printf(__fmt, ...)           printf((__fmt), ##__VA_ARGS__)
+# define ft_dprintf(__fd, __fmt, ...)    dprintf((__fd), (__fmt), ##__VA_ARGS__)
+# define ft_asprintf(__ptr, __fmt, ...)  asprintf((__ptr), (__fmt), ##__VA_ARGS__)
+#endif
 
 /*
 ** -- DATA STRUCTURES --
