@@ -1,1 +1,9 @@
 .vscode/
+.idea/
+*.o
+*.obj
+*.a
+*.lib
+*.so
+*.dylib
+*.DS_Store
