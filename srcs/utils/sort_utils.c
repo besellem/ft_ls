@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/21 13:07:57 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 17:01:05 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/04 15:07:24 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ int	cmp_node_by_desc_time(t_node *n1, t_node *n2)
 	if (n1_sec == n2_sec)
 		return (n1->_stats_.st_mtimespec.tv_nsec < n2->_stats_.st_mtimespec.tv_nsec);
 	return (n1_sec < n2_sec);
+	
+	// return (cmp_node_by_asc_time(n2, n1)); // may be a valid solution, to test
 }
 
 int	cmp_node_by_asc(t_node *n1, t_node *n2)

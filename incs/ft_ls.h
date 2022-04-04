@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 21:23:35 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/04 17:34:39 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 */
 # include <unistd.h>
 # include <stdint.h>
+# include <stdbool.h>
 # include <stdlib.h>
 # include <dirent.h>
 # include <sys/stat.h>
@@ -36,87 +37,47 @@
 /*
 ** -- DEFINES --
 */
-# define PROG_NAME "ft_ls"
-
-# define TRUE      1
-# define FALSE     0
-
-# define FOUND     1
-# define NOT_FOUND (-1)
-
-# define EMPTY     0
-
-# define NO_ERR    (-1)
-
-/* buffer size - the actual buffer stores data before a syscall to `write' */
-# define _LS_BUFSIZ_  BUFSIZ /* BUFSIZ == 1024. setting it to 4096 may be faster */
 
 /* debug macro - to remove when finished */
-# define __DEBUG__    TRUE
+# define __DEBUG__
 
-# if defined(__DEBUG__) && (TRUE == __DEBUG__)
-#  define ERR() ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
-#  define LOG   ERR()
-# else
-#  define ERR()
-#  define LOG
-# endif
 
-#if defined(__DEBUG__)
-# define LST_DEBUG(lst)															\
-	do {																		\
-		t_list	*tmp = lst;														\
-																				\
-		printf(B_BLUE"%s:%d: "CLR_COLOR"lst_size: ["B_GREEN"%d"CLR_COLOR"]\n",	\
-			__FILE__, __LINE__, ft_lstsize(lst));								\
-		while (tmp) {															\
-			printf("["B_RED"%p"CLR_COLOR"] ["B_RED"%p"CLR_COLOR"]\n",			\
-				tmp, tmp->next);												\
-			tmp = tmp->next;													\
-		}																		\
-	} while (0);
-# else
-# define LST_DEBUG(lst)	(void lst);
-#endif /* defined(__DEBUG__) */
+/*
+** On M1 macs, variadic functions are implemented differently.
+** Because of that, my ft_*printf functions may be buggy on this platform.
+** To avoid this, we can replace ft_*printf calls by the real ones
+*/
+// #ifdef __arm64__
+// # define ft_printf(__fmt, ...)           printf((__fmt), ##__VA_ARGS__)
+// # define ft_dprintf(__fd, __fmt, ...)    dprintf((__fd), (__fmt), ##__VA_ARGS__)
+// # define ft_asprintf(__ptr, __fmt, ...)  asprintf((__ptr), (__fmt), ##__VA_ARGS__)
+// #endif
 
-// # define merror() ft_printf("%s:%d: malloc error\n", __FILE__, __LINE__)
 
-# define ft_free_exit()                                                        \
+# ifdef __DEBUG__
+#  define LOG ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
+#  define ft_free_exit()                                                       \
 	do {                                                                       \
 		ft_printf("%s:%d: %s\n", __FILE__, __LINE__, strerror(errno));         \
 		ft_free_all();                                                         \
 		exit(EXIT_FAILURE);                                                    \
 	} while (0);
+# else
+#  define LOG
+#  define ft_free_exit()                                                       \
+	do {                                                                       \
+		ft_free_all();                                                         \
+		exit(EXIT_FAILURE);                                                    \
+	} while (0);
+# endif
 
-
-/*
-** On M1 macs, variadic functions are implemented differently.
-** Thus, my printf() functions are buggy on this platform.
-** To avoid this, I replace ft_*printf calls by the real ones here :
-*/
-#ifdef __arm64__
-# define ft_printf(__fmt, ...)           printf((__fmt), ##__VA_ARGS__)
-# define ft_dprintf(__fd, __fmt, ...)    dprintf((__fd), (__fmt), ##__VA_ARGS__)
-# define ft_asprintf(__ptr, __fmt, ...)  asprintf((__ptr), (__fmt), ##__VA_ARGS__)
-#endif
 
 /*
 ** -- DATA STRUCTURES --
 */
-enum e_error_msg
-{
-	ERR_MSG_MALLOC
-};
-
-/* Used temporarily for a lookup table in the option's parsing */
-struct	s_options
-{
-	char		opt;
-	uint64_t	flag;
-};
 
 /* get the len of max values for padding */
-typedef struct s_pad
+typedef struct	s_pad
 {
 	int		nlink;
 	int		size;
@@ -124,7 +85,7 @@ typedef struct s_pad
 	int		total_blocks;
 	int		owner_name;
 	int		group_name;
-}	t_pad;
+}				t_pad;
 
 /*
 ** One node contains the file / folder and its infos
@@ -133,7 +94,6 @@ typedef	struct	s_node
 {
 	char			*path;
 	t_list			*recursive_nodes;
-	// t_pad		pad;
 	struct stat		_stats_;
 	struct stat		_lstats_;
 	struct dirent	_dir_;
@@ -152,9 +112,6 @@ typedef	struct	s_node
 			path.
 			All nodes are sorted according to the sorting options set (`-t' or
 			`-r' for example).
-** buf_idx:	index into the current bufferized data
-** buffer:	buffer containing the data to display. Just way faster than a lot of
-			calls to `write'
 */
 typedef	struct	s_ls_data
 {
@@ -162,8 +119,6 @@ typedef	struct	s_ls_data
 	uint64_t	opts;
 	t_list		*args;
 	t_list		*nodes;
-	size_t		buf_idx;
-	char		buffer[_LS_BUFSIZ_];
 }				t_ls_data;
 
 /*
@@ -199,18 +154,17 @@ int				ft_parse_args(int, char **, t_list **);
 
 
 /* Display */
-void			print_blocks(t_node *, t_pad *);
-void			print_permissions(t_node *);
-void			print_nlinks(t_node *, t_pad *);
-void			print_owner(t_node *, t_pad *);
-void			print_group(t_node *, t_pad *);
-void			print_size(t_node *, t_pad *);
-void			print_time(t_node *);
-void			print_color(t_node *);
-void			print_readlink(t_node *);
+void			print_blocks(const t_node *, const t_pad *);
+void			print_permissions(const t_node *);
+void			print_nlinks(const t_node *, const t_pad *);
+void			print_owner(const t_node *, const t_pad *);
+void			print_group(const t_node *, const t_pad *);
+void			print_size(const t_node *, const t_pad *);
+void			print_time(const t_node *);
+void			print_color(const t_node *);
+void			print_readlink(const t_node *);
 
-void			ft_print_entries(t_list *);
-
-void	ft_lstprint(t_list *lst); // debug
+void			__print_lst_recursively__(t_list *, bool);
+void			__print_nodes__(t_list *);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 21:26:08 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/04 16:20:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,62 +17,57 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 {
 	struct passwd	*password;
 	struct group	*group;
-	t_pad 			tmp_pads;
-	t_list			*tmp;
+	t_pad 			tmp_pads = {0};
 	t_node			*node;
 
-	ft_bzero(pads, sizeof(t_pad));
-	ft_bzero(&tmp_pads, sizeof(t_pad));
-	tmp = head;
-	while (tmp)
+	// ft_bzero(pads, sizeof(t_pad));
+	for (t_list *tmp = head; tmp; tmp = tmp->next)
 	{
 		node = (t_node *)tmp->content;
-		if (node)
-		{
-			if (is_flag(OPT_S_MIN))
-			{
-				tmp_pads.blocks = ft_nblen(node->_stats_.st_blocks);
-				if (tmp_pads.blocks > pads->blocks)
-					pads->blocks = tmp_pads.blocks;
-			}
-			if (is_flag(OPT_L_MIN))
-			{
-				tmp_pads.nlink = ft_nblen(node->_stats_.st_nlink);
-				if (tmp_pads.nlink > pads->nlink)
-					pads->nlink = tmp_pads.nlink;
-				
-				password = getpwuid(node->_stats_.st_uid);
-				tmp_pads.owner_name = ft_strlen(password->pw_name);
-				if (tmp_pads.owner_name > pads->owner_name)
-					pads->owner_name = tmp_pads.owner_name;
+		if (!node)
+			continue ;
 
-				group = getgrgid(node->_stats_.st_gid);
-				tmp_pads.group_name = ft_strlen(group->gr_name);
-				if (tmp_pads.group_name > pads->group_name)
-					pads->group_name = tmp_pads.group_name;
-				
-				tmp_pads.size = ft_nblen(node->_stats_.st_size);
-				if (tmp_pads.size > pads->size)
-					pads->size = tmp_pads.size;
-			}
-			
-			/* total blocks to print */
-			pads->total_blocks += node->_stats_.st_blocks;
+		if (is_flag(OPT_S_MIN))
+		{
+			tmp_pads.blocks = ft_nblen(node->_stats_.st_blocks);
+			if (tmp_pads.blocks > pads->blocks)
+				pads->blocks = tmp_pads.blocks;
 		}
-		tmp = tmp->next;
+		if (is_flag(OPT_L_MIN))
+		{
+			tmp_pads.nlink = ft_nblen(node->_stats_.st_nlink);
+			if (tmp_pads.nlink > pads->nlink)
+				pads->nlink = tmp_pads.nlink;
+			
+			password = getpwuid(node->_stats_.st_uid);
+			tmp_pads.owner_name = ft_strlen(password->pw_name);
+			if (tmp_pads.owner_name > pads->owner_name)
+				pads->owner_name = tmp_pads.owner_name;
+
+			group = getgrgid(node->_stats_.st_gid);
+			tmp_pads.group_name = ft_strlen(group->gr_name);
+			if (tmp_pads.group_name > pads->group_name)
+				pads->group_name = tmp_pads.group_name;
+			
+			tmp_pads.size = ft_nblen(node->_stats_.st_size);
+			if (tmp_pads.size > pads->size)
+				pads->size = tmp_pads.size;
+		}
+		
+		/* total blocks to print */
+		pads->total_blocks += node->_stats_.st_blocks;
 	}
 }
 
-// static
-void	ft_print_entry(t_node *node, t_pad *pads)
+static void	ft_print_entry(t_node *node, t_pad *pads)
 {
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 	if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
 		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
 		 0 == ft_strcmp(node->_dir_.d_name, ".")))
+	{
 		return ;
-
-	// ft_printf("%#llx  %#llx %#llx\n", singleton()->opts, OPT_A, OPT_A_MIN);
+	}
 
 	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
 	if (!is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
@@ -81,7 +76,6 @@ void	ft_print_entry(t_node *node, t_pad *pads)
 		return ;
 	}
 
-	// LOG
 	/* print nbr of blocks if `-s' is set */
 	if (is_flag(OPT_S_MIN))
 		print_blocks(node, pads);
@@ -126,18 +120,17 @@ static void	print_total_blocks(t_pad *pads)
 {
 	char	*tmp = NULL;
 
-	ft_buffadd("total ");
-	ft_asprintf(&tmp, "%d", pads->total_blocks);
+	ft_asprintf(&tmp, "total %d\n", pads->total_blocks);
 	if (!tmp)
 		ft_free_exit();
 	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
-	ft_buffaddc('\n');
 }
 
-static void	__print_lst_recursively__(t_list *head, int is_last)
+// static
+void	__print_lst_recursively__(t_list *head, __unused bool is_last)
 {
-	t_pad	pads;
+	t_pad	pads = {0};
 	t_list	*lst;
 	t_node	*node;
 
@@ -158,8 +151,7 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 			print_total_blocks(&pads);
 	// }
 	
-	lst = head;
-	for ( ; lst; lst = lst->next)
+	for (lst = head; lst != NULL; lst = lst->next)
 	{
 		node = (t_node *)lst->content;
 		
@@ -167,21 +159,27 @@ static void	__print_lst_recursively__(t_list *head, int is_last)
 			ft_print_entry(node, &pads);
 	}
 	
-	if (FALSE == is_last)
-		ft_buffaddc('\n');
+	// if (!is_last)
+		// ft_buffaddc('\n');
 
 	/* then print the recursive lists */
-	lst = head;
-	for ( ; lst; lst = lst->next)
+	for (lst = head; lst != NULL; lst = lst->next)
 	{
 		node = (t_node *)lst->content;
 		
-		if (node && is_flag(OPT_R) && node->recursive_nodes)
+		if (node && node->recursive_nodes && is_flag(OPT_R))
+		{
+			ft_buffaddc('\n');
+
 			__print_lst_recursively__(node->recursive_nodes, FALSE);
+			
+			if (lst->next)
+				ft_buffaddc('\n');
+		}
 	}
 }
 
-void	ft_print_entries(t_list *lst)
+void	__print_nodes__(t_list *lst)
 {
 	for ( ; lst; lst = lst->next)
 	{

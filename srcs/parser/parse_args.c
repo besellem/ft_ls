@@ -12,6 +12,12 @@
 
 #include "ft_ls.h"
 
+struct s_options
+{
+	char		opt;
+	uint64_t	flag;
+};
+
 static const struct s_options	g_options[] = {
 	{'A', OPT_A},
 	{'a', OPT_A_MIN},
@@ -55,7 +61,7 @@ static const struct s_options	g_options[] = {
 };
 
 // NOT QUITE FINISHED
-void	resolve_options_conflicts(void)
+static void	__resolve_options_conflicts__(void)
 {
 	if (is_flag(OPT_F_MIN))
 		add_flag(OPT_A_MIN);
@@ -70,14 +76,14 @@ void	resolve_options_conflicts(void)
 		add_flag(OPT_L_MIN);
 }
 
-void	illegal_opt(char opt)
+static void	__illegal_opt__(char **av, char opt)
 {
-	ft_printf(PROG_NAME ": illegal option -- %c\n"
-			  "usage: " PROG_NAME " [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n",
-			  opt);
+	ft_printf("%s: illegal option -- %c\n"
+			  "usage: %s [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n",
+			  av[0], opt, av[0]);
 }
 
-int		get_args(const char *arg)
+static int	__get_args__(char **av, const char *arg)
 {
 	int		got_valid_option;
 	size_t	i;
@@ -91,14 +97,14 @@ int		get_args(const char *arg)
 			if (g_options[j].opt == arg[i])
 			{
 				add_flag(g_options[j].flag);
-				resolve_options_conflicts(); // ? NOT NECESSARY
+				__resolve_options_conflicts__(); // ? NOT NECESSARY
 				got_valid_option = TRUE;
 				break ;
 			}
 		}
 		if (FALSE == got_valid_option)
 		{
-			illegal_opt(arg[i]);
+			__illegal_opt__(av, arg[i]);
 			return (FALSE);
 		}
 	}
@@ -114,9 +120,9 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 
 	for (i = 1; i < ac; ++i)
 	{
-		if ('-' == av[i][0] && av[i][1] && FALSE == args_are_done)
+		if (FALSE == args_are_done && '-' == av[i][0] && av[i][1])
 		{
-			if (FALSE == get_args(av[i] + 1))
+			if (FALSE == __get_args__(av, av[i] + 1))
 				return (FALSE);
 		}
 		else
@@ -125,8 +131,8 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 			errno = 0;
 			dir = opendir(av[i]);
 			int	tmp_errno = errno;
-			if (!dir && NOT_FOUND == stat(av[i], &__stat))
-				ft_dprintf(STDERR_FILENO, PROG_NAME ": %s: %s\n", av[i], strerror(tmp_errno));
+			if (!dir && SYSCALL_ERR == stat(av[i], &__stat))
+				ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", av[0], av[i], strerror(tmp_errno));
 			else
 			{
 				if (!ft_lst_push_back(args, (char *)av[i]))
@@ -138,7 +144,7 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 	}
 	
 	/* there may be conflicts to avoid in options (man ls) */
-	resolve_options_conflicts();
+	__resolve_options_conflicts__();
 
 	/* if there is no path after the options, do `ls' on the current path */
 	if (0 == errno && ft_lstsize(*args) == 0)

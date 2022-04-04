@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 22:22:52 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 17:05:54 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/04 14:46:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** A call to the singleton returns the main structure. It's like a global.
 ** We can use it like this for example:
 **
-**   singleton()->buffer
+**   singleton()->args
 */
 t_ls_data	*singleton(void)
 {

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/03 21:28:41 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/04 17:31:32 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,28 +53,20 @@ void	print_stat(struct stat *d)
 	ft_printf("    stat->st_uid                   [%u]\n",   d->st_uid);
 	ft_printf("}\n");
 }
-
-void	ft_lstprint(t_list *lst)
-{
-	t_list	*tmp = lst;
-
-	while (tmp)
-	{
-		ft_printf("[%s]\n", (char *)tmp->content);
-		tmp = tmp->next;
-	}
-}
 ////////////////////////////////////////////////////////////////////////////////
 // END DEBUG PURPOSE ONLY
 ////////////////////////////////////////////////////////////////////////////////
 
 
-
-t_list	*ft_ls_file2lst(t_list *lst, char *path)
+void	ft_ls_file2lst(t_list **lst, const char *path)
 {
 	t_node	*node = (t_node *)ft_calloc(1, sizeof(t_node));
 
 	if (!node)
+		ft_free_exit();
+
+	node->path = ft_strdup(path);
+	if (!node->path)
 		ft_free_exit();
 
 	/* need that to print its name */
@@ -85,9 +77,8 @@ t_list	*ft_ls_file2lst(t_list *lst, char *path)
 	lstat(path, &node->_lstats_);
 
 	/* add that node to the list */
-	if (!ft_lst_push_back(&lst, node))
+	if (!ft_lst_push_back(lst, node))
 		ft_free_exit();
-	return (lst);
 }
 
 /*
@@ -96,7 +87,7 @@ t_list	*ft_ls_file2lst(t_list *lst, char *path)
 ** If the `-R' option is enable, we add a list to that node until no more
 ** directories are found in that path.
 */
-void	ft_ls2lst(t_list **lst, char *path)
+void	ft_ls2lst(t_list **lst, const char *path)
 {
 	DIR				*dir = opendir(path);
 	t_node			*node;
@@ -135,7 +126,7 @@ void	ft_ls2lst(t_list **lst, char *path)
 		// print_stat(&node->_lstats_);
 
 		/* if it's a directory & the flag `-R' is set, make a recursive call */
-		if (DT_DIR == s_dir->d_type &&			/* is a directory*/
+		if (DT_DIR == s_dir->d_type &&			/* is a directory */
 			is_flag(OPT_R) &&					/* `-R' option is set */
 			ft_strcmp(s_dir->d_name, "..") &&	/* the current node is not the parent dir (avoid inf loop) */
 			ft_strcmp(s_dir->d_name, "."))		/* the current node is not the current dir (avoid inf loop) */
@@ -166,10 +157,13 @@ t_list	*get_nodes(t_list *args)
 		/* `t_list' containing all the lists from a path (which is an argument) */
 		node_list = NULL;
 
-		if (ft_is_dir((char *)args->content))
+		if (ft_is_dir((char *)args->content) &&
+			((char *)args->content)[ft_strlen((char *)args->content) - 1] == '/') // diff btween /var/ & /var for example
+		{
 			ft_ls2lst(&node_list, (char *)args->content);
+		}
 		else
-			ft_ls_file2lst(node_list, (char *)args->content);
+			ft_ls_file2lst(&node_list, (const char *)args->content);
 		
 		if (!node_list)
 			ft_free_exit();
@@ -200,10 +194,10 @@ int		main(int ac, char **av)
 	if (NULL == singleton()->nodes)
 		ft_free_exit();
 
-	// ft_printf("%p\n", singleton()->nodes);
-	ft_print_entries(singleton()->nodes);
-	
+	__print_nodes__(singleton()->nodes);
+
 	ft_flush_buff();
 	ft_free_all();
+
 	return (EXIT_SUCCESS);
 }
