@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:31:32 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 02:00:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	ft_ls_file2lst(t_list **lst, const char *path)
 		ft_free_exit();
 
 	/* need that to print its name */
-	ft_memcpy(node->_dir_.d_name, path, ft_strlen(path));
+	ft_memcpy(node->_dir_.d_name, path, ft_strnlen(path, PATH_MAX));
 
 	/* copy `struct stat' */
 	stat(path, &node->_stats_);
@@ -89,13 +89,15 @@ void	ft_ls_file2lst(t_list **lst, const char *path)
 */
 void	ft_ls2lst(t_list **lst, const char *path)
 {
+	int				(*_cmp)() = get_cmp_method();
 	DIR				*dir = opendir(path);
 	t_node			*node;
-	char			*pwd = NULL;
+	char			*contructed_path = NULL;
 	struct dirent	*s_dir;
 
 	if (!dir)
 		return ;
+
 	while ((s_dir = readdir(dir)))
 	{
 		node = (t_node *)ft_calloc(1, sizeof(t_node));
@@ -108,19 +110,19 @@ void	ft_ls2lst(t_list **lst, const char *path)
 			ft_free_exit();
 
 		/* Add node's name to the current path */
-		ft_asprintf(&pwd, "%s/%s", path, s_dir->d_name);
-		if (!pwd)
+		ft_asprintf(&contructed_path, "%s/%s", path, s_dir->d_name);
+		if (!contructed_path)
 			ft_free_exit();
 
 		/* copy that `struct dirent' */
-		ft_memcpy(&node->_dir_, s_dir, sizeof(struct dirent));
+		ft_memcpy(&node->_dir_, s_dir, sizeof(*s_dir));
 
 		/* copy `struct stat' */
 		/*
 		** OPTI -> call `stat' and `lstat' only when the options need that infos
 		*/
-		stat(pwd, &node->_stats_);
-		lstat(pwd, &node->_lstats_);
+		stat(contructed_path, &node->_stats_);
+		lstat(contructed_path, &node->_lstats_);
 
 		// print_stat(&node->_stats_);
 		// print_stat(&node->_lstats_);
@@ -131,16 +133,32 @@ void	ft_ls2lst(t_list **lst, const char *path)
 			ft_strcmp(s_dir->d_name, "..") &&	/* the current node is not the parent dir (avoid inf loop) */
 			ft_strcmp(s_dir->d_name, "."))		/* the current node is not the current dir (avoid inf loop) */
 		{
-			ft_ls2lst(&node->recursive_nodes, pwd);
+			if (ft_strncmp(s_dir->d_name, ".", 1) == 0)
+			{
+				if (is_flag(OPT_A_MIN))
+					ft_ls2lst(&node->recursive_nodes, contructed_path);
+			}
+			else
+				ft_ls2lst(&node->recursive_nodes, contructed_path);
+				
+			// ft_ls2lst(&node->recursive_nodes, contructed_path);
 		}
-		ft_memdel((void **)&pwd);
+		ft_memdel((void **)&contructed_path);
 
 		/* add that node to the list */
-		if (!ft_lst_push_back(lst, node))
-			ft_free_exit();
+		// if (!ft_lst_push_back(lst, node))
+		// 	ft_free_exit();
+
+		ft_lst_push_sorted(lst, node, _cmp);
 	}
 	closedir(dir);
-	ft_sort_lst_nodes(lst);
+	// ft_sort_lst_nodes(lst);
+	
+	// ft_buffadd("\n[]\n");
+	// __print_lst__(*lst, true);
+	// ft_buffaddc('\n');
+	// __free_lst__(*lst);
+	
 	return ;
 }
 
@@ -149,21 +167,33 @@ void	ft_ls2lst(t_list **lst, const char *path)
 */
 t_list	*get_nodes(t_list *args)
 {
-	t_list	*nodes = NULL;	/* main list */
-	t_list	*node_list;		/*  */
+	t_list		*nodes = NULL;	/* main list */
+	t_list		*node_list;		/*  */
+	// char		last_path_char;
+	char		*current_path = NULL;
+	struct stat	_s = {0};
 
 	for ( ; args; args = args->next)
 	{
+		current_path = (char *)args->content;
+		
 		/* `t_list' containing all the lists from a path (which is an argument) */
 		node_list = NULL;
+		
+		if (stat(current_path, &_s) < 0)
+			ft_free_exit();
 
-		if (ft_is_dir((char *)args->content) &&
-			((char *)args->content)[ft_strlen((char *)args->content) - 1] == '/') // diff btween /var/ & /var for example
+		// last_path_char = current_path[ft_strlen(current_path) - 1];
+
+		// TODO: try `ls -lL /var'
+		if (ft_is_dir(current_path))// && (last_path_char == '/')) // diff btween /var/ & /var for example
 		{
-			ft_ls2lst(&node_list, (char *)args->content);
+			ft_ls2lst(&node_list, current_path);
 		}
 		else
-			ft_ls_file2lst(&node_list, (const char *)args->content);
+		{
+			ft_ls_file2lst(&node_list, current_path);
+		}
 		
 		if (!node_list)
 			ft_free_exit();

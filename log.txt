@@ -1,0 +1,109 @@
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++.:
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -1 +0,0 @@
+-./Makefile
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++srcs:
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++srcs/:
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++./srcs:
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++./srcs/:
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++srcs/main.c:225: No such file or directory
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -1 +1,2 @@
+-total 208
++.:
++total 248
+@@ -8 +9 @@
+--rw-r--r--   1 bsellem  staff      0 Apr  6 02:01 real.txt
++-rw-r--r--   1 bsellem  staff    527 Apr  6 02:01 real.txt
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -1,4 +1,5 @@
+-total 240
+-drwxr-xr-x@ 17 bsellem  staff    544 Apr  6 02:01 .
+-drwxr-xr-x@ 30 bsellem  staff    960 Apr  6 00:43 ..
+--rw-r--r--@  1 bsellem  staff   6148 Apr  6 02:01 .DS_Store
++.:
++total 248
++drwxr-xr-x  17 bsellem  staff    544 Apr  6 02:01 .
++drwxr-xr-x  30 bsellem  staff    960 Apr  6 00:43 ..
++-rw-r--r--   1 bsellem  staff   6148 Apr  6 02:01 .DS_Store
+@@ -8 +9 @@
+--rw-r--r--   1 bsellem  staff     75 Jun 29  2021 .gitmodules
++-rw-r--r--   1 bsellem  staff     75 Jun 29 19:56 .gitmodules
+@@ -16 +17 @@
+--rw-r--r--   1 bsellem  staff      0 Apr  6 02:01 real.txt
++-rw-r--r--   1 bsellem  staff    985 Apr  6 02:01 real.txt
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -1 +1,35 @@
+-lrwxr-xr-x@ 1 root  wheel  11 Mar 26 08:21 /var -> private/var
++/var:
++total 0
++drwxr-xr-x    3 root          wheel           96 Dec  1 05:28 MobileSoftwareUpdate
++drwx------    2 root          wheel           64 Mar 26 08:21 agentx
++drwxr-xr-x    8 daemon        wheel          256 Mar 26 08:21 at
++drwx------   64 root          wheel         2048 Apr  5 17:52 audit
++drwx------    2 root          wheel           64 Mar 26 08:21 backups
++drwxr-xr-x    3 root          wheel           96 Jan 17 20:46 containers
++drwxr-xr-x  113 root          wheel         3616 Apr  4 20:39 db
++drwx------    2 root          wheel           64 Apr  1 02:00 dirs_cleaner
++drwxr-xr-x    2 root          sys             64 Mar 26 08:21 empty
++drwxr-xr-x    5 root          wheel          160 Apr  1 01:59 folders
++drwx------    2 root          wheel           64 Apr  1 01:59 install
++drwxr-x---    2 _jabber       _jabber         64 Mar 26 08:21 jabberd
++drwxr-xr-x    3 root          wheel           96 Mar 26 08:21 lib
++drwxr-xr-x   48 root          wheel         1536 Apr  6 00:30 log
++drwxr-xr-x    6 root          wheel          192 Mar 29 18:34 logs
++drwxr-x---    2 _mobileasset  _mobileasset    64 Mar 26 08:21 ma
++drwxrwxr-x    2 root          mail            64 Mar 26 08:21 mail
++drwxr-xr-x    3 root          wheel           96 Mar 26 08:21 mobile
++drwxr-xr-x    3 root          wheel           96 Mar 26 08:21 msgs
++drwxr-xr-x    2 root          wheel           64 Mar 26 08:21 netboot
++drwxr-xr-x    4 _networkd     _networkd      128 Apr  1 01:59 networkd
++drwxr-xr-x    4 root          wheel          128 Dec  1 05:37 personalized_factory
++drwxr-xr-x    4 root          wheel          128 Apr  1 01:59 protected
++drwxr-x---    5 root          wheel          160 Jan 11 08:00 root
++drwxr-xr-x    4 root          wheel          128 Mar 26 08:21 rpc
++drwxrwxr-x   35 root          daemon        1120 Apr  5 23:13 run
++drwxr-xr-x    2 daemon        wheel           64 Mar 26 08:21 rwho
++drwxr-xr-x    3 root          wheel           96 Mar 26 08:21 select
++drwxrwxr-x    3 _sntpd        _sntpd          96 Apr  1 01:59 sntpd
++drwxr-xr-x    6 root          wheel          192 Mar 26 08:21 spool
++drwxrwxrwt    9 root          wheel          288 Apr  3 15:00 tmp
++drwxr-xr-x    3 root          wheel           96 Apr  1 01:59 vm
++drwxr-xr-x    3 root          wheel           96 Mar 26 08:21 yp
+
+--- real.txt	2022-04-06 02:01:01.000000000 +0200
++++ mine.txt	2022-04-06 02:01:01.000000000 +0200
+@@ -0,0 +1 @@
++/var/:
+

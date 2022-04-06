@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:15 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:35:59 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 01:39:05 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 void	print_time(const t_node *node)
 {
-	char	*file_time = ctime(&node->_lstats_.st_mtimespec.tv_sec);
+	const struct stat	_stat = is_flag(OPT_L) ? node->_stats_ : node->_lstats_;
+	char				*file_time = ctime(&_stat.st_mtimespec.tv_sec);
 
 	if (!file_time)
 		return ;

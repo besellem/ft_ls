@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 16:20:30 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 01:31:31 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,51 +15,54 @@
 /* get max padding values of a list */
 static void	__set_pads__(t_list *head, t_pad *pads)
 {
+	struct stat		_stats;
 	struct passwd	*password;
 	struct group	*group;
 	t_pad 			tmp_pads = {0};
 	t_node			*node;
 
-	// ft_bzero(pads, sizeof(t_pad));
+	ft_bzero(pads, sizeof(t_pad));
 	for (t_list *tmp = head; tmp; tmp = tmp->next)
 	{
 		node = (t_node *)tmp->content;
 		if (!node)
 			continue ;
+		
+		_stats = is_flag(OPT_L) ? node->_stats_ : node->_lstats_;
 
 		if (is_flag(OPT_S_MIN))
 		{
-			tmp_pads.blocks = ft_nblen(node->_stats_.st_blocks);
+			tmp_pads.blocks = ft_nblen(_stats.st_blocks);
 			if (tmp_pads.blocks > pads->blocks)
 				pads->blocks = tmp_pads.blocks;
 		}
 		if (is_flag(OPT_L_MIN))
 		{
-			tmp_pads.nlink = ft_nblen(node->_stats_.st_nlink);
+			tmp_pads.nlink = ft_nblen(_stats.st_nlink);
 			if (tmp_pads.nlink > pads->nlink)
 				pads->nlink = tmp_pads.nlink;
 			
-			password = getpwuid(node->_stats_.st_uid);
+			password = getpwuid(_stats.st_uid);
 			tmp_pads.owner_name = ft_strlen(password->pw_name);
 			if (tmp_pads.owner_name > pads->owner_name)
 				pads->owner_name = tmp_pads.owner_name;
 
-			group = getgrgid(node->_stats_.st_gid);
+			group = getgrgid(_stats.st_gid);
 			tmp_pads.group_name = ft_strlen(group->gr_name);
 			if (tmp_pads.group_name > pads->group_name)
 				pads->group_name = tmp_pads.group_name;
 			
-			tmp_pads.size = ft_nblen(node->_stats_.st_size);
+			tmp_pads.size = ft_nblen(_stats.st_size);
 			if (tmp_pads.size > pads->size)
 				pads->size = tmp_pads.size;
 		}
 		
 		/* total blocks to print */
-		pads->total_blocks += node->_stats_.st_blocks;
+		pads->total_blocks += _stats.st_blocks;
 	}
 }
 
-static void	ft_print_entry(t_node *node, t_pad *pads)
+static void	ft_print_entry(const t_node *node, const t_pad *pads)
 {
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 	if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
@@ -105,7 +108,7 @@ static void	ft_print_entry(t_node *node, t_pad *pads)
 		ft_buffadd(CLR_COLOR);
 	
 	/* follow the link and print it */
-	if (S_ISLNK(node->_lstats_.st_mode))
+	if (S_ISLNK(node->_lstats_.st_mode) && !is_flag(OPT_L))
 		print_readlink(node);
 
 	/* add `/' when the option `-p' is turned on and if it's a directory */
@@ -128,28 +131,30 @@ static void	print_total_blocks(t_pad *pads)
 }
 
 // static
-void	__print_lst_recursively__(t_list *head, __unused bool is_last)
+void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 {
-	t_pad	pads = {0};
 	t_list	*lst;
 	t_node	*node;
+	t_pad	pads;
 
 	/* set the different padding values */
 	__set_pads__(head, &pads);
 
 	/* first print all the current list */
-	// if (ft_strcmp(((t_node *)head->content)->path, ".") == 0)
-	// {
+	if (_print_dir_path)
+	{
 		ft_buffadd(((t_node *)head->content)->path);
 		ft_buffadd(":\n");
-	// }
+		// ft_printf("curr      [%s]\n", ((t_node *)head->content)->_dir_.d_name);
+		// ft_printf("next      [%s]\n", ((t_node *)head->next->content)->_dir_.d_name);
+		// ft_printf("next next [%s]\n", ((t_node *)head->next->next->content)->_dir_.d_name);
+		// ft_printf("lst size %d\n", ft_lstsize(head));
+	}
 	
-	// if (head)
-	// {
-	// 	node = (t_node *)head->content;
-	// 	if (node->recursive_nodes)
-			print_total_blocks(&pads);
-	// }
+	if (is_flag(OPT_L_MIN))
+	{
+		print_total_blocks(&pads);
+	}
 	
 	for (lst = head; lst != NULL; lst = lst->next)
 	{
@@ -158,9 +163,6 @@ void	__print_lst_recursively__(t_list *head, __unused bool is_last)
 		if (node)
 			ft_print_entry(node, &pads);
 	}
-	
-	// if (!is_last)
-		// ft_buffaddc('\n');
 
 	/* then print the recursive lists */
 	for (lst = head; lst != NULL; lst = lst->next)
@@ -169,20 +171,105 @@ void	__print_lst_recursively__(t_list *head, __unused bool is_last)
 		
 		if (node && node->recursive_nodes && is_flag(OPT_R))
 		{
+			
 			ft_buffaddc('\n');
 
-			__print_lst_recursively__(node->recursive_nodes, FALSE);
+			__print_lst_recursively__(node->recursive_nodes, _print_dir_path);
 			
-			if (lst->next)
-				ft_buffaddc('\n');
+			// if (lst->next)
+			// 	ft_buffaddc('\n');
 		}
 	}
 }
 
-void	__print_nodes__(t_list *lst)
+// void	__print_lst__(t_list *head, bool _print_dir_path)
+// {
+// 	t_list	*lst;
+// 	t_node	*node;
+// 	t_pad	pads;
+
+// 	/* set the different padding values */
+// 	__set_pads__(head, &pads);
+
+// 	/* first print all the current list */
+// 	if (_print_dir_path)
+// 	{
+// 		ft_buffadd(((t_node *)head->content)->path);
+// 		ft_buffadd(":\n");
+// 		// ft_printf("curr      [%s]\n", ((t_node *)head->content)->_dir_.d_name);
+// 		// ft_printf("next      [%s]\n", ((t_node *)head->next->content)->_dir_.d_name);
+// 		// ft_printf("next next [%s]\n", ((t_node *)head->next->next->content)->_dir_.d_name);
+// 		// ft_printf("lst size %d\n", ft_lstsize(head));
+// 	}
+	
+// 	if (is_flag(OPT_L_MIN))
+// 	{
+// 		print_total_blocks(&pads);
+// 	}
+	
+// 	for (lst = head; lst != NULL; lst = lst->next)
+// 	{
+// 		node = (t_node *)lst->content;
+		
+// 		if (node)
+// 			ft_print_entry(node, &pads);
+// 	}
+
+// 	/* then print the recursive lists */
+// 	// for (lst = head; lst != NULL; lst = lst->next)
+// 	// {
+// 	// 	node = (t_node *)lst->content;
+		
+// 	// 	if (node && node->recursive_nodes && is_flag(OPT_R))
+// 	// 	{
+			
+// 	// 		ft_buffaddc('\n');
+
+// 	// 		__print_lst_recursively__(node->recursive_nodes, _print_dir_path);
+			
+// 	// 		// if (lst->next)
+// 	// 		// 	ft_buffaddc('\n');
+// 	// 	}
+// 	// }
+// }
+
+void	__print_node(void *data)
 {
-	for ( ; lst; lst = lst->next)
+	t_node	*node = (t_node *)data;
+
+	ft_printf("[%11p] [%d] [%s]\n",
+		node, ft_lstsize(node->recursive_nodes), node->path);
+}
+
+void	__print_nodes__(t_list *head)
+{
+	t_list	*lst;
+	bool	print_dir_path = (ft_lstsize(head) > 1);
+
+	/* check if there is some recursive nodes basicaly */
+	for (lst = head; lst; lst = lst->next)
+	{	
+		if (print_dir_path)
+			break ;
+		for (t_list *_member = lst; _member; _member = _member->next)
+		{
+			// ft_lst_print(_member, __print_node);
+			
+			t_node	*node = (t_node *)_member->content;
+			
+			// ft_printf("[%s]\n", node->path);
+			if (node && node->recursive_nodes)
+			{
+				print_dir_path = true;
+				break ;
+			}
+		}
+	}
+
+	for (lst = head; lst; lst = lst->next)
 	{
-		__print_lst_recursively__((t_list *)lst->content, (NULL == lst->next));
+		__print_lst_recursively__((t_list *)lst->content, print_dir_path);
+		if (lst->next)
+			ft_buffaddc('\n');
 	}
 }

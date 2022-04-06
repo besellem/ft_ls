@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:34:07 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 02:03:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,11 @@ inline static char	__get_mode__(mode_t mode)
 	return ('-');
 }
 
+// TODO: check all permissions on every type of file
+// TODO: add xattributes
 void	print_permissions(const t_node *node)
 {
-	const mode_t	mode = node->_lstats_.st_mode;
+	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
 
 	ft_buffaddc(__get_mode__(mode));
 	
@@ -48,7 +50,6 @@ void	print_permissions(const t_node *node)
 	else
 		ft_buffaddc((mode & S_IXOTH) ? 'x' : '-');
 	
-
 
 	// ft_printf("mode [%hd]\n", mode);
 	

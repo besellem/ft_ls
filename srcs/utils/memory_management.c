@@ -6,13 +6,13 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 15:03:01 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 00:45:04 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void	__free_lst__(t_list *head)
+void	__free_lst__(t_list *head)
 {
 	t_node	*node;
 
@@ -30,7 +30,7 @@ static void	__free_lst__(t_list *head)
 	ft_lstclear(&head, NULL);
 }
 
-static void	ft_free_nodes(t_list *head)
+void	ft_free_nodes(t_list *head)
 {
 	for (t_list *lst = head; lst != NULL; lst = lst->next)
 	{

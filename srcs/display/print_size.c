@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:12 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:35:08 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 01:28:13 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,24 +45,27 @@ const struct s_unit_lookup_table	g_units[] = {
 
 void	print_size(const t_node *node, const t_pad *pads)
 {
-	char	*tmp = NULL;
+	const off_t	_size = is_flag(OPT_L) ? node->_stats_.st_size : node->_lstats_.st_size;
+	char		*tmp = NULL;
 
 	if (is_flag(OPT_H_MIN)) /* ISN'T GOOD */
 	{
 		for (int i = 0; g_units[i].unit != 0; ++i)
 		{
-			if (node->_stats_.st_size < g_units[i].size)
+			if (_size < g_units[i].size)
 			{
 				ft_asprintf(&tmp, "%*.1f%c",
 					5,
-					node->_stats_.st_size / (g_units[i].size / UNIT_BYTE),
+					_size / (g_units[i].size / UNIT_BYTE),
 					g_units[i].unit);
 				break ;
 			}
 		}
 	}
 	else
-		ft_asprintf(&tmp, "%*lld", pads->size, node->_stats_.st_size);
+	{
+		ft_asprintf(&tmp, "%*lld", pads->size, _size);
+	}
 	if (!tmp)
 		ft_free_exit();
 	ft_buffadd(tmp);

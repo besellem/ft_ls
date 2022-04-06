@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:34:39 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 01:44:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,13 @@
 # endif
 
 
+/* define the function to sort the list */
+#define get_cmp_method()													   \
+	(is_flag(OPT_R_MIN) ?                                                      \
+		(is_flag(OPT_T_MIN) ? &cmp_node_by_asc_time : &cmp_node_by_desc) :     \
+		(is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
+
+
 /*
 ** -- DATA STRUCTURES --
 */
@@ -131,6 +138,8 @@ t_ls_data		*singleton(void);
 int				ft_is_dir(char *);
 
 /* Memory & Error Management */
+void			__free_lst__(t_list *);
+void			ft_free_nodes(t_list *);
 void			ft_free_all(void);
 
 
@@ -165,6 +174,7 @@ void			print_color(const t_node *);
 void			print_readlink(const t_node *);
 
 void			__print_lst_recursively__(t_list *, bool);
+// void			__print_lst__(t_list *, bool);
 void			__print_nodes__(t_list *);
 
 #endif

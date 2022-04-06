@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:21:49 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:35:17 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/06 01:36:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,9 @@
 
 void	print_color(const t_node *node)
 {
-	if (S_ISLNK(node->_lstats_.st_mode))
+	if (S_ISLNK(node->_lstats_.st_mode) && is_flag(OPT_L))
+		ft_buffadd(B_CYAN);
+	else if (S_ISLNK(node->_lstats_.st_mode))
 		ft_buffadd(PURPLE);
 	else if (S_ISSOCK(node->_lstats_.st_mode))
 		ft_buffadd(GREEN);
