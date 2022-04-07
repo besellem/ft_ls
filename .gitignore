@@ -8,3 +8,4 @@ ft_ls
 *.so
 *.dylib
 *.DS_Store
+*.txt
