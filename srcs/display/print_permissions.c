@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/06 02:03:01 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:30:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,8 @@ inline static char	__get_mode__(mode_t mode)
 void	print_permissions(const t_node *node)
 {
 	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
+	char			*contructed_path = NULL;
+	ssize_t			sd;
 
 	ft_buffaddc(__get_mode__(mode));
 	
@@ -36,7 +38,7 @@ void	print_permissions(const t_node *node)
 	ft_buffaddc((mode & S_IRUSR) ? 'r' : '-');
 	ft_buffaddc((mode & S_IWUSR) ? 'w' : '-');
 	ft_buffaddc((mode & S_IXUSR) ? 'x' : '-');
-	
+
 	// group
 	ft_buffaddc((mode & S_IRGRP) ? 'r' : '-');
 	ft_buffaddc((mode & S_IWGRP) ? 'w' : '-');
@@ -53,14 +55,21 @@ void	print_permissions(const t_node *node)
 
 	// ft_printf("mode [%hd]\n", mode);
 	
-	// char		*str = node->_dir_.d_name;
-	// // char		*str = node->path;
-	// ssize_t		sd = listxattr(str, NULL, 0, 0);
+	ft_asprintf(&contructed_path, "%s/%s", node->path, node->_dir_.d_name);
+	if (!contructed_path)
+		ft_free_exit();
 	
-	// printf("[%s] %zd\n", str, sd);
+	sd = listxattr(contructed_path, NULL, 0, XATTR_NOFOLLOW);
 	
-	// if (sd > 0)
-	// 	ft_buffadd("@ ");
-	// else
-	ft_buffadd("  ");
+	if (ENOTSUP == errno)
+		ft_buffaddc(' ');
+	else
+	{
+		if (sd <= 0)
+			ft_buffadd("  ");
+		else
+			ft_buffadd("@ ");
+	}
+	// errno = 0; // TODO: check if it breaks something
+	ft_memdel((void **)&contructed_path);
 }

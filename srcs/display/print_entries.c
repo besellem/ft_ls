@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/06 01:31:31 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:36:51 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 		node = (t_node *)tmp->content;
 		if (!node)
 			continue ;
-		
+
 		_stats = is_flag(OPT_L) ? node->_stats_ : node->_lstats_;
 
 		if (is_flag(OPT_S_MIN))
@@ -58,7 +58,7 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 		}
 		
 		/* total blocks to print */
-		pads->total_blocks += _stats.st_blocks;
+		pads->total_blocks += _stats.st_blocks; // TODO: diff btw `-l' & `-la'
 	}
 }
 
@@ -117,6 +117,9 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 	
 	/* new line -- end of the entry */
 	ft_buffaddc('\n');
+
+	if (is_flag(OPT_L_MIN) && is_flag(OPT_XATTR))
+		print_xattrs(node);
 }
 
 static void	print_total_blocks(t_pad *pads)
@@ -145,10 +148,6 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 	{
 		ft_buffadd(((t_node *)head->content)->path);
 		ft_buffadd(":\n");
-		// ft_printf("curr      [%s]\n", ((t_node *)head->content)->_dir_.d_name);
-		// ft_printf("next      [%s]\n", ((t_node *)head->next->content)->_dir_.d_name);
-		// ft_printf("next next [%s]\n", ((t_node *)head->next->next->content)->_dir_.d_name);
-		// ft_printf("lst size %d\n", ft_lstsize(head));
 	}
 	
 	if (is_flag(OPT_L_MIN))
@@ -171,13 +170,8 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 		
 		if (node && node->recursive_nodes && is_flag(OPT_R))
 		{
-			
 			ft_buffaddc('\n');
-
 			__print_lst_recursively__(node->recursive_nodes, _print_dir_path);
-			
-			// if (lst->next)
-			// 	ft_buffaddc('\n');
 		}
 	}
 }
@@ -196,10 +190,6 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 // 	{
 // 		ft_buffadd(((t_node *)head->content)->path);
 // 		ft_buffadd(":\n");
-// 		// ft_printf("curr      [%s]\n", ((t_node *)head->content)->_dir_.d_name);
-// 		// ft_printf("next      [%s]\n", ((t_node *)head->next->content)->_dir_.d_name);
-// 		// ft_printf("next next [%s]\n", ((t_node *)head->next->next->content)->_dir_.d_name);
-// 		// ft_printf("lst size %d\n", ft_lstsize(head));
 // 	}
 	
 // 	if (is_flag(OPT_L_MIN))
@@ -214,23 +204,6 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 // 		if (node)
 // 			ft_print_entry(node, &pads);
 // 	}
-
-// 	/* then print the recursive lists */
-// 	// for (lst = head; lst != NULL; lst = lst->next)
-// 	// {
-// 	// 	node = (t_node *)lst->content;
-		
-// 	// 	if (node && node->recursive_nodes && is_flag(OPT_R))
-// 	// 	{
-			
-// 	// 		ft_buffaddc('\n');
-
-// 	// 		__print_lst_recursively__(node->recursive_nodes, _print_dir_path);
-			
-// 	// 		// if (lst->next)
-// 	// 		// 	ft_buffaddc('\n');
-// 	// 	}
-// 	// }
 // }
 
 void	__print_node(void *data)
@@ -238,7 +211,7 @@ void	__print_node(void *data)
 	t_node	*node = (t_node *)data;
 
 	ft_printf("[%11p] [%d] [%s]\n",
-		node, ft_lstsize(node->recursive_nodes), node->path);
+		node, ft_lstsize(node->recursive_nodes), node->_dir_.d_name);
 }
 
 void	__print_nodes__(t_list *head)
@@ -251,13 +224,15 @@ void	__print_nodes__(t_list *head)
 	{	
 		if (print_dir_path)
 			break ;
+		
 		for (t_list *_member = lst; _member; _member = _member->next)
 		{
-			// ft_lst_print(_member, __print_node);
-			
 			t_node	*node = (t_node *)_member->content;
 			
+			// ft_lst_print(_member, __print_node);
+			
 			// ft_printf("[%s]\n", node->path);
+			// ft_printf("[%s] [%p]\n", node->_dir_.d_name, node->recursive_nodes->content);
 			if (node && node->recursive_nodes)
 			{
 				print_dir_path = true;

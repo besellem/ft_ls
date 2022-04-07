@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/06 01:44:01 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 15:52:59 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,8 @@
 /* debug macro - to remove when finished */
 # define __DEBUG__
 
+/* `@' option is not set in libft/incs/parse_args.h */
+# define OPT_XATTR 0x8000000000000000
 
 /*
 ** On M1 macs, variadic functions are implemented differently.
@@ -77,6 +79,9 @@
 	(is_flag(OPT_R_MIN) ?                                                      \
 		(is_flag(OPT_T_MIN) ? &cmp_node_by_asc_time : &cmp_node_by_desc) :     \
 		(is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
+
+
+#define alloc_node()  ((t_node *)ft_calloc(1, sizeof(t_node))); if (!node) ft_free_exit();
 
 
 /*
@@ -139,7 +144,7 @@ int				ft_is_dir(char *);
 
 /* Memory & Error Management */
 void			__free_lst__(t_list *);
-void			ft_free_nodes(t_list *);
+void			ft_free_nodes(t_list **);
 void			ft_free_all(void);
 
 
@@ -148,10 +153,6 @@ int				cmp_node_by_asc_time(t_node *, t_node *);
 int				cmp_node_by_desc_time(t_node *, t_node *);
 int				cmp_node_by_asc(t_node *, t_node *);
 int				cmp_node_by_desc(t_node *, t_node *);
-int				cmp_content_asc(void *, void *);
-int				cmp_content_desc(void *, void *);
-
-void			ft_sort_lst_nodes(t_list **);
 
 
 /* Options parsing & flag utils */
@@ -172,6 +173,7 @@ void			print_size(const t_node *, const t_pad *);
 void			print_time(const t_node *);
 void			print_color(const t_node *);
 void			print_readlink(const t_node *);
+void			print_xattrs(const t_node *);
 
 void			__print_lst_recursively__(t_list *, bool);
 // void			__print_lst__(t_list *, bool);

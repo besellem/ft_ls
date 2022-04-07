@@ -57,6 +57,7 @@ static const struct s_options	g_options[] = {
 	{'w', OPT_W_MIN},
 	{'x', OPT_X_MIN},
 	{'1', OPT_1},
+	{'@', OPT_XATTR},
 	{0, 0}
 };
 
@@ -116,6 +117,7 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 	int				args_are_done = FALSE;
 	struct stat		__stat;
 	DIR				*dir;
+	t_node			*node;
 	int				i;
 
 	for (i = 1; i < ac; ++i)
@@ -135,8 +137,16 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 				ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", av[0], av[i], strerror(tmp_errno));
 			else
 			{
-				if (!ft_lst_push_back(args, (char *)av[i]))
-					ft_free_exit();	
+				node = alloc_node();
+				if (!node)
+					ft_free_exit();
+
+				ft_strncpy(node->_dir_.d_name, av[i], PATH_MAX);
+				stat(av[i], &node->_stats_);
+				lstat(av[i], &node->_lstats_);
+
+				if (!ft_lst_push_back(args, node))
+					ft_free_exit();
 				if (dir)
 					closedir(dir);
 			}
@@ -149,10 +159,17 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 	/* if there is no path after the options, do `ls' on the current path */
 	if (0 == errno && ft_lstsize(*args) == 0)
 	{
-		if (!ft_lst_push_front(args, ".")) // `.' is the current directory
-			ft_free_exit();	
+		node = alloc_node();
+		
+		ft_strncpy(node->_dir_.d_name, ".", PATH_MAX);
+		stat(av[i], &node->_stats_);
+		lstat(av[i], &node->_lstats_);
+		
+		if (!ft_lst_push_back(args, node)) // `.' is the current directory
+			ft_free_exit();
 	}
-	// ft_lst_qsort(args, &cmp_node_by_desc);
-	ft_sort_lst_nodes(args); /* PROBLEM HERE - CHECK : 'ls -lRrt incs srcs' */
+	
+	ft_lst_qsort(args, get_cmp_method());
+	
 	return (TRUE);
 }

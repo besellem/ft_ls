@@ -6,14 +6,14 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2022/04/04 17:19:07 by besellem         ###   ########.fr        #
+#    Updated: 2022/04/07 15:39:34 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			:= clang
-CFLAGS 		:= -Wall -Wextra -Werror #-O2 #-g3 -fsanitize=address
+CFLAGS 		:= -Wall -Wextra -Werror #-g3 -fsanitize=address #-O2
 INCS		:= ./incs/ft_ls.h
 IFLAGS 		:= -I./incs -I./libft/incs
 LIBFLAGS 	:= -L./libft -lft
@@ -42,7 +42,8 @@ SUB_SRC	:= print_blocks.c \
 		   print_permissions.c \
 		   print_readlink.c \
 		   print_size.c \
-		   print_time.c
+		   print_time.c \
+		   print_xattrs.c
 SRC		+= $(addprefix display/, $(SUB_SRC))
 SUB_SRC	:= parse_args.c
 SRC		+= $(addprefix parser/, $(SUB_SRC))
