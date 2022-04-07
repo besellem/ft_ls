@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 16:36:51 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 17:09:57 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,8 +62,54 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 	}
 }
 
+// #include <libgen.h>
+// char	*ft_basename(char *path)
+// {
+// 	static char		*bname = NULL;
+// 	const char		*endp;
+// 	const char		*startp;
+
+// 	if (bname == NULL)
+// 	{
+// 		bname = (char *)malloc(PATH_MAX);
+// 		if (bname == NULL)
+// 			return (NULL);
+// 	}
+
+// 	/* Empty or NULL string gets treated as "." */
+// 	if (path == NULL || *path == '\0')
+// 	{
+// 		ft_strcpy(bname, ".");
+// 		return (bname);
+// 	}
+
+// 	/* Strip trailing slashes */
+// 	endp = path + strlen(path) - 1;
+// 	while (endp > path && *endp == '/')
+// 		endp--;
+
+// 	/* All slashes becomes "/" */
+// 	if (endp == path && *endp == '/')
+// 	{
+// 		ft_strcpy(bname, "/");
+// 		return (bname);
+// 	}
+
+// 	/* Find the start of the base */
+// 	startp = endp;
+// 	while (startp > path && *(startp - 1) != '/')
+// 		startp--;
+
+// 	if ((endp - startp + 2) > PATH_MAX)
+// 		return (NULL);
+// 	ft_strncpy(bname, startp, endp - startp + 1);
+// 	bname[endp - startp + 1] = '\0';
+// 	return (bname);
+// }
+
 static void	ft_print_entry(const t_node *node, const t_pad *pads)
 {
+
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 	if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
 		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
@@ -74,7 +120,7 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 
 	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
 	if (!is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
-		0 == ft_strncmp(node->_dir_.d_name, ".", 1))
+		0 == ft_strncmp(node->_dir_.d_name, ".", 1)) // TODO: create ft_basename to use here
 	{
 		return ;
 	}
@@ -214,25 +260,27 @@ void	__print_node(void *data)
 		node, ft_lstsize(node->recursive_nodes), node->_dir_.d_name);
 }
 
-void	__print_nodes__(t_list *head)
+
+/*
+** Check if there is some recursive nodes to print the path header
+** Try `ls -1 srcs' vs `ls -1 srcs incs' :
+** In the first, the path is not printed because there's no other path to print
+** atferward.
+*/
+static bool	print_dir_path_check(void)
 {
-	t_list	*lst;
+	t_list	*head = singleton()->nodes;
 	bool	print_dir_path = (ft_lstsize(head) > 1);
 
-	/* check if there is some recursive nodes basicaly */
-	for (lst = head; lst; lst = lst->next)
-	{	
+	for (t_list *lst = head; lst; lst = lst->next)
+	{
 		if (print_dir_path)
 			break ;
 		
-		for (t_list *_member = lst; _member; _member = _member->next)
+		for (t_list *_member = (t_list *)lst->content; _member; _member = _member->next)
 		{
 			t_node	*node = (t_node *)_member->content;
-			
-			// ft_lst_print(_member, __print_node);
-			
-			// ft_printf("[%s]\n", node->path);
-			// ft_printf("[%s] [%p]\n", node->_dir_.d_name, node->recursive_nodes->content);
+
 			if (node && node->recursive_nodes)
 			{
 				print_dir_path = true;
@@ -240,8 +288,14 @@ void	__print_nodes__(t_list *head)
 			}
 		}
 	}
+	return print_dir_path;
+}
 
-	for (lst = head; lst; lst = lst->next)
+void	__print_nodes__(t_list *head)
+{
+	bool	print_dir_path = print_dir_path_check();
+
+	for (t_list *lst = head; lst; lst = lst->next)
 	{
 		__print_lst_recursively__((t_list *)lst->content, print_dir_path);
 		if (lst->next)

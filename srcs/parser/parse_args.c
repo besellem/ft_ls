@@ -160,7 +160,9 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 	if (0 == errno && ft_lstsize(*args) == 0)
 	{
 		node = alloc_node();
-		
+		if (!node)
+			ft_free_exit();
+
 		ft_strncpy(node->_dir_.d_name, ".", PATH_MAX);
 		stat(av[i], &node->_stats_);
 		lstat(av[i], &node->_lstats_);

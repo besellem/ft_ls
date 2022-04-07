@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 15:52:59 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 16:41:44 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,7 +81,7 @@
 		(is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
 
 
-#define alloc_node()  ((t_node *)ft_calloc(1, sizeof(t_node))); if (!node) ft_free_exit();
+#define alloc_node()  ((t_node *)ft_calloc(1, sizeof(t_node)))
 
 
 /*

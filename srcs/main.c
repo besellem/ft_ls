@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 15:43:37 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 17:00:12 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ void	ft_ls_file2lst(t_list **lst, const char *path)
 		ft_free_exit();
 
 	/* need that to print its name */
-	ft_memcpy(node->_dir_.d_name, path, ft_strnlen(path, PATH_MAX));
+	ft_strncpy(node->_dir_.d_name, path, PATH_MAX);
 
 	/* copy `struct stat' */
 	stat(path, &node->_stats_);
@@ -101,6 +101,7 @@ void	ft_ls2lst(t_list **lst, const char *path)
 	while ((s_dir = readdir(dir)))
 	{
 		node = alloc_node();
+
 		if (!node)
 			ft_free_exit();
 
