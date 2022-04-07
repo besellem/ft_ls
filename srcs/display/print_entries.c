@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 17:09:57 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/07 22:45:59 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,51 +62,6 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 	}
 }
 
-// #include <libgen.h>
-// char	*ft_basename(char *path)
-// {
-// 	static char		*bname = NULL;
-// 	const char		*endp;
-// 	const char		*startp;
-
-// 	if (bname == NULL)
-// 	{
-// 		bname = (char *)malloc(PATH_MAX);
-// 		if (bname == NULL)
-// 			return (NULL);
-// 	}
-
-// 	/* Empty or NULL string gets treated as "." */
-// 	if (path == NULL || *path == '\0')
-// 	{
-// 		ft_strcpy(bname, ".");
-// 		return (bname);
-// 	}
-
-// 	/* Strip trailing slashes */
-// 	endp = path + strlen(path) - 1;
-// 	while (endp > path && *endp == '/')
-// 		endp--;
-
-// 	/* All slashes becomes "/" */
-// 	if (endp == path && *endp == '/')
-// 	{
-// 		ft_strcpy(bname, "/");
-// 		return (bname);
-// 	}
-
-// 	/* Find the start of the base */
-// 	startp = endp;
-// 	while (startp > path && *(startp - 1) != '/')
-// 		startp--;
-
-// 	if ((endp - startp + 2) > PATH_MAX)
-// 		return (NULL);
-// 	ft_strncpy(bname, startp, endp - startp + 1);
-// 	bname[endp - startp + 1] = '\0';
-// 	return (bname);
-// }
-
 static void	ft_print_entry(const t_node *node, const t_pad *pads)
 {
 
@@ -120,7 +75,7 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 
 	/* if `-a' is not set & the node's name starts with a `.', do not print that node */
 	if (!is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
-		0 == ft_strncmp(node->_dir_.d_name, ".", 1)) // TODO: create ft_basename to use here
+		0 == ft_strncmp(ft_basename(node->_dir_.d_name), ".", 1))
 	{
 		return ;
 	}
