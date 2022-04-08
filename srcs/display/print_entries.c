@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 22:45:59 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:49:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,9 +27,19 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 		node = (t_node *)tmp->content;
 		if (!node)
 			continue ;
+		
+		// TODO: check if this is correct
+		if (!is_flag(OPT_A_MIN) && 0 == ft_strncmp(ft_basename(node->_dir_.d_name), ".", 1))
+			continue ;
 
 		_stats = is_flag(OPT_L) ? node->_stats_ : node->_lstats_;
 
+		if (is_flag(OPT_I_MIN))
+		{
+			tmp_pads.inode = ft_nblen(_stats.st_ino);
+			if (tmp_pads.inode > pads->inode)
+				pads->inode = tmp_pads.inode;
+		}
 		if (is_flag(OPT_S_MIN))
 		{
 			tmp_pads.blocks = ft_nblen(_stats.st_blocks);
@@ -80,6 +90,9 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 		return ;
 	}
 
+	if (is_flag(OPT_I_MIN))
+		print_inode(node, pads);
+
 	/* print nbr of blocks if `-s' is set */
 	if (is_flag(OPT_S_MIN))
 		print_blocks(node, pads);
@@ -99,13 +112,13 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 	** print node's name
 	*/
 	/* option `-G' turns on the colors */
-	if (is_flag(OPT_G) && TRUE == singleton()->_isatty)
+	if (is_flag(OPT_G) && singleton()->_isatty)
 		print_color(node);
 	
 	/* print entry name */
 	ft_buffadd(node->_dir_.d_name);
 
-	if (is_flag(OPT_G) && TRUE == singleton()->_isatty)
+	if (is_flag(OPT_G) && singleton()->_isatty)
 		ft_buffadd(CLR_COLOR);
 	
 	/* follow the link and print it */
@@ -129,7 +142,7 @@ static void	print_total_blocks(t_pad *pads)
 
 	ft_asprintf(&tmp, "total %d\n", pads->total_blocks);
 	if (!tmp)
-		ft_free_exit();
+		die();
 	ft_buffadd(tmp);
 	ft_memdel((void **)&tmp);
 }
@@ -144,7 +157,7 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 	/* set the different padding values */
 	__set_pads__(head, &pads);
 
-	/* first print all the current list */
+	/* print path in header */
 	if (_print_dir_path)
 	{
 		ft_buffadd(((t_node *)head->content)->path);
@@ -152,9 +165,7 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 	}
 	
 	if (is_flag(OPT_L_MIN))
-	{
 		print_total_blocks(&pads);
-	}
 	
 	for (lst = head; lst != NULL; lst = lst->next)
 	{
@@ -207,25 +218,17 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 // 	}
 // }
 
-void	__print_node(void *data)
-{
-	t_node	*node = (t_node *)data;
-
-	ft_printf("[%11p] [%d] [%s]\n",
-		node, ft_lstsize(node->recursive_nodes), node->_dir_.d_name);
-}
-
-
 /*
 ** Check if there is some recursive nodes to print the path header
 ** Try `ls -1 srcs' vs `ls -1 srcs incs' :
 ** In the first, the path is not printed because there's no other path to print
 ** atferward.
 */
-static bool	print_dir_path_check(void)
+// static
+bool	print_dir_path_check(void)
 {
 	t_list	*head = singleton()->nodes;
-	bool	print_dir_path = (ft_lstsize(head) > 1);
+	bool	print_dir_path = (lst_size(head) > 1);
 
 	for (t_list *lst = head; lst; lst = lst->next)
 	{

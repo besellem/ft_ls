@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 16:58:27 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:42:07 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,12 +57,16 @@ void	print_permissions(const t_node *node)
 	
 	ft_asprintf(&contructed_path, "%s/%s", node->path, node->_dir_.d_name);
 	if (!contructed_path)
-		ft_free_exit();
+		die();
 	
-	sd = listxattr(contructed_path, NULL, 0, XATTR_NOFOLLOW);
+
+	sd = listxattr(contructed_path, NULL, 0, XATTR_NOFOLLOW); // ! HUGE SPEED PROBLEM
 	
 	if (ENOTSUP == errno)
+	{
 		ft_buffaddc(' ');
+		errno = 0;
+	}
 	else
 	{
 		if (sd <= 0)
@@ -70,6 +74,5 @@ void	print_permissions(const t_node *node)
 		else
 			ft_buffadd("@ ");
 	}
-	// errno = 0; // TODO: check if it breaks something
 	ft_memdel((void **)&contructed_path);
 }

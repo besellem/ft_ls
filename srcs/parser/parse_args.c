@@ -64,6 +64,9 @@ static const struct s_options	g_options[] = {
 // NOT QUITE FINISHED
 static void	__resolve_options_conflicts__(void)
 {
+	if (singleton()->_isatty)
+		add_flag(OPT_1);
+
 	if (is_flag(OPT_F_MIN))
 		add_flag(OPT_A_MIN);
 
@@ -79,7 +82,7 @@ static void	__resolve_options_conflicts__(void)
 
 static void	__illegal_opt__(char **av, char opt)
 {
-	ft_printf("%s: illegal option -- %c\n"
+	ft_dprintf(STDERR_FILENO, "%s: illegal option -- %c\n"
 			  "usage: %s [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n",
 			  av[0], opt, av[0]);
 }
@@ -112,7 +115,7 @@ static int	__get_args__(char **av, const char *arg)
 	return (TRUE);
 }
 
-int		ft_parse_args(int ac, char **av, t_list **args)
+int		ft_parse_args(int ac, char **av, t_args **args)
 {
 	int				args_are_done = FALSE;
 	struct stat		__stat;
@@ -138,15 +141,12 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 			else
 			{
 				node = alloc_node();
-				if (!node)
-					ft_free_exit();
 
 				ft_strncpy(node->_dir_.d_name, av[i], PATH_MAX);
 				stat(av[i], &node->_stats_);
 				lstat(av[i], &node->_lstats_);
 
-				if (!ft_lst_push_back(args, node))
-					ft_free_exit();
+				lst_push_sorted(args, node, get_cmp_method());
 				if (dir)
 					closedir(dir);
 			}
@@ -154,24 +154,18 @@ int		ft_parse_args(int ac, char **av, t_list **args)
 	}
 	
 	/* there may be conflicts to avoid in options (man ls) */
-	__resolve_options_conflicts__();
+	__resolve_options_conflicts__(); // ? NOT NECESSARY HERE
 
 	/* if there is no path after the options, do `ls' on the current path */
-	if (0 == errno && ft_lstsize(*args) == 0)
+	if (0 == errno && lst_size(*args) == 0)
 	{
 		node = alloc_node();
-		if (!node)
-			ft_free_exit();
 
 		ft_strncpy(node->_dir_.d_name, ".", PATH_MAX);
 		stat(av[i], &node->_stats_);
 		lstat(av[i], &node->_lstats_);
 		
-		if (!ft_lst_push_back(args, node)) // `.' is the current directory
-			ft_free_exit();
+		lst_push_sorted(args, node, get_cmp_method());
 	}
-	
-	ft_lst_qsort(args, get_cmp_method());
-	
 	return (TRUE);
 }

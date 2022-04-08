@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 13:49:55 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 15:19:49 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,7 +27,7 @@ void	__free_lst__(t_list *head)
 		}
 		ft_memdel((void **)&node);
 	}
-	ft_lstclear(&head, NULL);
+	lst_clear(&head, LST_CLEAR_IGN);
 }
 
 void	ft_free_nodes(t_list **head)
@@ -36,7 +36,7 @@ void	ft_free_nodes(t_list **head)
 	{
 		__free_lst__((t_list *)lst->content);
 	}
-	ft_lstclear(head, NULL);
+	lst_clear(head, LST_CLEAR_IGN);
 }
 
 void	ft_free_all(void)
@@ -45,7 +45,7 @@ void	ft_free_all(void)
 	if (singleton())
 	{
 		if (singleton()->args)
-			ft_free_nodes(&singleton()->args);
+			lst_clear(&singleton()->args, free);
 		if (singleton()->nodes)
 			ft_free_nodes(&singleton()->nodes);
 		free(singleton());

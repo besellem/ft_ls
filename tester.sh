@@ -55,18 +55,33 @@ do_test srcs
 do_test srcs/
 do_test ./srcs
 do_test ./srcs/
+do_test ./Makefile srcs
+do_test ./Makefile ./srcs
 
 # error management
 do_test i_dont_exist
 do_test -z
 
+do_test i_dont_exist srcs
+do_test i_dont_exist Makefile
+do_test i_dont_exist Makefile i_dont_exist
+
+
 do_test -a
 do_test -s
 do_test -l
 do_test -la
+do_test -laA
 do_test -ls
-do_test -lR
+do_test -lR srcs
 # do_test -las
+
+do_test -l Makefile
+do_test -la Makefile
+do_test -l ./Makefile
+do_test -la ./Makefile
+do_test -l Makefile srcs
+do_test -la Makefile srcs
 
 
 do_test -l /var

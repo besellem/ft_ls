@@ -6,7 +6,7 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2022/04/07 15:39:34 by besellem         ###   ########.fr        #
+#    Updated: 2022/04/08 16:31:08 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -37,6 +37,7 @@ SUB_SRC	:= print_blocks.c \
 		   print_color.c \
 		   print_entries.c \
 		   print_group.c \
+		   print_inode.c \
 		   print_nlinks.c \
 		   print_owner.c \
 		   print_permissions.c \

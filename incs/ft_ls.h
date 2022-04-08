@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/07 16:41:44 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:51:06 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,15 @@
 # include <stdio.h>
 # include <errno.h>
 
+
+/*
+** defined for the lists templates
+** must be defined before including libft.h
+*/
+#ifndef die
+# define die() ft_free_exit()
+#endif
+
 # include "libft.h"
 
 /*
@@ -39,21 +48,10 @@
 */
 
 /* debug macro - to remove when finished */
-# define __DEBUG__
+// # define __DEBUG__
 
 /* `@' option is not set in libft/incs/parse_args.h */
 # define OPT_XATTR 0x8000000000000000
-
-/*
-** On M1 macs, variadic functions are implemented differently.
-** Because of that, my ft_*printf functions may be buggy on this platform.
-** To avoid this, we can replace ft_*printf calls by the real ones
-*/
-// #ifdef __arm64__
-// # define ft_printf(__fmt, ...)           printf((__fmt), ##__VA_ARGS__)
-// # define ft_dprintf(__fd, __fmt, ...)    dprintf((__fd), (__fmt), ##__VA_ARGS__)
-// # define ft_asprintf(__ptr, __fmt, ...)  asprintf((__ptr), (__fmt), ##__VA_ARGS__)
-// #endif
 
 
 # ifdef __DEBUG__
@@ -81,7 +79,12 @@
 		(is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
 
 
-#define alloc_node()  ((t_node *)ft_calloc(1, sizeof(t_node)))
+#define alloc_node() ({ \
+	t_node *__tmp = ((t_node *)ft_calloc(1, sizeof(t_node))); \
+	if (!__tmp) die(); \
+	__tmp; \
+})
+
 
 
 /*
@@ -94,10 +97,12 @@ typedef struct	s_pad
 	int		nlink;
 	int		size;
 	int		blocks;
+	int		inode;
 	int		total_blocks;
 	int		owner_name;
 	int		group_name;
 }				t_pad;
+
 
 /*
 ** One node contains the file / folder and its infos
@@ -110,6 +115,13 @@ typedef	struct	s_node
 	struct stat		_lstats_;
 	struct dirent	_dir_;
 }				t_node;
+
+
+/* list types creation */
+CREATE_LST_TYPE(t_args, t_node *); // list of arguments (used on parsing only)
+// CREATE_LST_TYPE(node_list_t, t_node *); // list of nodes
+// CREATE_LST_TYPE(list_t, node_list_t *); // list of node lists
+
 
 /*
 ** opts:	flag containing all parsed options.
@@ -129,18 +141,22 @@ typedef	struct	s_ls_data
 {
 	int			_isatty;
 	uint64_t	opts;
-	t_list		*args;
+	t_args		*args;
 	t_list		*nodes;
 }				t_ls_data;
 
+
 /*
 ** -- PROTOTYPES --
-** General Utils
 */
+
+/* General Utils */
 t_ls_data		*singleton(void);
+
 
 /* Utils */
 int				ft_is_dir(char *);
+
 
 /* Memory & Error Management */
 void			__free_lst__(t_list *);
@@ -160,12 +176,13 @@ void			add_flag(uint64_t);
 void			rm_flag(uint64_t);
 int				is_flag(uint64_t);
 
-int				ft_parse_args(int, char **, t_list **);
+int				ft_parse_args(int, char **, t_args **);
 
 
 /* Display */
-void			print_blocks(const t_node *, const t_pad *);
+void			print_inode(const t_node *, const t_pad *);
 void			print_permissions(const t_node *);
+void			print_blocks(const t_node *, const t_pad *);
 void			print_nlinks(const t_node *, const t_pad *);
 void			print_owner(const t_node *, const t_pad *);
 void			print_group(const t_node *, const t_pad *);
@@ -178,5 +195,6 @@ void			print_xattrs(const t_node *);
 void			__print_lst_recursively__(t_list *, bool);
 // void			__print_lst__(t_list *, bool);
 void			__print_nodes__(t_list *);
+
 
 #endif
