@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 17:17:35 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:24:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 		ft_buffadd(":\n");
 	}
 	
-	if (is_flag(OPT_L_MIN))
+	if (is_flag(OPT_L_MIN) || is_flag(OPT_S_MIN))
 		print_total_blocks(&pads);
 	
 	for (lst = head; lst != NULL; lst = lst->next)

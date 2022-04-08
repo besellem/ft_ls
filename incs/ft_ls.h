@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 17:10:43 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 18:03:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,21 +16,21 @@
 /*
 ** -- INCLUDES --
 */
-# include <unistd.h>
-# include <stdint.h>
-# include <stdbool.h>
-# include <stdlib.h>
-# include <dirent.h>
-# include <sys/stat.h>
-# include <sys/types.h>
-# include <pwd.h>
-# include <uuid/uuid.h>
-# include <grp.h>
-# include <uuid/uuid.h>
-# include <sys/xattr.h>
-# include <time.h>
-# include <stdio.h>
-# include <errno.h>
+#include <unistd.h>
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <dirent.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
+#include <uuid/uuid.h>
+#include <grp.h>
+#include <uuid/uuid.h>
+#include <sys/xattr.h>
+#include <time.h>
+#include <stdio.h>
+#include <errno.h>
 
 
 /*
@@ -41,7 +41,7 @@
 # define die() ft_free_exit()
 #endif
 
-# include "libft.h"
+#include "libft.h"
 
 /*
 ** -- DEFINES --
@@ -51,38 +51,34 @@
 // # define __DEBUG__
 
 /* `@' option is not set in libft/incs/parse_args.h */
-# define OPT_XATTR 0x8000000000000000
+#define OPT_XATTR 0x8000000000000000
 
 
-# ifdef __DEBUG__
-#  define LOG ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
-#  define ft_free_exit()                                                       \
+#ifdef __DEBUG__
+# define LOG ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
+# define ft_free_exit()                                                        \
 	do {                                                                       \
 		ft_printf("%s:%d: %s\n", __FILE__, __LINE__, strerror(errno));         \
-		ft_free_all();                                                         \
 		exit(EXIT_FAILURE);                                                    \
 	} while (0);
-# else
-#  define LOG
-#  define ft_free_exit()                                                       \
-	do {                                                                       \
-		ft_free_all();                                                         \
-		exit(EXIT_FAILURE);                                                    \
-	} while (0);
-# endif
+#else
+# define LOG
+# define ft_free_exit() exit(EXIT_FAILURE)
+#endif
 
 
 /* define the function to sort the list */
-#define get_cmp_method()													   \
+#define get_cmp_method()                                                       \
 	(is_flag(OPT_R_MIN) ?                                                      \
 		(is_flag(OPT_T_MIN) ? &cmp_node_by_asc_time : &cmp_node_by_desc) :     \
 		(is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
 
 
 #define alloc_node() ({ \
-	t_node *__tmp = ((t_node *)ft_calloc(1, sizeof(t_node))); \
-	if (!__tmp) die(); \
-	__tmp; \
+	t_node *__tmp = ((t_node *)ft_calloc(1, sizeof(t_node)));                  \
+	if (!__tmp)                                                                \
+		die();                                                                 \
+	__tmp;                                                                     \
 })
 
 
@@ -141,7 +137,7 @@ struct s_node
 			All nodes are sorted according to the sorting options parsed (`-t'
 			or `-r' for example).
 */
-typedef	struct	s_ls_data
+typedef struct s_ls_data
 {
 	int			_isatty;
 	uint64_t	opts;
@@ -155,7 +151,7 @@ typedef	struct	s_ls_data
 */
 
 /* General Utils */
-t_ls_data		*singleton(void);
+t_ls_data		*singleton(void) __constructor;
 
 
 /* Utils */
@@ -165,7 +161,7 @@ int				ft_is_dir(char *);
 /* Memory & Error Management */
 void			__free_node_lst__(node_list_t *);
 void			ft_free_nodes(list_t **);
-void			ft_free_all(void);
+void			ft_free_all(void) __destructor;
 
 
 /* Sorting Utils */

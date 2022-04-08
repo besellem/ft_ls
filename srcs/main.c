@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 16:59:01 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 18:04:40 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,10 +149,6 @@ list_t	*get_nodes(const t_args *arguments)
 
 int		main(int ac, char **av)
 {
-	/* init singleton */
-	if (NULL == singleton())
-		die();
-
 	/* parse arguments */
 	if (FALSE == ft_parse_args(ac, av, &singleton()->args))
 		die();
@@ -168,7 +164,6 @@ int		main(int ac, char **av)
 	__print_nodes__(singleton()->nodes);
 
 	ft_flush_buff();
-	ft_free_all();
 
 	return (EXIT_SUCCESS);
 }

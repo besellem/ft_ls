@@ -25,9 +25,9 @@ do_test() {
 		# echo "❌  "
 		echo "❌ =>" $* # debug purpose
 		
-		echo "###############################" >> $log_file
-		echo "###### Test: ls" $* >> $log_file
-		echo "###############################" >> $log_file
+		echo "---------------------------------------------------" >> $log_file
+		echo "-- Test: ls" $* >> $log_file
+		echo "---------------------------------------------------" >> $log_file
 		cat $tmp_file >> $log_file
 		echo >> $log_file
 	fi
@@ -69,6 +69,8 @@ do_test i_dont_exist Makefile i_dont_exist
 
 do_test -a
 do_test -s
+do_test -i
+do_test -is
 do_test -l
 do_test -la
 do_test -laA

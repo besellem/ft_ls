@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 22:22:52 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 14:46:58 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:35:00 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ t_ls_data	*singleton(void)
 	{
 		s = (t_ls_data *)ft_calloc(1, sizeof(t_ls_data));
 		if (!s)
-			return (NULL);
+			die();
 		
 		/*
 		** If False, do not print colors, etc...
