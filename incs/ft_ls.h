@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 16:51:06 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:10:43 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,18 @@
 ** -- DATA STRUCTURES --
 */
 
+/* typedefs */
+typedef	struct s_node	t_node;
+typedef struct s_pad	t_pad;
+
+/* list types creation */
+CREATE_LST_TYPE(t_args, t_node *); // list of arguments (used on parsing only)
+CREATE_LST_TYPE(node_list_t, t_node *); // list of nodes
+CREATE_LST_TYPE(list_t, node_list_t *); // list of node lists
+
+
 /* get the len of max values for padding */
-typedef struct	s_pad
+struct s_pad
 {
 	int		nlink;
 	int		size;
@@ -101,48 +111,42 @@ typedef struct	s_pad
 	int		total_blocks;
 	int		owner_name;
 	int		group_name;
-}				t_pad;
+};
 
 
 /*
 ** One node contains the file / folder and its infos
 */
-typedef	struct	s_node
+struct s_node
 {
 	char			*path;
-	t_list			*recursive_nodes;
+	node_list_t		*recursive_nodes;
 	struct stat		_stats_;
 	struct stat		_lstats_;
 	struct dirent	_dir_;
-}				t_node;
-
-
-/* list types creation */
-CREATE_LST_TYPE(t_args, t_node *); // list of arguments (used on parsing only)
-// CREATE_LST_TYPE(node_list_t, t_node *); // list of nodes
-// CREATE_LST_TYPE(list_t, node_list_t *); // list of node lists
+};
 
 
 /*
 ** opts:	flag containing all parsed options.
 ** args:	list containing all parsed arguments.
 ** nodes:	list containing all arguments and their data.
-			`nodes->content' is a `t_list *'. The `lst->content' of this former
-			list is a `t_node *' structure containing all data about that
-			file / folder.
+			`nodes->content' is a `node_list_t *'. The `->content' of this
+			former list is a `t_node *' structure containing all data about that
+			file/folder.
 			If the `-R' option is set, there will be a recursive dive in the
 			directories found, setting another list into that node, itself
 			containing a node... until no more directories are found in that
 			path.
-			All nodes are sorted according to the sorting options set (`-t' or
-			`-r' for example).
+			All nodes are sorted according to the sorting options parsed (`-t'
+			or `-r' for example).
 */
 typedef	struct	s_ls_data
 {
 	int			_isatty;
 	uint64_t	opts;
 	t_args		*args;
-	t_list		*nodes;
+	list_t		*nodes;
 }				t_ls_data;
 
 
@@ -159,8 +163,8 @@ int				ft_is_dir(char *);
 
 
 /* Memory & Error Management */
-void			__free_lst__(t_list *);
-void			ft_free_nodes(t_list **);
+void			__free_node_lst__(node_list_t *);
+void			ft_free_nodes(list_t **);
 void			ft_free_all(void);
 
 
@@ -192,9 +196,8 @@ void			print_color(const t_node *);
 void			print_readlink(const t_node *);
 void			print_xattrs(const t_node *);
 
-void			__print_lst_recursively__(t_list *, bool);
-// void			__print_lst__(t_list *, bool);
-void			__print_nodes__(t_list *);
+void			__print_lst_recursively__(node_list_t *, bool);
+void			__print_nodes__(const list_t *);
 
 
 #endif

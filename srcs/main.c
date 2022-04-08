@@ -6,13 +6,13 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 16:46:49 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 16:59:01 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	ft_ls_file2lst(t_list **lst, const char *path)
+void	ft_ls_file2lst(node_list_t **lst, const char *path)
 {
 	t_node	*node = alloc_node();
 
@@ -37,7 +37,7 @@ void	ft_ls_file2lst(t_list **lst, const char *path)
 ** If the `-R' option is enable, we add a list to that node until no more
 ** directories are found in that path.
 */
-void	ft_ls2lst(t_list **lst, const char *path)
+void	ft_ls2lst(node_list_t **lst, const char *path)
 {
 	DIR				*dir = opendir(path);
 	t_node			*node;
@@ -102,10 +102,10 @@ void	ft_ls2lst(t_list **lst, const char *path)
 /*
 ** Parse all files and directories of requested path(s) (contained in `arguments')
 */
-t_list	*get_nodes(const t_args *arguments)
+list_t	*get_nodes(const t_args *arguments)
 {
-	t_list			*nodes = NULL;	/* main list */
-	t_list			*node_list;		/*  */
+	list_t			*nodes = NULL;
+	node_list_t		*node_list;
 	t_node			*_node;
 	// char			last_path_char;
 	char			*current_path = NULL;
@@ -116,7 +116,7 @@ t_list	*get_nodes(const t_args *arguments)
 		_node = arg->content;
 		current_path = _node->_dir_.d_name;
 		
-		/* `t_list' containing all the lists from a path (which is an argument) */
+		/* `node_list_t' containing all the lists from a path (which is an argument) */
 		node_list = NULL;
 		
 		if (stat(current_path, &_s) < 0)

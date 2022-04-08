@@ -6,14 +6,14 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 16:49:27 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:08:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
 /* get max padding values of a list */
-static void	__set_pads__(t_list *head, t_pad *pads)
+static void	__set_pads__(node_list_t *head, t_pad *pads)
 {
 	struct stat		_stats;
 	struct passwd	*password;
@@ -22,7 +22,7 @@ static void	__set_pads__(t_list *head, t_pad *pads)
 	t_node			*node;
 
 	ft_bzero(pads, sizeof(t_pad));
-	for (t_list *tmp = head; tmp; tmp = tmp->next)
+	for (node_list_t *tmp = head; tmp; tmp = tmp->next)
 	{
 		node = (t_node *)tmp->content;
 		if (!node)
@@ -148,11 +148,11 @@ static void	print_total_blocks(t_pad *pads)
 }
 
 // static
-void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
+void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 {
-	t_list	*lst;
-	t_node	*node;
-	t_pad	pads;
+	node_list_t	*lst;
+	t_node		*node;
+	t_pad		pads;
 
 	/* set the different padding values */
 	__set_pads__(head, &pads);
@@ -188,36 +188,6 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 	}
 }
 
-// void	__print_lst__(t_list *head, bool _print_dir_path)
-// {
-// 	t_list	*lst;
-// 	t_node	*node;
-// 	t_pad	pads;
-
-// 	/* set the different padding values */
-// 	__set_pads__(head, &pads);
-
-// 	/* first print all the current list */
-// 	if (_print_dir_path)
-// 	{
-// 		ft_buffadd(((t_node *)head->content)->path);
-// 		ft_buffadd(":\n");
-// 	}
-	
-// 	if (is_flag(OPT_L_MIN))
-// 	{
-// 		print_total_blocks(&pads);
-// 	}
-	
-// 	for (lst = head; lst != NULL; lst = lst->next)
-// 	{
-// 		node = (t_node *)lst->content;
-		
-// 		if (node)
-// 			ft_print_entry(node, &pads);
-// 	}
-// }
-
 /*
 ** Check if there is some recursive nodes to print the path header
 ** Try `ls -1 srcs' vs `ls -1 srcs incs' :
@@ -227,17 +197,17 @@ void	__print_lst_recursively__(t_list *head, bool _print_dir_path)
 // static
 bool	print_dir_path_check(void)
 {
-	t_list	*head = singleton()->nodes;
+	list_t	*head = singleton()->nodes;
 	bool	print_dir_path = (lst_size(head) > 1);
 
-	for (t_list *lst = head; lst; lst = lst->next)
+	for (list_t *lst = head; lst; lst = lst->next)
 	{
 		if (print_dir_path)
 			break ;
 		
-		for (t_list *_member = (t_list *)lst->content; _member; _member = _member->next)
+		for (node_list_t *_member = lst->content; _member; _member = _member->next)
 		{
-			t_node	*node = (t_node *)_member->content;
+			t_node	*node = _member->content;
 
 			if (node && node->recursive_nodes)
 			{
@@ -249,13 +219,13 @@ bool	print_dir_path_check(void)
 	return print_dir_path;
 }
 
-void	__print_nodes__(t_list *head)
+void	__print_nodes__(const list_t *head)
 {
 	bool	print_dir_path = print_dir_path_check();
 
-	for (t_list *lst = head; lst; lst = lst->next)
+	for (list_t *lst = (list_t *)head; lst; lst = lst->next)
 	{
-		__print_lst_recursively__((t_list *)lst->content, print_dir_path);
+		__print_lst_recursively__(lst->content, print_dir_path);
 		if (lst->next)
 			ft_buffaddc('\n');
 	}
