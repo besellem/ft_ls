@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 17:08:56 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:17:35 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ static void	__set_pads__(node_list_t *head, t_pad *pads)
 	ft_bzero(pads, sizeof(t_pad));
 	for (node_list_t *tmp = head; tmp; tmp = tmp->next)
 	{
-		node = (t_node *)tmp->content;
+		node = tmp->content;
 		if (!node)
 			continue ;
 		
@@ -160,7 +160,7 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 	/* print path in header */
 	if (_print_dir_path)
 	{
-		ft_buffadd(((t_node *)head->content)->path);
+		ft_buffadd(head->content->path);
 		ft_buffadd(":\n");
 	}
 	
@@ -169,7 +169,7 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 	
 	for (lst = head; lst != NULL; lst = lst->next)
 	{
-		node = (t_node *)lst->content;
+		node = lst->content;
 		
 		if (node)
 			ft_print_entry(node, &pads);
@@ -178,7 +178,7 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 	/* then print the recursive lists */
 	for (lst = head; lst != NULL; lst = lst->next)
 	{
-		node = (t_node *)lst->content;
+		node = lst->content;
 		
 		if (node && node->recursive_nodes && is_flag(OPT_R))
 		{

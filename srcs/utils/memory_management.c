@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 17:06:13 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/08 17:17:55 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	__free_node_lst__(node_list_t *head)
 
 	for (node_list_t *tmp = head; tmp != NULL; tmp = tmp->next)
 	{
-		node = (t_node *)tmp->content;
+		node = tmp->content;
 		
 		if (node)
 		{
