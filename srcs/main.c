@@ -6,13 +6,13 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 18:04:40 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 09:23:38 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	ft_ls_file2lst(node_list_t **lst, const char *path)
+static void	ft_ls_file2lst(node_list_t **lst, const char *path)
 {
 	t_node	*node = alloc_node();
 
@@ -29,6 +29,10 @@ void	ft_ls_file2lst(node_list_t **lst, const char *path)
 
 	/* add that node to the list */
 	lst_push_back(lst, node);
+
+	__print_entries_lst__(*lst, true);
+	__free_node_lst__(*lst);
+	*lst = NULL;
 }
 
 /*
@@ -37,16 +41,17 @@ void	ft_ls_file2lst(node_list_t **lst, const char *path)
 ** If the `-R' option is enable, we add a list to that node until no more
 ** directories are found in that path.
 */
-void	ft_ls2lst(node_list_t **lst, const char *path)
+static void	ft_ls2lst(node_list_t **lst, const char *path)
 {
 	DIR				*dir = opendir(path);
 	t_node			*node;
 	char			*contructed_path = NULL;
-	struct dirent	*s_dir;
+	struct dirent	*s_dir = NULL;
 
 	if (!dir)
 		return ;
 
+	/* add each file/folder of THIS `path' in a list of nodes */
 	while ((s_dir = readdir(dir)))
 	{
 		node = alloc_node();
@@ -67,63 +72,87 @@ void	ft_ls2lst(node_list_t **lst, const char *path)
 		/* copy `struct stat' */
 		stat(contructed_path, &node->_stats_);
 		lstat(contructed_path, &node->_lstats_);
-
-		/* if it's a directory & the flag `-R' is set, make a recursive call */
-		if (DT_DIR == s_dir->d_type &&			/* is a directory */
-			is_flag(OPT_R) &&					/* `-R' option is set */
-			ft_strcmp(s_dir->d_name, "..") &&	/* the current node is not the parent dir (avoid inf loop) */
-			ft_strcmp(s_dir->d_name, "."))		/* the current node is not the current dir (avoid inf loop) */
-		{
-			if (0 == ft_strncmp(s_dir->d_name, ".", 1))
-			{
-				if (is_flag(OPT_A_MIN))
-					ft_ls2lst(&node->recursive_nodes, contructed_path);
-			}
-			else
-				ft_ls2lst(&node->recursive_nodes, contructed_path);
-			
-			// ft_ls2lst(&node->recursive_nodes, contructed_path);
-		}
+		
 		ft_memdel((void **)&contructed_path);
 
 		/* add that node to the list */
 		lst_push_sorted(lst, node, get_cmp_method());
 	}
 	closedir(dir);
-	
-	// ft_buffadd("\n[]\n");
-	// __print_lst__(*lst, true);
-	// ft_buffaddc('\n');
-	// __free_lst__(*lst);
-	
-	return ;
+	dir = NULL;
+
+
+	/* print this dir entries */
+	__print_entries_lst__(*lst, true);
+
+
+	/* no need to go further if there's no dive to do */
+	if (!is_flag(OPT_R))
+	{
+		__free_node_lst__(*lst);
+		*lst = NULL;
+		return ;
+	}
+
+
+	/* search for recursive directories to print */
+	for (node_list_t *rec_node = *lst; rec_node; rec_node = rec_node->next)
+	{
+		node = rec_node->content;
+		
+		/* if it's a directory & the flag `-R' is set, make a recursive call */
+		if (DT_DIR == node->_dir_.d_type &&			/* is a directory */
+			ft_strcmp(node->_dir_.d_name, "..") &&	/* the current node is not the parent dir (avoid inf loop) */
+			ft_strcmp(node->_dir_.d_name, "."))		/* the current node is not the current dir (avoid inf loop) */
+		{
+			/* Add node's name to the current path */
+			ft_asprintf(&contructed_path, "%s/%s", path, node->_dir_.d_name);
+			if (!contructed_path)
+				die();
+
+			if (0 == ft_strncmp(node->_dir_.d_name, ".", 1))
+			{
+				if (is_flag(OPT_A_MIN))
+				{
+					ft_buffaddc('\n');
+					ft_ls2lst(&node->recursive_nodes, contructed_path);
+				}
+			}
+			else
+			{
+				ft_buffaddc('\n');
+				ft_ls2lst(&node->recursive_nodes, contructed_path);
+			}
+			ft_memdel((void **)&contructed_path);
+		}
+	}
+
+	__free_node_lst__(*lst);
+	*lst = NULL;
 }
 
 /*
 ** Parse all files and directories of requested path(s) (contained in `arguments')
 */
-list_t	*get_nodes(const t_args *arguments)
+static void	do_ls(const t_args *arguments)
 {
-	list_t			*nodes = NULL;
 	node_list_t		*node_list;
-	t_node			*_node;
 	// char			last_path_char;
-	char			*current_path = NULL;
-	struct stat		_s = {0};
+	char			*current_path;
+	// struct stat		st = {0};
 
 	for (t_args *arg = (t_args *)arguments; arg; arg = arg->next)
 	{
-		_node = arg->content;
-		current_path = _node->_dir_.d_name;
+		current_path = arg->content->_dir_.d_name;
 		
 		/* `node_list_t' containing all the lists from a path (which is an argument) */
 		node_list = NULL;
-		
-		if (stat(current_path, &_s) < 0)
-			die();
+
+		// ft_bzero(&st, sizeof(st));
+		// if (stat(current_path, &st) < 0)
+		// 	die();
 
 		// last_path_char = current_path[ft_strlen(current_path) - 1];
-
 		// TODO: try `ls -lL /var'
 		if (ft_is_dir(current_path))// && (last_path_char == '/')) // diff btween /var/ & /var for example
 		{
@@ -133,35 +162,16 @@ list_t	*get_nodes(const t_args *arguments)
 		{
 			ft_ls_file2lst(&node_list, current_path);
 		}
-		
-		if (!node_list)
-			die();
-		
-		/* when the directory passed in args does exist */
-		if (node_list)
-		{
-			/* append the new list to the main one */
-			lst_push_back(&nodes, node_list);
-		}
 	}
-	return (nodes);
 }
 
-int		main(int ac, char **av)
+int			main(int ac, char **av)
 {
 	/* parse arguments */
 	if (FALSE == ft_parse_args(ac, av, &singleton()->args))
 		die();
 
-	/* get all nodes asked by the args and the options set */
-	singleton()->nodes = get_nodes(singleton()->args);
-	if (NULL == singleton()->nodes)
-		die();
-
-	/* not needed anymore */
-	lst_clear(&singleton()->args, free);
-	
-	__print_nodes__(singleton()->nodes);
+	do_ls(singleton()->args);
 
 	ft_flush_buff();
 

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 17:24:01 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 09:18:23 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static void	__set_pads__(node_list_t *head, t_pad *pads)
 			if (tmp_pads.blocks > pads->blocks)
 				pads->blocks = tmp_pads.blocks;
 		}
-		if (is_flag(OPT_L_MIN))
+		if (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN))
 		{
 			tmp_pads.nlink = ft_nblen(_stats.st_nlink);
 			if (tmp_pads.nlink > pads->nlink)
@@ -72,7 +72,7 @@ static void	__set_pads__(node_list_t *head, t_pad *pads)
 	}
 }
 
-static void	ft_print_entry(const t_node *node, const t_pad *pads)
+static void	__print_entry__(const t_node *node, const t_pad *pads)
 {
 
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
@@ -98,12 +98,13 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 		print_blocks(node, pads);
 
 	/* print long format if `-l' (ell) is set */
-	if (is_flag(OPT_L_MIN))
+	if (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN))
 	{
 		print_permissions(node);
 		print_nlinks(node, pads);
 		print_owner(node, pads);
-		print_group(node, pads);
+		if (!is_flag(OPT_O_MIN))
+			print_group(node, pads);
 		print_size(node, pads);
 		print_time(node);
 	}
@@ -132,7 +133,7 @@ static void	ft_print_entry(const t_node *node, const t_pad *pads)
 	/* new line -- end of the entry */
 	ft_buffaddc('\n');
 
-	if (is_flag(OPT_L_MIN) && is_flag(OPT_XATTR))
+	if ((is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN)) && is_flag(OPT_XATTR))
 		print_xattrs(node);
 }
 
@@ -148,7 +149,7 @@ static void	print_total_blocks(t_pad *pads)
 }
 
 // static
-void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
+void	__print_entries_lst__(node_list_t *head, bool _print_dir_path)
 {
 	node_list_t	*lst;
 	t_node		*node;
@@ -157,14 +158,14 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 	/* set the different padding values */
 	__set_pads__(head, &pads);
 
-	/* print path in header */
+	/* print path header */
 	if (_print_dir_path)
 	{
 		ft_buffadd(head->content->path);
 		ft_buffadd(":\n");
 	}
 	
-	if (is_flag(OPT_L_MIN) || is_flag(OPT_S_MIN))
+	if (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN) || is_flag(OPT_S_MIN))
 		print_total_blocks(&pads);
 	
 	for (lst = head; lst != NULL; lst = lst->next)
@@ -172,19 +173,7 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 		node = lst->content;
 		
 		if (node)
-			ft_print_entry(node, &pads);
-	}
-
-	/* then print the recursive lists */
-	for (lst = head; lst != NULL; lst = lst->next)
-	{
-		node = lst->content;
-		
-		if (node && node->recursive_nodes && is_flag(OPT_R))
-		{
-			ft_buffaddc('\n');
-			__print_lst_recursively__(node->recursive_nodes, _print_dir_path);
-		}
+			__print_entry__(node, &pads);
 	}
 }
 
@@ -195,38 +184,26 @@ void	__print_lst_recursively__(node_list_t *head, bool _print_dir_path)
 ** atferward.
 */
 // static
-bool	print_dir_path_check(void)
-{
-	list_t	*head = singleton()->nodes;
-	bool	print_dir_path = (lst_size(head) > 1);
+// bool	print_dir_path_check(void)
+// {
+// 	list_t	*head = singleton()->nodes;
+// 	bool	print_dir_path = (lst_size(head) > 1);
 
-	for (list_t *lst = head; lst; lst = lst->next)
-	{
-		if (print_dir_path)
-			break ;
+// 	for (list_t *lst = head; lst; lst = lst->next)
+// 	{
+// 		if (print_dir_path)
+// 			break ;
 		
-		for (node_list_t *_member = lst->content; _member; _member = _member->next)
-		{
-			t_node	*node = _member->content;
+// 		for (node_list_t *_member = lst->content; _member; _member = _member->next)
+// 		{
+// 			t_node	*node = _member->content;
 
-			if (node && node->recursive_nodes)
-			{
-				print_dir_path = true;
-				break ;
-			}
-		}
-	}
-	return print_dir_path;
-}
-
-void	__print_nodes__(const list_t *head)
-{
-	bool	print_dir_path = print_dir_path_check();
-
-	for (list_t *lst = (list_t *)head; lst; lst = lst->next)
-	{
-		__print_lst_recursively__(lst->content, print_dir_path);
-		if (lst->next)
-			ft_buffaddc('\n');
-	}
-}
+// 			if (node && node->recursive_nodes)
+// 			{
+// 				print_dir_path = true;
+// 				break ;
+// 			}
+// 		}
+// 	}
+// 	return print_dir_path;
+// }
