@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:55:56 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 23:11:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 		}
 		
 		/* total blocks to print */
-		pads->total_blocks += _stats.st_blocks; // TODO: diff btw `-l' & `-la'
+		pads->total_blocks += _stats.st_blocks;
 	}
 }
 

@@ -6,13 +6,13 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 11:48:12 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 23:15:50 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-static void	ft_ls_file2lst(node_list_t **lst, const char *path)
+static void	__ls_on_file__(node_list_t **lst, const char *path)
 {
 	t_node	*node = alloc_node();
 
@@ -41,7 +41,7 @@ static void	ft_ls_file2lst(node_list_t **lst, const char *path)
 ** If the `-R' option is enable, we add a list to that node until no more
 ** directories are found in that path.
 */
-static void	ft_ls2lst(node_list_t **lst, const char *path)
+static void	__ls_on_dir__(node_list_t **lst, const char *path)
 {
 	DIR				*dir = opendir(path);
 	t_node			*node;
@@ -115,13 +115,13 @@ static void	ft_ls2lst(node_list_t **lst, const char *path)
 				if (is_flag(OPT_A_MIN))
 				{
 					ft_buffaddc('\n');
-					ft_ls2lst(&node->recursive_nodes, contructed_path);
+					__ls_on_dir__(&node->recursive_nodes, contructed_path);
 				}
 			}
 			else
 			{
 				ft_buffaddc('\n');
-				ft_ls2lst(&node->recursive_nodes, contructed_path);
+				__ls_on_dir__(&node->recursive_nodes, contructed_path);
 			}
 			ft_memdel((void **)&contructed_path);
 		}
@@ -137,10 +137,10 @@ static void	ft_ls2lst(node_list_t **lst, const char *path)
 static void	do_ls(const t_args *arguments)
 {
 	node_list_t		*node_list;
-	// char			last_path_char;
 	char			*current_path;
 	bool			is_dir;
-	// struct stat		st = {0};
+	// char			last_path_char;
+	// struct stat		st;
 
 	for (t_args *arg = (t_args *)arguments; arg; arg = arg->next)
 	{
@@ -150,8 +150,7 @@ static void	do_ls(const t_args *arguments)
 		node_list = NULL;
 
 		// ft_bzero(&st, sizeof(st));
-		// if (stat(current_path, &st) < 0)
-		// 	die();
+		// stat(current_path, &st);
 
 		// last_path_char = current_path[ft_strlen(current_path) - 1];
 		is_dir = ft_is_dir(current_path);
@@ -159,11 +158,11 @@ static void	do_ls(const t_args *arguments)
 		// TODO: try `ls -lL /var'
 		if (is_dir && !is_flag(OPT_D_MIN))// && (last_path_char == '/')) // diff btween /var/ & /var for example
 		{
-			ft_ls2lst(&node_list, current_path);
+			__ls_on_dir__(&node_list, current_path);
 		}
 		else
 		{
-			ft_ls_file2lst(&node_list, current_path);
+			__ls_on_file__(&node_list, current_path);
 		}
 	}
 }
