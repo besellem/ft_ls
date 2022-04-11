@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:21:12 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 09:29:30 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ void	__free_node_lst__(node_list_t *head)
 
 __destructor void	ft_free_all(void)
 {
-	ft_destroy_buff();
+	ft_flush_buff();
 	if (singleton())
 	{
 		if (singleton()->args)

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:23:38 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 09:29:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,8 +172,6 @@ int			main(int ac, char **av)
 		die();
 
 	do_ls(singleton()->args);
-
-	ft_flush_buff();
 
 	return (EXIT_SUCCESS);
 }
