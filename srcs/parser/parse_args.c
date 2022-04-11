@@ -65,7 +65,10 @@ static const struct s_options	g_options[] = {
 static void	__resolve_options_conflicts__(void)
 {
 	if (singleton()->_isatty)
-		add_flag(OPT_1);
+	{
+		add_flag(OPT_1); // not in the man - to remove if I manage multi-columns
+		add_flag(OPT_C);
+	}
 
 	if (is_flag(OPT_F_MIN))
 		add_flag(OPT_A_MIN);
@@ -83,7 +86,7 @@ static void	__resolve_options_conflicts__(void)
 static void	__illegal_opt__(char **av, char opt)
 {
 	ft_dprintf(STDERR_FILENO, "%s: illegal option -- %c\n"
-			  "usage: %s [-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx] [file ...]\n",
+			  "usage: %s [" HANDLED_FLAGS "] [file ...]\n",
 			  av[0], opt, av[0]);
 }
 

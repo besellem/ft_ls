@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:29:34 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 11:48:12 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,6 +139,7 @@ static void	do_ls(const t_args *arguments)
 	node_list_t		*node_list;
 	// char			last_path_char;
 	char			*current_path;
+	bool			is_dir;
 	// struct stat		st = {0};
 
 	for (t_args *arg = (t_args *)arguments; arg; arg = arg->next)
@@ -153,8 +154,10 @@ static void	do_ls(const t_args *arguments)
 		// 	die();
 
 		// last_path_char = current_path[ft_strlen(current_path) - 1];
+		is_dir = ft_is_dir(current_path);
+		
 		// TODO: try `ls -lL /var'
-		if (ft_is_dir(current_path))// && (last_path_char == '/')) // diff btween /var/ & /var for example
+		if (is_dir && !is_flag(OPT_D_MIN))// && (last_path_char == '/')) // diff btween /var/ & /var for example
 		{
 			ft_ls2lst(&node_list, current_path);
 		}

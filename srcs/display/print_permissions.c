@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 16:42:07 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 22:52:11 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,15 +17,12 @@ inline static char	__get_mode__(mode_t mode)
 	if (S_ISBLK(mode))  return ('b'); /* block special */
 	if (S_ISCHR(mode))  return ('c'); /* char special */
 	if (S_ISDIR(mode))  return ('d'); /* directory */
-	if (S_ISREG(mode))  return ('-'); /* regular file */
 	if (S_ISLNK(mode))  return ('l'); /* symbolic link */
-	if (S_ISSOCK(mode)) return ('s'); /* socket */
 	if (S_ISFIFO(mode)) return ('p'); /* fifo or socket */
-	return ('-');
+	if (S_ISSOCK(mode)) return ('s'); /* socket */
+	return ('-');                     /* regular file by default */
 }
 
-// TODO: check all permissions on every type of file
-// TODO: add xattributes
 void	print_permissions(const t_node *node)
 {
 	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
@@ -37,31 +34,32 @@ void	print_permissions(const t_node *node)
 	// user
 	ft_buffaddc((mode & S_IRUSR) ? 'r' : '-');
 	ft_buffaddc((mode & S_IWUSR) ? 'w' : '-');
-	ft_buffaddc((mode & S_IXUSR) ? 'x' : '-');
+	// ft_buffaddc((mode & S_IXUSR) ? 'x' : '-');
+	ft_buffaddc((mode & S_IXUSR) ?
+		((S_ISUID & mode) ? 's' : 'x') :
+		((S_ISUID & mode) ? 'S' : '-'));
 
 	// group
 	ft_buffaddc((mode & S_IRGRP) ? 'r' : '-');
 	ft_buffaddc((mode & S_IWGRP) ? 'w' : '-');
-	ft_buffaddc((mode & S_IXGRP) ? 'x' : '-');
-	
+	ft_buffaddc((mode & S_IXGRP) ?
+		((S_ISGID & mode) ? 's' : 'x') :
+		((S_ISGID & mode) ? 'S' : '-'));
+
 	// other
 	ft_buffaddc((mode & S_IROTH) ? 'r' : '-');
 	ft_buffaddc((mode & S_IWOTH) ? 'w' : '-');
-	if (mode & S_ISVTX)
-		ft_buffaddc((mode & S_IXOTH) ? 't' : 'T');
-	else
-		ft_buffaddc((mode & S_IXOTH) ? 'x' : '-');
+	ft_buffaddc((S_IXOTH & mode) ?
+		((S_ISVTX & mode) ? 't' : 'x') :
+		((S_ISVTX & mode) ? 'T' : '-'));
 	
-
-	// ft_printf("mode [%hd]\n", mode);
 	
 	ft_asprintf(&contructed_path, "%s/%s", node->path, node->_dir_.d_name);
 	if (!contructed_path)
 		die();
-	
 
-	sd = listxattr(contructed_path, NULL, 0, XATTR_NOFOLLOW); // ! HUGE SPEED PROBLEM
-	
+	sd = listxattr(contructed_path, NULL, 0, XATTR_NOFOLLOW);
+	ft_memdel((void **)&contructed_path);
 	if (ENOTSUP == errno)
 	{
 		ft_buffaddc(' ');
@@ -74,5 +72,4 @@ void	print_permissions(const t_node *node)
 		else
 			ft_buffadd("@ ");
 	}
-	ft_memdel((void **)&contructed_path);
 }

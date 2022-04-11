@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:24:03 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 13:26:54 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,8 @@
 /* debug macro - to remove when finished */
 # define __DEBUG__
 
+# define HANDLED_FLAGS  "-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx"
+
 /* `@' option is not set in libft/incs/parse_args.h */
 #define OPT_XATTR 0x8000000000000000
 
@@ -65,6 +67,22 @@
 # define LOG
 # define ft_free_exit() exit(EXIT_FAILURE)
 #endif
+
+
+#if defined(__APPLE__) && defined(__MACH__)
+# define _atime_spec(__st) ((__st).st_atimespec)
+# define _mtime_spec(__st) ((__st).st_mtimespec)
+# define _ctime_spec(__st) ((__st).st_ctimespec)
+#else /* Linux */
+# if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
+#  define LINUX_OLD_KERNEL_VERSION
+#  error "Kernel version too old: require 2.6.0 or newer"
+# else
+#  define _atime_spec(__st) ((__st).st_atime)
+#  define _mtime_spec(__st) ((__st).st_mtime)
+#  define _ctime_spec(__st) ((__st).st_ctime)
+# endif
+#endif /* Linux */
 
 
 /* define the function to sort the list */
@@ -165,6 +183,8 @@ void			ft_free_all(void) __destructor;
 /* Sorting Utils */
 int				cmp_node_by_asc_time(t_node *, t_node *);
 int				cmp_node_by_desc_time(t_node *, t_node *);
+int				cmp_node_by_asc_last_access_time(t_node *, t_node *);  // unused
+int				cmp_node_by_desc_last_access_time(t_node *, t_node *); // unused
 int				cmp_node_by_asc(t_node *, t_node *);
 int				cmp_node_by_desc(t_node *, t_node *);
 

@@ -6,14 +6,14 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:18:23 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 09:55:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
 /* get max padding values of a list */
-static void	__set_pads__(node_list_t *head, t_pad *pads)
+static void	__set_pads__(const node_list_t *head, t_pad *pads)
 {
 	struct stat		_stats;
 	struct passwd	*password;
@@ -22,7 +22,7 @@ static void	__set_pads__(node_list_t *head, t_pad *pads)
 	t_node			*node;
 
 	ft_bzero(pads, sizeof(t_pad));
-	for (node_list_t *tmp = head; tmp; tmp = tmp->next)
+	for (node_list_t *tmp = (node_list_t *)head; tmp; tmp = tmp->next)
 	{
 		node = tmp->content;
 		if (!node)

@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 22:22:52 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/08 17:35:00 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/11 09:52:28 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 **
 **   singleton()->args
 */
-t_ls_data	*singleton(void)
+__constructor t_ls_data	*singleton(void)
 {
 	static t_ls_data	*s = NULL;
 
