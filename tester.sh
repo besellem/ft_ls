@@ -107,6 +107,9 @@ do_test -l /dev/random
 
 
 # bonus
+do_test -L ~
+do_test -l ~
+do_test -lL ~
 do_test -L /
 do_test -lL /
 do_test -lL /var

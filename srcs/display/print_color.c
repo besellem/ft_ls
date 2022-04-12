@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:21:49 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 09:45:08 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 14:19:19 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,8 @@ void	print_color(const t_node *node)
 {
 	const mode_t	mode = node->_lstats_.st_mode;
 	const bool		is_exec = (S_IXGRP & mode || S_IXUSR & mode || S_IXOTH & mode);
-	const bool		is_dir = ft_is_dir(node->path);
+	// const bool		is_dir = ft_is_dir(node->path);
+	const bool		is_dir = S_ISDIR(node->_stats_.st_mode);
 
 	if (S_ISLNK(mode))
 		ft_buffadd(is_flag(OPT_L) ? B_CYAN : PURPLE);

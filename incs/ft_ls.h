@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 10:33:02 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 14:03:28 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,7 @@
 #include <grp.h>
 #include <uuid/uuid.h>
 #include <sys/xattr.h>
+#include <sys/acl.h>
 #include <time.h>
 #include <stdio.h>
 #include <errno.h>
@@ -100,7 +101,7 @@
 })
 
 
-#define STRISEQ(__s1, __s2)  (0 == ft_strcmp(__s1, __s2))
+#define STRISEQ(__s1, __s2)  (0 == ft_strcmp((__s1), (__s2)))
 
 
 /*

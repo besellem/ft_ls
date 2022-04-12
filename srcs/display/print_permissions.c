@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 10:58:34 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 14:10:14 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,9 +62,17 @@ void	print_permissions(const t_node *node)
 	}
 	else
 	{
+		acl_t	acl = acl_get_file(node->constructed_path, ACL_TYPE_EXTENDED);
+
 		if (sd <= 0)
-			ft_buffadd("  ");
+		{
+			if (!acl)
+				ft_buffadd("  ");
+			else
+				ft_buffadd("+ ");
+		}
 		else
 			ft_buffadd("@ ");
+		acl_free(acl);
 	}
 }
