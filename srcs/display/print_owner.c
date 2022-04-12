@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:05 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/04 17:35:00 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 11:07:56 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	print_owner(const t_node *node, const t_pad *pads)
 	struct passwd	*password = getpwuid(node->_stats_.st_uid);
 	char			*tmp = NULL;
 	
-	if (!password) // NOT HAPPENING NORMALLY
+	if (!password)
 		ft_free_exit();
 
 	ft_asprintf(&tmp, "%-*s  ", pads->owner_name, password->pw_name);
