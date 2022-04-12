@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 10:21:47 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:58:34 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,13 @@ void	print_permissions(const t_node *node)
 	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
 	ssize_t			sd;
 
+	
+	// file type
 	ft_buffaddc(__get_mode__(mode));
 	
 	// user
 	ft_buffaddc((mode & S_IRUSR) ? 'r' : '-');
 	ft_buffaddc((mode & S_IWUSR) ? 'w' : '-');
-	// ft_buffaddc((mode & S_IXUSR) ? 'x' : '-');
 	ft_buffaddc((mode & S_IXUSR) ?
 		((S_ISUID & mode) ? 's' : 'x') :
 		((S_ISUID & mode) ? 'S' : '-'));
@@ -53,8 +54,7 @@ void	print_permissions(const t_node *node)
 		((S_ISVTX & mode) ? 'T' : '-'));
 	
 	
-	sd = listxattr(node->constructed_path, NULL, 0, XATTR_NOFOLLOW | XATTR_SHOWCOMPRESSION);
-	// ft_printf("[%s]\n", node->constructed_path);
+	sd = listxattr(node->constructed_path, NULL, 0, XATTR_NOFOLLOW);
 	if (ENOTSUP == errno)
 	{
 		ft_buffaddc(' ');
