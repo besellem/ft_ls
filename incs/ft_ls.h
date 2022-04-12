@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 13:26:54 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:33:02 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,23 +48,23 @@
 */
 
 /* debug macro - to remove when finished */
-# define __DEBUG__
+// # define __DEBUG__
 
 # define HANDLED_FLAGS  "-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx"
 
 /* `@' option is not set in libft/incs/parse_args.h */
-#define OPT_XATTR 0x8000000000000000
+#define OPT_XATTR       0x8000000000000000
 
+
+#define LOG ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
 
 #ifdef __DEBUG__
-# define LOG ft_printf(B_RED "%s:%d: " CLR_COLOR " Error\n", __FILE__, __LINE__);
 # define ft_free_exit()                                                        \
 	do {                                                                       \
 		ft_printf("%s:%d: %s\n", __FILE__, __LINE__, strerror(errno));         \
 		exit(EXIT_FAILURE);                                                    \
 	} while (0);
 #else
-# define LOG
 # define ft_free_exit() exit(EXIT_FAILURE)
 #endif
 
@@ -100,6 +100,8 @@
 })
 
 
+#define STRISEQ(__s1, __s2)  (0 == ft_strcmp(__s1, __s2))
+
 
 /*
 ** -- DATA STRUCTURES --
@@ -134,7 +136,7 @@ struct s_pad
 struct s_node
 {
 	char			*path;
-	node_list_t		*recursive_nodes;
+	char			*constructed_path;
 	struct stat		_stats_;
 	struct stat		_lstats_;
 	struct dirent	_dir_;
@@ -176,7 +178,8 @@ int				ft_is_dir(char *);
 
 
 /* Memory & Error Management */
-void			__free_node_lst__(node_list_t *);
+void			rm_arg(t_args **, t_args *);
+void			free_node_lst(node_list_t *);
 void			ft_free_all(void) __destructor;
 
 
@@ -210,6 +213,6 @@ void			print_color(const t_node *);
 void			print_readlink(const t_node *);
 void			print_xattrs(const t_node *);
 
-void			__print_entries_lst__(node_list_t *, bool);
+void			__print_entries_lst__(node_list_t *, bool, bool);
 
 #endif

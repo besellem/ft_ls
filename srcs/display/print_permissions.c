@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 22:52:11 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:21:47 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ inline static char	__get_mode__(mode_t mode)
 void	print_permissions(const t_node *node)
 {
 	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
-	char			*contructed_path = NULL;
 	ssize_t			sd;
 
 	ft_buffaddc(__get_mode__(mode));
@@ -54,12 +53,8 @@ void	print_permissions(const t_node *node)
 		((S_ISVTX & mode) ? 'T' : '-'));
 	
 	
-	ft_asprintf(&contructed_path, "%s/%s", node->path, node->_dir_.d_name);
-	if (!contructed_path)
-		die();
-
-	sd = listxattr(contructed_path, NULL, 0, XATTR_NOFOLLOW);
-	ft_memdel((void **)&contructed_path);
+	sd = listxattr(node->constructed_path, NULL, 0, XATTR_NOFOLLOW | XATTR_SHOWCOMPRESSION);
+	// ft_printf("[%s]\n", node->constructed_path);
 	if (ENOTSUP == errno)
 	{
 		ft_buffaddc(' ');

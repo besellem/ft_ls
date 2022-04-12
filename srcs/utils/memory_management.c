@@ -6,13 +6,39 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/20 22:32:46 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 09:29:30 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:43:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
-void	__free_node_lst__(node_list_t *head)
+void	rm_arg(t_args **head, t_args *to_rm)
+{
+	t_args	*tmp = *head;
+	t_args	*to_free = NULL;
+
+	if (!*head || !to_rm)
+	{
+		free(to_rm);
+		return ;
+	}
+	
+	if (*head == to_rm)
+	{
+		to_free = *head;
+		*head = (*head)->next;
+	}
+	else
+	{
+		while (tmp && tmp->next && tmp->next != to_rm)
+			tmp = tmp->next;
+		to_free = tmp->next;
+		tmp->next = tmp->next->next;
+	}
+	free(to_free);
+}
+
+void	free_node_lst(node_list_t *head)
 {
 	t_node	*node;
 
@@ -22,8 +48,13 @@ void	__free_node_lst__(node_list_t *head)
 		
 		if (node)
 		{
+			/*
+			** node->constructed_path may be a reference to node->path.
+			** In this case, only node->path must be freed.
+			*/
+			if (node->path != node->constructed_path)
+				ft_memdel((void **)&node->constructed_path);
 			ft_memdel((void **)&node->path);
-			__free_node_lst__(node->recursive_nodes);
 		}
 		ft_memdel((void **)&node);
 	}

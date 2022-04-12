@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/11 23:11:34 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/12 10:03:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,11 +74,9 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 
 static void	__print_entry__(const t_node *node, const t_pad *pads)
 {
-
 	/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 	if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
-		(0 == ft_strcmp(node->_dir_.d_name, "..") ||
-		 0 == ft_strcmp(node->_dir_.d_name, ".")))
+		(STRISEQ(node->_dir_.d_name, "..") || STRISEQ(node->_dir_.d_name, ".")))
 	{
 		return ;
 	}
@@ -137,7 +135,7 @@ static void	__print_entry__(const t_node *node, const t_pad *pads)
 		print_xattrs(node);
 }
 
-static void	print_total_blocks(t_pad *pads)
+static void	print_total_blocks(const t_pad *pads)
 {
 	char	*tmp = NULL;
 
@@ -148,8 +146,7 @@ static void	print_total_blocks(t_pad *pads)
 	ft_memdel((void **)&tmp);
 }
 
-// static
-void	__print_entries_lst__(node_list_t *head, bool _print_dir_path)
+void	__print_entries_lst__(node_list_t *head, bool _print_dir_path, bool _printing_file_list)
 {
 	node_list_t	*lst;
 	t_node		*node;
@@ -165,7 +162,7 @@ void	__print_entries_lst__(node_list_t *head, bool _print_dir_path)
 		ft_buffadd(":\n");
 	}
 	
-	if (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN) || is_flag(OPT_S_MIN))
+	if (_printing_file_list && (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN) || is_flag(OPT_S_MIN)))
 		print_total_blocks(&pads);
 	
 	for (lst = head; lst != NULL; lst = lst->next)
@@ -176,34 +173,3 @@ void	__print_entries_lst__(node_list_t *head, bool _print_dir_path)
 			__print_entry__(node, &pads);
 	}
 }
-
-/*
-** Check if there is some recursive nodes to print the path header
-** Try `ls -1 srcs' vs `ls -1 srcs incs' :
-** In the first, the path is not printed because there's no other path to print
-** atferward.
-*/
-// static
-// bool	print_dir_path_check(void)
-// {
-// 	list_t	*head = singleton()->nodes;
-// 	bool	print_dir_path = (lst_size(head) > 1);
-
-// 	for (list_t *lst = head; lst; lst = lst->next)
-// 	{
-// 		if (print_dir_path)
-// 			break ;
-		
-// 		for (node_list_t *_member = lst->content; _member; _member = _member->next)
-// 		{
-// 			t_node	*node = _member->content;
-
-// 			if (node && node->recursive_nodes)
-// 			{
-// 				print_dir_path = true;
-// 				break ;
-// 			}
-// 		}
-// 	}
-// 	return print_dir_path;
-// }

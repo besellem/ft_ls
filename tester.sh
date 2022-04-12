@@ -3,9 +3,9 @@
 
 _ext=".txt"
 
-real_file="real${_ext}"
-my_file="mine${_ext}"
-log_file="log${_ext}"
+real_file="../real${_ext}"
+my_file="../mine${_ext}"
+log_file="../log${_ext}"
 tmp_file="__tmp__"
 
 
@@ -57,6 +57,10 @@ do_test ./srcs
 do_test ./srcs/
 do_test ./Makefile srcs
 do_test ./Makefile ./srcs
+do_test srcs incs
+do_test srcs Makefile incs
+do_test srcs Makefile incs Makefile
+do_test Makefile srcs incs Makefile
 
 # error management
 do_test i_dont_exist
@@ -67,6 +71,7 @@ do_test i_dont_exist Makefile
 do_test i_dont_exist Makefile i_dont_exist
 
 
+# options
 do_test -a
 do_test -s
 do_test -i
@@ -75,8 +80,7 @@ do_test -l
 do_test -la
 do_test -laA
 do_test -ls
-do_test -lR srcs
-# do_test -las
+do_test -las
 
 do_test -l Makefile
 do_test -la Makefile
@@ -85,9 +89,36 @@ do_test -la ./Makefile
 do_test -l Makefile srcs
 do_test -la Makefile srcs
 
+# recursive option
+# do_test -lR
+# do_test -laR
+# do_test -lR srcs
+# do_test -laR srcs incs
+# do_test -larR srcs incs
+# do_test -latR srcs incs
+# do_test -lartR srcs incs
+# do_test -lartR . srcs tester.sh incs Makefile
 
+
+# special cases
 do_test -l /var
 do_test -l /var/
+do_test -l /dev/random
+
+
+# bonus
+do_test -L /
+do_test -lL /
+do_test -lL /var
+do_test -lL /var/
+do_test -Ls /
+do_test -Lls /
+do_test -Lls /
+
+do_test -lGad .
+do_test -L@ /
+do_test -L@ /
+do_test -d . srcs
 
 
 # remove the log file if it's empty
