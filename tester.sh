@@ -90,14 +90,14 @@ do_test -l Makefile srcs
 do_test -la Makefile srcs
 
 # recursive option
-# do_test -lR
-# do_test -laR
-# do_test -lR srcs
-# do_test -laR srcs incs
-# do_test -larR srcs incs
-# do_test -latR srcs incs
-# do_test -lartR srcs incs
-# do_test -lartR . srcs tester.sh incs Makefile
+do_test -lR
+do_test -laR
+do_test -lR srcs
+do_test -laR srcs incs
+do_test -larR srcs incs
+do_test -latR srcs incs
+do_test -lartR srcs incs
+do_test -lartR . srcs tester.sh incs Makefile
 
 
 # special cases

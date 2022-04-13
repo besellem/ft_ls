@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 14:03:28 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/13 12:18:58 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,11 +70,11 @@
 #endif
 
 
-#if defined(__APPLE__) && defined(__MACH__)
+#if defined(__APPLE__) && defined(__MACH__) /* macOS */
 # define _atime_spec(__st) ((__st).st_atimespec)
 # define _mtime_spec(__st) ((__st).st_mtimespec)
 # define _ctime_spec(__st) ((__st).st_ctimespec)
-#else /* Linux */
+#else                                       /* Linux */
 # if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
 #  define LINUX_OLD_KERNEL_VERSION
 #  error "Kernel version too old: require 2.6.0 or newer"
@@ -83,7 +83,7 @@
 #  define _mtime_spec(__st) ((__st).st_mtime)
 #  define _ctime_spec(__st) ((__st).st_ctime)
 # endif
-#endif /* Linux */
+#endif /* defined(__APPLE__) && defined(__MACH__) */
 
 
 /* define the function to sort the list */
@@ -94,10 +94,10 @@
 
 
 #define alloc_node() ({ \
-	t_node *__tmp = ((t_node *)ft_calloc(1, sizeof(t_node)));                  \
-	if (!__tmp)                                                                \
+	t_node *__ptr = ((t_node *)ft_calloc(1, sizeof(t_node)));                  \
+	if (!__ptr)                                                                \
 		die();                                                                 \
-	__tmp;                                                                     \
+	__ptr;                                                                     \
 })
 
 
@@ -113,9 +113,9 @@ typedef	struct s_node	t_node;
 typedef struct s_pad	t_pad;
 
 /* list types creation */
-CREATE_LST_TYPE(t_args, t_node *); // list of arguments (used on parsing only)
+CREATE_LST_TYPE(t_args, t_node *) // list of arguments (used on parsing only)
 
-CREATE_LST_TYPE(node_list_t, t_node *); // list of nodes
+CREATE_LST_TYPE(node_list_t, t_node *) // list of nodes
 
 
 /* get the len of max values for padding */

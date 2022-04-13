@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:21:49 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 14:19:19 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/13 12:13:48 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,15 +26,15 @@ void	print_color(const t_node *node)
 	else if S_ISFIFO(mode)
 		ft_buffadd(YELLOW);
 	else if (S_ISCHR(mode))
-		ft_buffadd("\e[0;43;34m"); // BLUE TEXT + YELLOW FOREGROUND
+		ft_buffadd("\033[0;43;34m"); // BLUE TEXT + YELLOW FOREGROUND
 	else if (S_ISBLK(mode))
-		ft_buffadd("\e[0;46;34m"); // BLUE TEXT + CYAN FOREGROUND
+		ft_buffadd("\033[0;46;34m"); // BLUE TEXT + CYAN FOREGROUND
 	else if (is_dir)
-		ft_buffadd((S_IWOTH & mode) ? "\e[0;43;30m" : B_CYAN);
+		ft_buffadd((S_IWOTH & mode) ? "\033[0;43;30m" : B_CYAN);
 	else if ((S_ISUID & mode) && is_exec) // setuid mode (chmod 4000)
-		ft_buffadd("\e[0;41;30m"); // BLACK TEXT + RED FOREGROUND
+		ft_buffadd("\033[0;41;30m"); // BLACK TEXT + RED FOREGROUND
 	else if ((S_ISGID & mode) && is_exec) // setgid mode (chmod 2000)
-		ft_buffadd("\e[0;47;30m"); // BLACK TEXT + GREY FOREGROUND
+		ft_buffadd("\033[0;47;30m"); // BLACK TEXT + GREY FOREGROUND
 	else if (!is_dir && is_exec)
 		ft_buffadd(RED);
 }

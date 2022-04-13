@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 10:42:12 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/13 12:36:02 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,13 +115,13 @@ static void	__ls_on_dir__(const char *path, bool print_header)
 				if (is_flag(OPT_A_MIN))
 				{
 					ft_buffaddc('\n');
-					__ls_on_dir__(node->constructed_path, print_header);
+					__ls_on_dir__(node->constructed_path, true);
 				}
 			}
 			else
 			{
 				ft_buffaddc('\n');
-				__ls_on_dir__(node->constructed_path, print_header);
+				__ls_on_dir__(node->constructed_path, true);
 			}
 		}
 	}
@@ -141,6 +141,7 @@ static void	do_ls(t_args **arguments)
 	bool			is_dir;
 	bool			listed_files = false;
 	bool			print_header = false;
+	// bool			print_header = (lst_size(*arguments) > 1);
 
 
 	/* ls on all files first */
