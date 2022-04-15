@@ -6,14 +6,14 @@
 #    By: besellem <besellem@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2021/06/15 21:33:47 by besellem          #+#    #+#              #
-#    Updated: 2022/04/13 12:19:32 by besellem         ###   ########.fr        #
+#    Updated: 2022/04/15 18:29:07 by besellem         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # COMPILATION
 
 CC			:= clang
-CFLAGS 		:= -Wall -Wextra -Werror -O2 #-g3 -fsanitize=address #-Wpedantic
+CFLAGS 		:= -Wall -Wextra -Werror #-g3 -fsanitize=address #-Wpedantic -O2
 INCS		:= ./incs/ft_ls.h
 IFLAGS 		:= -I./incs -I./libft/incs
 LIBFLAGS 	:= -L./libft -lft

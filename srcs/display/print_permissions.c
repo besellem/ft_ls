@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/12 14:10:14 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/15 15:43:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,32 +27,38 @@ void	print_permissions(const t_node *node)
 {
 	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
 	ssize_t			sd;
+	acl_t			acl;
+	const char		permissions[11] = {
+		
+		// file type
+		__get_mode__(mode),
 
-	
-	// file type
-	ft_buffaddc(__get_mode__(mode));
-	
-	// user
-	ft_buffaddc((mode & S_IRUSR) ? 'r' : '-');
-	ft_buffaddc((mode & S_IWUSR) ? 'w' : '-');
-	ft_buffaddc((mode & S_IXUSR) ?
-		((S_ISUID & mode) ? 's' : 'x') :
-		((S_ISUID & mode) ? 'S' : '-'));
+		// user
+		(mode & S_IRUSR) ? 'r' : '-',
+		(mode & S_IWUSR) ? 'w' : '-',
+		(mode & S_IXUSR) ?
+			((S_ISUID & mode) ? 's' : 'x') :
+			((S_ISUID & mode) ? 'S' : '-'),
 
-	// group
-	ft_buffaddc((mode & S_IRGRP) ? 'r' : '-');
-	ft_buffaddc((mode & S_IWGRP) ? 'w' : '-');
-	ft_buffaddc((mode & S_IXGRP) ?
-		((S_ISGID & mode) ? 's' : 'x') :
-		((S_ISGID & mode) ? 'S' : '-'));
+		// group
+		(mode & S_IRGRP) ? 'r' : '-',
+		(mode & S_IWGRP) ? 'w' : '-',
+		(mode & S_IXGRP) ?
+			((S_ISGID & mode) ? 's' : 'x') :
+			((S_ISGID & mode) ? 'S' : '-'),
 
-	// other
-	ft_buffaddc((mode & S_IROTH) ? 'r' : '-');
-	ft_buffaddc((mode & S_IWOTH) ? 'w' : '-');
-	ft_buffaddc((S_IXOTH & mode) ?
-		((S_ISVTX & mode) ? 't' : 'x') :
-		((S_ISVTX & mode) ? 'T' : '-'));
-	
+		// other
+		(mode & S_IROTH) ? 'r' : '-',
+		(mode & S_IWOTH) ? 'w' : '-',
+		(S_IXOTH & mode) ?
+			((S_ISVTX & mode) ? 't' : 'x') :
+			((S_ISVTX & mode) ? 'T' : '-'),
+		
+		'\0'
+	};
+
+
+	ft_buffadd(permissions);
 	
 	sd = listxattr(node->constructed_path, NULL, 0, XATTR_NOFOLLOW);
 	if (ENOTSUP == errno)
@@ -62,17 +68,16 @@ void	print_permissions(const t_node *node)
 	}
 	else
 	{
-		acl_t	acl = acl_get_file(node->constructed_path, ACL_TYPE_EXTENDED);
-
 		if (sd <= 0)
 		{
+			acl = acl_get_file(node->constructed_path, ACL_TYPE_EXTENDED);
 			if (!acl)
 				ft_buffadd("  ");
 			else
 				ft_buffadd("+ ");
+			acl_free(acl);
 		}
 		else
 			ft_buffadd("@ ");
-		acl_free(acl);
 	}
 }

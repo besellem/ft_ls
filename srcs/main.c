@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/13 12:36:02 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/15 18:45:22 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,17 +55,8 @@ static void	__ls_on_dir__(const char *path, bool print_header)
 	/* add each file/folder of THIS `path' in a list of nodes */
 	while ((s_dir = readdir(dir)))
 	{
-
-		// TODO: check if errno must be displayed (try `ls /var/db')
-		// if (errno)
-		// {
-		// 	ft_printf("ft_ls: %s: %s" CLR_COLOR "\n", s_dir->d_name, strerror(errno));
-		// 	errno = 0;
-		// }
-		
 		node = alloc_node();
 
-		
 		/* keep current path */
 		node->path = ft_strdup(path);
 		if (!node->path)
@@ -133,15 +124,16 @@ static void	__ls_on_dir__(const char *path, bool print_header)
 /*
 ** Parse all files and directories of requested path(s) (contained in `arguments')
 */
-static void	do_ls(t_args **arguments)
+static void	do_ls(const char *prog_name, t_args **arguments)
 {
 	t_args			*arg = NULL;
 	t_args			*to_del;
 	char			*current_path;
 	bool			is_dir;
 	bool			listed_files = false;
+	bool			listed_error = false;
 	bool			print_header = false;
-	// bool			print_header = (lst_size(*arguments) > 1);
+	struct stat		_s;
 
 
 	/* ls on all files first */
@@ -149,19 +141,31 @@ static void	do_ls(t_args **arguments)
 	{
 		current_path = arg->content->_dir_.d_name;
 		is_dir = ft_is_dir(current_path);
-
+		
 		to_del = NULL;
-		if (!is_dir || (S_ISLNK(arg->content->_lstats_.st_mode) && !is_flag(OPT_L)) || is_flag(OPT_D_MIN))
+		
+		if (!is_dir || (S_ISLNK(arg->content->_lstats_.st_mode) &&
+			!is_flag(OPT_L)) || is_flag(OPT_D_MIN))
 		{
+			if (SYSCALL_ERR == stat(current_path, &_s))
+			{
+				ft_dprintf(STDERR_FILENO, "%s: %s: %s\n",
+					prog_name, current_path, strerror(errno));
+				errno = 0;
+				listed_error = true;
+			}
+			else
+			{
+				__ls_on_file__(current_path);
+			}
 			listed_files = true;
-			__ls_on_file__(current_path);
 			to_del = arg;
 		}
 		arg = arg->next;
 		rm_arg(arguments, to_del);
 	}
 
-	if (listed_files && *arguments)
+	if (listed_files && !listed_error && *arguments)
 		ft_buffaddc('\n');
 	
 	
@@ -189,7 +193,7 @@ int			main(int ac, char **av)
 	if (FALSE == ft_parse_args(ac, av, &singleton()->args))
 		die();
 
-	do_ls(&singleton()->args);
+	do_ls(av[0], &singleton()->args);
 
 	return (EXIT_SUCCESS);
 }

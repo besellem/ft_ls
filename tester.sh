@@ -3,8 +3,8 @@
 
 _ext=".txt"
 
-real_file="../real${_ext}"
-my_file="../mine${_ext}"
+real_file="/tmp/__real_ls__${_ext}"
+my_file="/tmp/__my_ls__${_ext}"
 log_file="../log${_ext}"
 tmp_file="__tmp__"
 
@@ -62,8 +62,10 @@ do_test srcs Makefile incs
 do_test srcs Makefile incs Makefile
 do_test Makefile srcs incs Makefile
 
+
 # error management
 do_test i_dont_exist
+do_test ''
 do_test -z
 
 do_test i_dont_exist srcs
@@ -88,6 +90,9 @@ do_test -l ./Makefile
 do_test -la ./Makefile
 do_test -l Makefile srcs
 do_test -la Makefile srcs
+do_test -l /var
+do_test -l /var/
+
 
 # recursive option
 do_test -lR
@@ -98,12 +103,7 @@ do_test -larR srcs incs
 do_test -latR srcs incs
 do_test -lartR srcs incs
 do_test -lartR . srcs tester.sh incs Makefile
-
-
-# special cases
-do_test -l /var
-do_test -l /var/
-do_test -l /dev/random
+do_test -lR ~/Downloads
 
 
 # bonus
@@ -116,12 +116,21 @@ do_test -lL /var
 do_test -lL /var/
 do_test -Ls /
 do_test -Lls /
-do_test -Lls /
+do_test -Lls
+do_test -h
+do_test -hl ~
+do_test -lLsaAp ~
+do_test -lLsaArp ~
+do_test -lLstaAup ~
+do_test -lLsAarioGTtup srcs incs Makefile
+do_test -lLsAarioGTtup ~
+do_test -lLsAaioGTtup /
+do_test -lLsAarioGTtup /
+do_test -startup
 
-do_test -lGad .
-do_test -L@ /
-do_test -L@ /
 do_test -d . srcs
+do_test -lGad
+do_test -L@ /
 
 
 # remove the log file if it's empty

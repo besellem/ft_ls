@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/13 12:18:58 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/15 18:45:27 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@
 /* debug macro - to remove when finished */
 // # define __DEBUG__
 
-# define HANDLED_FLAGS  "-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx"
+#define HANDLED_FLAGS  "-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx"
 
 /* `@' option is not set in libft/incs/parse_args.h */
 #define OPT_XATTR       0x8000000000000000
@@ -89,8 +89,12 @@
 /* define the function to sort the list */
 #define get_cmp_method()                                                       \
 	(is_flag(OPT_R_MIN) ?                                                      \
-		(is_flag(OPT_T_MIN) ? &cmp_node_by_asc_time : &cmp_node_by_desc) :     \
-		(is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
+		(is_flag(OPT_U_MIN) ?                                                  \
+			&cmp_node_by_asc_last_access_time :                                \
+			is_flag(OPT_T_MIN) ? &cmp_node_by_asc_time : &cmp_node_by_desc) :  \
+		(is_flag(OPT_U_MIN) ?                                                  \
+			&cmp_node_by_desc_last_access_time :                               \
+			is_flag(OPT_T_MIN) ? &cmp_node_by_desc_time : &cmp_node_by_asc))
 
 
 #define alloc_node() ({ \
@@ -100,6 +104,18 @@
 	__ptr;                                                                     \
 })
 
+
+#define ft_max(a, b) ({                                                        \
+	typeof(a) _a = (a);                                                        \
+	typeof(b) _b = (b);                                                        \
+    _a > _b ? _a : _b;                                                         \
+})
+
+#define ft_min(a, b) ({                                                        \
+	typeof(a) _a = (a);                                                        \
+	typeof(b) _b = (b);                                                        \
+	_a < _b ? _a : _b;                                                         \
+})
 
 #define STRISEQ(__s1, __s2)  (0 == ft_strcmp((__s1), (__s2)))
 

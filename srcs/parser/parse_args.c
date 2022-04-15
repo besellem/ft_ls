@@ -120,39 +120,27 @@ static int	__get_args__(char **av, const char *arg)
 
 int		ft_parse_args(int ac, char **av, t_args **args)
 {
-	int				args_are_done = FALSE;
-	struct stat		__stat;
-	DIR				*dir;
-	t_node			*node;
-	int				i;
+	bool	args_are_done = false;
+	t_node	*node;
+	int		i;
 
 	for (i = 1; i < ac; ++i)
 	{
-		if (FALSE == args_are_done && '-' == av[i][0] && av[i][1])
+		if (!args_are_done && '-' == av[i][0] && av[i][1])
 		{
 			if (FALSE == __get_args__(av, av[i] + 1))
 				return (FALSE);
 		}
 		else
 		{
-			args_are_done = TRUE;
-			errno = 0;
-			dir = opendir(av[i]);
-			int	tmp_errno = errno;
-			if (!dir && SYSCALL_ERR == stat(av[i], &__stat))
-				ft_dprintf(STDERR_FILENO, "%s: %s: %s\n", av[0], av[i], strerror(tmp_errno));
-			else
-			{
-				node = alloc_node();
+			args_are_done = true;
+			node = alloc_node();
 
-				ft_strncpy(node->_dir_.d_name, av[i], PATH_MAX);
-				stat(av[i], &node->_stats_);
-				lstat(av[i], &node->_lstats_);
+			ft_strncpy(node->_dir_.d_name, av[i], PATH_MAX);
+			stat(av[i], &node->_stats_);
+			lstat(av[i], &node->_lstats_);
 
-				lst_push_sorted(args, node, get_cmp_method());
-				if (dir)
-					closedir(dir);
-			}
+			lst_push_sorted(args, node, get_cmp_method());
 		}
 	}
 	
