@@ -103,7 +103,6 @@ do_test -larR srcs incs
 do_test -latR srcs incs
 do_test -lartR srcs incs
 do_test -lartR . srcs tester.sh incs Makefile
-do_test -lR ~/Downloads
 
 
 # bonus
@@ -131,12 +130,5 @@ do_test -startup
 do_test -d . srcs
 do_test -lGad
 do_test -L@ /
-
-
-# remove the log file if it's empty
-if [ $(wc -c < $log_file | xargs) == "0" ]; then
-	rm -f $log_file
-fi
-
 
 # make fclean
