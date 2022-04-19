@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/19 12:57:05 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 13:11:47 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 		if (!node)
 			continue ;
 
-
-#ifdef __linux__
 		/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
 		if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
 			(STRISEQ(node->_dir_.d_name, "..") || STRISEQ(node->_dir_.d_name, ".")))
@@ -43,12 +41,6 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 		{
 			continue ;
 		}
-#else
-		if (!is_flag(OPT_A_MIN) && 0 == ft_strncmp(ft_basename(node->_dir_.d_name), ".", 1))
-		{
-			continue ;
-		}
-#endif
 
 		
 		_stats = is_flag(OPT_L) ? node->_stats_ : node->_lstats_;
