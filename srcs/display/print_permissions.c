@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:20:13 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/15 15:43:42 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 11:36:32 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,8 +26,6 @@ inline static char	__get_mode__(mode_t mode)
 void	print_permissions(const t_node *node)
 {
 	const mode_t	mode = is_flag(OPT_L) ? node->_stats_.st_mode : node->_lstats_.st_mode;
-	ssize_t			sd;
-	acl_t			acl;
 	const char		permissions[11] = {
 		
 		// file type
@@ -59,8 +57,11 @@ void	print_permissions(const t_node *node)
 
 
 	ft_buffadd(permissions);
-	
-	sd = listxattr(node->constructed_path, NULL, 0, XATTR_NOFOLLOW);
+
+#ifdef __linux__
+	ft_buffaddc(' ');
+#else
+	ssize_t sd = listxattr(node->constructed_path, NULL, 0, XATTR_NOFOLLOW);
 	if (ENOTSUP == errno)
 	{
 		ft_buffaddc(' ');
@@ -70,7 +71,7 @@ void	print_permissions(const t_node *node)
 	{
 		if (sd <= 0)
 		{
-			acl = acl_get_file(node->constructed_path, ACL_TYPE_EXTENDED);
+			acl_t acl = acl_get_file(node->constructed_path, ACL_TYPE_EXTENDED);
 			if (!acl)
 				ft_buffadd("  ");
 			else
@@ -80,4 +81,5 @@ void	print_permissions(const t_node *node)
 		else
 			ft_buffadd("@ ");
 	}
+#endif
 }

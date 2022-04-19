@@ -48,7 +48,9 @@ static const struct s_options	g_options[] = {
 	{'r', OPT_R_MIN},
 	{'S', OPT_S},
 	{'s', OPT_S_MIN},
+#ifndef __linux__
 	{'T', OPT_T},
+#endif
 	{'t', OPT_T_MIN},
 	{'U', OPT_U},
 	{'u', OPT_U_MIN},
@@ -57,7 +59,9 @@ static const struct s_options	g_options[] = {
 	{'w', OPT_W_MIN},
 	{'x', OPT_X_MIN},
 	{'1', OPT_1},
+#ifndef __linux__
 	{'@', OPT_XATTR},
+#endif
 	{0, 0}
 };
 
@@ -81,6 +85,11 @@ static void	__resolve_options_conflicts__(void)
 
 	if (is_flag(OPT_N_MIN))
 		add_flag(OPT_L_MIN);
+	
+#ifdef __linux__
+	if (is_flag(OPT_A))
+		rm_flag(OPT_A_MIN);
+#endif
 }
 
 static void	__illegal_opt__(char **av, char opt)
@@ -136,7 +145,7 @@ int		ft_parse_args(int ac, char **av, t_args **args)
 			args_are_done = true;
 			node = alloc_node();
 
-			ft_strncpy(node->_dir_.d_name, av[i], PATH_MAX);
+			ft_strncpy(node->_dir_.d_name, av[i], sizeof(node->_dir_.d_name));
 			stat(av[i], &node->_stats_);
 			lstat(av[i], &node->_lstats_);
 
@@ -152,7 +161,7 @@ int		ft_parse_args(int ac, char **av, t_args **args)
 	{
 		node = alloc_node();
 
-		ft_strncpy(node->_dir_.d_name, ".", PATH_MAX);
+		ft_strncpy(node->_dir_.d_name, ".", sizeof(node->_dir_.d_name));
 		stat(av[i], &node->_stats_);
 		lstat(av[i], &node->_lstats_);
 		

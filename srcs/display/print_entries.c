@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 13:59:55 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/15 18:43:37 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 12:57:05 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,16 +21,36 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 	t_pad 			tmp_pads = {0};
 	t_node			*node;
 
-	ft_bzero(pads, sizeof(t_pad));
+	ft_bzero(pads, sizeof(*pads));
 	for (node_list_t *tmp = (node_list_t *)head; tmp; tmp = tmp->next)
 	{
 		node = tmp->content;
 		if (!node)
 			continue ;
-		
-		if (!is_flag(OPT_A_MIN) && 0 == ft_strncmp(ft_basename(node->_dir_.d_name), ".", 1))
-			continue ;
 
+
+#ifdef __linux__
+		/* if `-A' is set & the node's name starts is either `.' or `..', do not print that node */
+		if (is_flag(OPT_A) && !is_flag(OPT_A_MIN) &&
+			(STRISEQ(node->_dir_.d_name, "..") || STRISEQ(node->_dir_.d_name, ".")))
+		{
+			continue ;
+		}
+
+		/* if `-a' is not set & the node's name starts with a `.', do not print that node */
+		if (!is_flag(OPT_A) && !is_flag(OPT_A_MIN) && !is_flag(OPT_D_MIN) &&
+			0 == ft_strncmp(ft_basename(node->_dir_.d_name), ".", 1))
+		{
+			continue ;
+		}
+#else
+		if (!is_flag(OPT_A_MIN) && 0 == ft_strncmp(ft_basename(node->_dir_.d_name), ".", 1))
+		{
+			continue ;
+		}
+#endif
+
+		
 		_stats = is_flag(OPT_L) ? node->_stats_ : node->_lstats_;
 
 		if (is_flag(OPT_I_MIN))
@@ -40,10 +60,14 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 		}
 		if (is_flag(OPT_S_MIN))
 		{
+#ifdef __linux__
+			tmp_pads.blocks = ft_nblen(_stats.st_blocks >> 1);
+#else
 			tmp_pads.blocks = ft_nblen(_stats.st_blocks);
+#endif
 			pads->blocks = ft_max(pads->blocks, tmp_pads.blocks);
 		}
-		if (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN))
+		if (is_flag(OPT_L_MIN | OPT_O_MIN))
 		{
 			tmp_pads.nlink = ft_nblen(_stats.st_nlink);
 			pads->nlink = ft_max(pads->nlink, tmp_pads.nlink);
@@ -62,9 +86,13 @@ static void	__set_pads__(const node_list_t *head, t_pad *pads)
 				tmp_pads.size = ft_nblen(_stats.st_size);
 			pads->size = ft_max(pads->size, tmp_pads.size);
 		}
-		
+
 		/* total blocks to print */
+#ifdef __linux__
+		pads->total_blocks += _stats.st_blocks >> 1;
+#else
 		pads->total_blocks += _stats.st_blocks;
+#endif
 	}
 }
 
@@ -95,7 +123,7 @@ static void	__print_entry__(const t_node *node, const t_pad *pads)
 		print_blocks(node, pads);
 
 	/* print long format if `-l' (ell) is set */
-	if (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN))
+	if (is_flag(OPT_L_MIN | OPT_O_MIN))
 	{
 		print_permissions(node);
 		print_nlinks(node, pads);
@@ -159,7 +187,7 @@ void	__print_entries_lst__(node_list_t *head, bool _print_dir_path, bool _printi
 		ft_buffadd(":\n");
 	}
 	
-	if (_printing_file_list && (is_flag(OPT_L_MIN) || is_flag(OPT_O_MIN) || is_flag(OPT_S_MIN)))
+	if (_printing_file_list && is_flag(OPT_L_MIN | OPT_O_MIN | OPT_S_MIN))
 		print_total_blocks(&pads);
 	
 	for (node_list_t *lst = head; lst != NULL; lst = lst->next)

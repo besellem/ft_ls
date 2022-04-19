@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:37:45 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/15 18:45:22 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 12:36:38 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static void	__ls_on_file__(const char *path)
 		die();
 	
 	/* needed to print its name */
-	ft_strncpy(node->_dir_.d_name, path, PATH_MAX);
+	ft_strncpy(node->_dir_.d_name, path, sizeof(node->_dir_.d_name));
 
 	/* copy file's infos into the node */
 	stat(path, &node->_stats_);

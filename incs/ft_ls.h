@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/15 21:36:34 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/15 18:45:27 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 12:21:29 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,14 +24,16 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <pwd.h>
-#include <uuid/uuid.h>
 #include <grp.h>
-#include <uuid/uuid.h>
 #include <sys/xattr.h>
-#include <sys/acl.h>
 #include <time.h>
 #include <stdio.h>
 #include <errno.h>
+
+#ifndef __linux__
+# include <uuid/uuid.h>
+# include <sys/acl.h>
+#endif
 
 
 /*
@@ -51,7 +53,11 @@
 /* debug macro - to remove when finished */
 // # define __DEBUG__
 
-#define HANDLED_FLAGS  "-1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx"
+#if __linux__
+# define HANDLED_FLAGS  "-1ABCFGHLOPRSUWabcdefghiklmnopqrstuwx"
+#else
+# define HANDLED_FLAGS  "-@1ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx"
+#endif
 
 /* `@' option is not set in libft/incs/parse_args.h */
 #define OPT_XATTR       0x8000000000000000
@@ -74,15 +80,18 @@
 # define _atime_spec(__st) ((__st).st_atimespec)
 # define _mtime_spec(__st) ((__st).st_mtimespec)
 # define _ctime_spec(__st) ((__st).st_ctimespec)
-#else                                       /* Linux */
+#elif defined(__linux__)                    /* Linux */
+# include <linux/version.h>
 # if LINUX_VERSION_CODE < KERNEL_VERSION(2,6,0)
 #  define LINUX_OLD_KERNEL_VERSION
 #  error "Kernel version too old: require 2.6.0 or newer"
 # else
-#  define _atime_spec(__st) ((__st).st_atime)
-#  define _mtime_spec(__st) ((__st).st_mtime)
-#  define _ctime_spec(__st) ((__st).st_ctime)
+#  define _atime_spec(__st) ((__st).st_atim)
+#  define _mtime_spec(__st) ((__st).st_mtim)
+#  define _ctime_spec(__st) ((__st).st_ctim)
 # endif
+#else
+# error "Unsupported OS"
 #endif /* defined(__APPLE__) && defined(__MACH__) */
 
 

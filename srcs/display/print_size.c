@@ -6,7 +6,7 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/06/27 15:22:12 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/15 18:42:18 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 12:08:25 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,12 @@
 #define UNIT_GIGABYTE 1099511627776.0        /* 2^40 */
 #define UNIT_TERABYTE 1125899906842624.0     /* 2^50 */
 #define UNIT_PETABYTE 1152921504606846976.0  /* 2^60 */
+
+#ifdef __linux__
+# define LONG_FMT "ld"
+#else
+# define LONG_FMT "lld"
+#endif
 
 const struct s_unit_lookup_table
 {
@@ -47,7 +53,7 @@ void	print_size(const t_node *node, const t_pad *pads)
 				const int	pad_size = ft_min(pads->size, 4) + 1; // TODO: debug this
 
 				if ('B' == g_units[i].unit)
-					ft_asprintf(&tmp, "%*lld%c ", pad_size, _size, g_units[i].unit);
+					ft_asprintf(&tmp, "%*" LONG_FMT "%c ", pad_size, _size, g_units[i].unit);
 				else
 					ft_asprintf(&tmp, "%*.1f%c ", pad_size, _size / (g_units[i].size / UNIT_BYTE), g_units[i].unit);
 				break ;
@@ -56,7 +62,7 @@ void	print_size(const t_node *node, const t_pad *pads)
 	}
 	else
 	{
-		ft_asprintf(&tmp, "%*lld ", pads->size, _size);
+		ft_asprintf(&tmp, "%*" LONG_FMT " ", pads->size, _size);
 	}
 	if (!tmp)
 		ft_free_exit();

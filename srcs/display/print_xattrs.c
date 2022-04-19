@@ -6,12 +6,15 @@
 /*   By: besellem <besellem@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/07 15:35:46 by besellem          #+#    #+#             */
-/*   Updated: 2022/04/13 13:41:52 by besellem         ###   ########.fr       */
+/*   Updated: 2022/04/19 11:39:42 by besellem         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_ls.h"
 
+#ifdef __linux__
+void	print_xattrs(__attribute__((unused)) const t_node *node) {}
+#else
 void	print_xattrs(const t_node *node)
 {
 	char		*tmp = NULL;
@@ -39,3 +42,4 @@ void	print_xattrs(const t_node *node)
 		}
 	}
 }
+#endif
